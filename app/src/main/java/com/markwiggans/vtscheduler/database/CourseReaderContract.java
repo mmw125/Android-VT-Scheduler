@@ -21,9 +21,19 @@ public class CourseReaderContract {
         public static final String COLUMN_NAME_SEMESTER_ID = "semester_id";
     }
 
-    public static class MeetingTimeList implements BaseColumns {
+    public static class MeetingTimeListEntry implements BaseColumns {
         public static final String TABLE_NAME = "scheduler_server_meetingtimelist";
         public static final String COLUMN_NAME_ID = "id";
         public static final String COLUMN_NAME_COURSE_ID = "course_id";
+    }
+
+    public static class CRNEntry implements BaseColumns {
+        public static final String TABLE_NAME = "scheduler_server_crn";
+        public static final String COLUMN_NAME_ID = "id";
+        public static final String COLUMN_NAME_CRN = "crn";
+        public static final String COLUMN_NAME_CRN_TEXT = "crn_txt";
+        public static final String COLUMN_NAME_INSTRUCTOR = "instructor";
+        public static final String COLUMN_NAME_LOCATION = "location";
+        public static final String COLUMN_NAME_MEETING_TIMES_ID = "meeting_times_id";
     }
 }

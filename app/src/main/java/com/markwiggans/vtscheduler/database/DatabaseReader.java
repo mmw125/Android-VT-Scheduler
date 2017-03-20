@@ -102,8 +102,22 @@ public class DatabaseReader extends SQLiteOpenHelper {
         }
     }
 
-
-    public Cursor query(String table, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy) {
+    /**
+     * Gets all of the elements in the table with the given table
+     * @param table the table to query
+     * @return cursor on the given table
+     */
+    public Cursor query(String table) {
         return myDataBase.query(table, null, null, null, null, null, null, null);
+    }
+
+    /**
+     * Gets all of the elements in the table with the given attribute
+     * @param table name of the table to query
+     * @param selection selection statement to match items on
+     * @return the cursor on the elements
+     */
+    public Cursor query(String table, String selection) {
+        return myDataBase.query(table, null, selection, null, null, null, null, null);
     }
 }

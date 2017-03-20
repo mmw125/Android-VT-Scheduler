@@ -11,6 +11,7 @@ import java.util.List;
 
 /**
  * Created by Mark Wiggans on 3/19/2017.
+ * Wrapper for the DatabaseReader class
  */
 public class DataSource {
     private static DataSource instance;
@@ -19,14 +20,16 @@ public class DataSource {
      * Gets the data source instance
      * @return the data source instance
      */
-    public static DataSource getInstance() {
+    public static DataSource getInstance(Context context) {
         if(instance != null) {
-            instance = new DataSource();
+            instance = new DataSource(context);
         }
         return instance;
     }
 
-    private DataSource() {
+    private DatabaseReader reader;
+    private DataSource(Context context) {
+        reader = new DatabaseReader(context);
     }
 
     private List<Course> courses;
@@ -35,18 +38,16 @@ public class DataSource {
      * Queries the database for all of the courses. This is a cached operation
      * @return all of the courses
      */
-    public List<Course> getCourses(Context context) {
+    public List<Course> getCourses() {
         if (courses == null) {
-            DatabaseReader myDbHelper = new DatabaseReader(context);
-            myDbHelper.openDataBase();
-            Cursor c = myDbHelper.query(CourseReaderContract.CourseEntry.TABLE_NAME, null, null, null, null, null, null);
+            reader.openDataBase();
+            Cursor c = reader.query(CourseReaderContract.CourseEntry.TABLE_NAME);
             courses = new ArrayList<>();
             if (c.moveToFirst()) {
                 do {
                     courses.add(new Course(c));
                 } while (c.moveToNext());
             }
-            myDbHelper.close();
         }
         return courses;
     }
@@ -56,14 +57,12 @@ public class DataSource {
      * @param courses the courses to find the meeting times for
      * @return the meeting times for the given courses
      */
-    public List<MeetingTimeList>[] getManyMeetingTimes(Context context, List<Course> courses) {
-        DatabaseReader reader = new DatabaseReader(context);
+    public List<MeetingTimeList>[] getManyMeetingTimes(List<Course> courses) {
         List<MeetingTimeList>[] arr = (List<MeetingTimeList>[]) new Object[courses.size()];
         reader.openDataBase();
         for(int i = 0; i < courses.size(); i++) {
-            arr[i] = this.getMeetingTimes(context, courses.get(i), reader);
+            arr[i] = this.getMeetingTimes(courses.get(i));
         }
-        reader.close();
         return arr;
     }
 
@@ -72,24 +71,20 @@ public class DataSource {
      * @param course the course to get the meeting times for
      * @return the meeting times for the given course
      */
-    public List<MeetingTimeList> getMeetingTimes(Context context, Course course) {
-        return this.getMeetingTimes(context, course, null);
-    }
-
-    private List<MeetingTimeList> getMeetingTimes(Context context, Course course, DatabaseReader reader) {
+    public List<MeetingTimeList> getMeetingTimes(Course course) {
         if(course.getCachedMeetingTimeLists() != null) {
             return course.getCachedMeetingTimeLists();
         }
-        boolean hasReader = reader == null;
-        if(!hasReader) {
-            reader = new DatabaseReader(context);
+        reader.openDataBase();
+        String whereStatement = CourseReaderContract.MeetingTimeListEntry.COLUMN_NAME_COURSE_ID + " = " + course.getId();
+        Cursor c = reader.query(CourseReaderContract.MeetingTimeListEntry.TABLE_NAME, whereStatement);
+        List<MeetingTimeList> meetingTimeLists = new ArrayList<>();
+        if (c.moveToFirst()) {
+            do {
+                meetingTimeLists.add(new MeetingTimeList(c));
+            } while (c.moveToNext());
         }
-
-        //TODO: Preform query
-
-        if(!hasReader) {
-            reader.close();
-        }
-        return course.getMeetingTimeLists(context);
+        course.setMeetingTimeLists(meetingTimeLists);
+        return meetingTimeLists;
     }
 }

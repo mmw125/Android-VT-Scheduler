@@ -5,6 +5,7 @@ import android.database.Cursor;
 
 import com.markwiggans.vtscheduler.database.DataSource;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,7 +33,7 @@ public class Course {
     private List<MeetingTimeList> meetingTimeLists;
     public List<MeetingTimeList> getMeetingTimeLists(Context context) {
         if(meetingTimeLists == null) {
-            meetingTimeLists = DataSource.getInstance().getMeetingTimes(context, this);
+            meetingTimeLists = DataSource.getInstance(context).getMeetingTimes(this);
         }
         return meetingTimeLists;
     }
@@ -47,6 +48,17 @@ public class Course {
 
     public int getId() {
         return id;
+    }
+
+    private List<CRN> crns;
+    public List<CRN> getCRNs(Context context) {
+        if(crns == null) {
+            crns = new ArrayList<>();
+            for(MeetingTimeList list : this.getMeetingTimeLists(context)) {
+                crns.addAll(list.getCRNs());
+            }
+        }
+        return crns;
     }
 
     @Override
