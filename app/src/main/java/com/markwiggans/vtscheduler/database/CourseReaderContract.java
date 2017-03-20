@@ -1,4 +1,4 @@
-package com.markwiggans.vtscheduler;
+package com.markwiggans.vtscheduler.database;
 
 import android.provider.BaseColumns;
 
@@ -19,5 +19,11 @@ public class CourseReaderContract {
         public static final String COLUMN_NAME_TYPE = "type";
         public static final String COLUMN_NAME_DEPARTMENT_ID = "department_id";
         public static final String COLUMN_NAME_SEMESTER_ID = "semester_id";
+    }
+
+    public static class MeetingTimeList implements BaseColumns {
+        public static final String TABLE_NAME = "scheduler_server_meetingtimelist";
+        public static final String COLUMN_NAME_ID = "id";
+        public static final String COLUMN_NAME_COURSE_ID = "course_id";
     }
 }

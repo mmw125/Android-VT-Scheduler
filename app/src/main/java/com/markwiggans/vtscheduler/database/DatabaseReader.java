@@ -1,4 +1,4 @@
-package com.markwiggans.vtscheduler;
+package com.markwiggans.vtscheduler.database;
 
 import android.content.Context;
 import android.database.Cursor;
