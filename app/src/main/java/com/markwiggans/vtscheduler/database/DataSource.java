@@ -6,6 +6,7 @@ import android.database.Cursor;
 import com.markwiggans.vtscheduler.data.Course;
 import com.markwiggans.vtscheduler.data.MeetingTimeList;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class DataSource {
      * @return the data source instance
      */
     public static DataSource getInstance(Context context) {
-        if(instance != null) {
+        if(instance == null) {
             instance = new DataSource(context);
         }
         return instance;
@@ -40,6 +41,9 @@ public class DataSource {
      */
     public List<Course> getCourses() {
         if (courses == null) {
+            try {
+                reader.createDataBase();
+            } catch (IOException e) { }
             reader.openDataBase();
             Cursor c = reader.query(CourseReaderContract.CourseEntry.TABLE_NAME);
             courses = new ArrayList<>();
@@ -59,6 +63,11 @@ public class DataSource {
      */
     public List<MeetingTimeList>[] getManyMeetingTimes(List<Course> courses) {
         List<MeetingTimeList>[] arr = (List<MeetingTimeList>[]) new Object[courses.size()];
+        try {
+            reader.createDataBase();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         reader.openDataBase();
         for(int i = 0; i < courses.size(); i++) {
             arr[i] = this.getMeetingTimes(courses.get(i));

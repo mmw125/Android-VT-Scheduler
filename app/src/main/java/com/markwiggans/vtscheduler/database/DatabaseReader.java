@@ -33,9 +33,7 @@ public class DatabaseReader extends SQLiteOpenHelper {
 
     public void createDataBase() throws IOException {
         boolean dbExist = checkDataBase();
-        if (dbExist) {
-
-        } else {
+        if (!dbExist) {
             this.getReadableDatabase();
             try {
                 copyDataBase();
