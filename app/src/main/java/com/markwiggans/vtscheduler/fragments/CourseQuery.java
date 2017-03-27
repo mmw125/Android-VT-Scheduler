@@ -6,16 +6,31 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import com.markwiggans.vtscheduler.R;
-import com.markwiggans.vtscheduler.interfaces.FragmentInteractionListener;
+import com.markwiggans.vtscheduler.data.Course;
+import com.markwiggans.vtscheduler.database.CourseReaderContract;
+import com.markwiggans.vtscheduler.database.DatabaseTask;
+import com.markwiggans.vtscheduler.database.Query;
+import com.markwiggans.vtscheduler.database.QueryResult;
+import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
+
+import java.util.List;
 
 
 /**
  * Fragment for Quering courses
  */
-public class CourseQuery extends Fragment {
-    private FragmentInteractionListener mListener;
+public class CourseQuery extends Fragment implements View.OnClickListener, DatabaseTask.DatabaseTaskReceiver{
+    private MainActivityInteraction mListener;
+    private Button submit;
+    private EditText crn;
+    private LinearLayout layout;
+    private Context context;
+    private LinearLayout linlaHeaderProgress;
 
     public CourseQuery() {
         // Required empty public constructor
@@ -33,25 +48,29 @@ public class CourseQuery extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-//        List<Course> courses = DataSource.getInstance(this).getCourses();
-//        setListAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, courses));
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_schedule_creator, container, false);
+        View view = inflater.inflate(R.layout.fragment_course_query, container, false);
+        crn = (EditText) view.findViewById(R.id.editText);
+        submit = (Button) view.findViewById(R.id.submit);
+        submit.setOnClickListener(this);
+        layout = (LinearLayout) view.findViewById(R.id.linear_layout);
+        linlaHeaderProgress = (LinearLayout) view.findViewById(R.id.linlaHeaderProgress);
+        return view;
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof FragmentInteractionListener) {
-            mListener = (FragmentInteractionListener) context;
+        this.context = context;
+        if (context instanceof MainActivityInteraction) {
+            mListener = (MainActivityInteraction) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement FragmentInteractionListener");
+                    + " must implement MainActivityInteraction");
         }
     }
 
@@ -59,5 +78,21 @@ public class CourseQuery extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v.equals(submit)) {
+            linlaHeaderProgress.setVisibility(View.VISIBLE);
+            Query q = new Query(CourseReaderContract.CourseEntry.TABLE_NAME,
+                    CourseReaderContract.CourseEntry.COLUMN_NAME_COURSE_NUMBER + " = " + crn.getText().toString(), null);
+            new DatabaseTask(context).execute(q);
+        }
+    }
+
+    @Override
+    public void onDatabaseTask(List<QueryResult> cursor) {
+        List<Course> courses = Course.createCourses(cursor.get(0).getCursor());
+
     }
 }

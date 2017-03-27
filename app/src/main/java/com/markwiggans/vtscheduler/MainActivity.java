@@ -14,20 +14,22 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.markwiggans.vtscheduler.database.DataSource;
+import com.markwiggans.vtscheduler.database.Query;
 import com.markwiggans.vtscheduler.fragments.CourseQuery;
 import com.markwiggans.vtscheduler.fragments.ScheduleCreator;
-import com.markwiggans.vtscheduler.interfaces.FragmentInteractionListener;
+import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
 
 /**
  * The Main Activity for the application
  */
-public class MainActivity extends Activity implements FragmentInteractionListener {
+public class MainActivity extends Activity implements MainActivityInteraction {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -123,8 +125,19 @@ public class MainActivity extends Activity implements FragmentInteractionListene
     }
 
     @Override
-    public DataSource getDataSource() {
-        return null;
+    public void changeFragment(String fragmentName, String... params) {
+
+    }
+
+    @Override
+    public void startWait() {
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        setProgressBarIndeterminateVisibility(true);
+    }
+
+    @Override
+    public void endWait() {
+        setProgressBarIndeterminateVisibility(false);
     }
 
     /*

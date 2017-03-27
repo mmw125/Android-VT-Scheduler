@@ -8,13 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.markwiggans.vtscheduler.R;
-import com.markwiggans.vtscheduler.interfaces.FragmentInteractionListener;
+import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
 
 /**
  * Fragment for creating schedules
  */
 public class ScheduleCreator extends Fragment {
-    private FragmentInteractionListener mListener;
+    private MainActivityInteraction mListener;
 
     public ScheduleCreator() {
         // Required empty public constructor
@@ -44,11 +44,11 @@ public class ScheduleCreator extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof FragmentInteractionListener) {
-            mListener = (FragmentInteractionListener) context;
+        if (context instanceof MainActivityInteraction) {
+            mListener = (MainActivityInteraction) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement FragmentInteractionListener");
+                    + " must implement MainActivityInteraction");
         }
     }
 

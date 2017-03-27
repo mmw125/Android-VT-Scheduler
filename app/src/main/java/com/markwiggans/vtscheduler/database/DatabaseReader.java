@@ -28,7 +28,6 @@ public class DatabaseReader extends SQLiteOpenHelper {
         super(context, DB_NAME, null, 10);
         this.myContext = context;
         this.DB_PATH = "/data/data/" + context.getPackageName() + "/databases/";
-        Log.e("Path 1", DB_PATH);
     }
 
     public void createDataBase() throws IOException {
@@ -98,6 +97,12 @@ public class DatabaseReader extends SQLiteOpenHelper {
                 e.printStackTrace();
             }
         }
+    }
+
+    public Cursor query(Query query) {
+        return myDataBase.query(query.getTable(), query.getColumns(), query.getSelection(),
+                query.getSelectionArgs(), query.getGroupBy(), query.getHaving(),
+                query.getOrderBy(), query.getLimit());
     }
 
     /**

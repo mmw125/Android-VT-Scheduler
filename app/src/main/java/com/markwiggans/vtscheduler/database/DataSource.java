@@ -96,4 +96,14 @@ public class DataSource {
         course.setMeetingTimeLists(meetingTimeLists);
         return meetingTimeLists;
     }
+
+    protected QueryResult query(Query query) {
+        try {
+            reader.createDataBase();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        reader.openDataBase();
+        return new QueryResult(query, reader.query(query));
+    }
 }

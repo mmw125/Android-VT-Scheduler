@@ -12,6 +12,16 @@ import java.util.List;
  * Created by Mark Wiggans on 3/19/2017.
  */
 public class Course {
+    public static List<Course> createCourses(Cursor c) {
+        ArrayList<Course> courses = new ArrayList<>();
+        if (c.moveToFirst()) {
+            do {
+                courses.add(new Course(c));
+            } while (c.moveToNext());
+        }
+        return courses;
+    }
+
     private int id;
     private String wholeName;
     private String name;
