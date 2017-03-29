@@ -6,11 +6,14 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 
 import com.markwiggans.vtscheduler.R;
+import com.markwiggans.vtscheduler.adapters.CourseAdapter;
 import com.markwiggans.vtscheduler.data.Course;
 import com.markwiggans.vtscheduler.database.CourseReaderContract;
 import com.markwiggans.vtscheduler.database.DatabaseTask;
@@ -93,6 +96,6 @@ public class CourseQuery extends Fragment implements View.OnClickListener, Datab
     @Override
     public void onDatabaseTask(List<QueryResult> cursor) {
         List<Course> courses = Course.createCourses(cursor.get(0).getCursor());
-
+        ListAdapter adapter = new CourseAdapter(context, courses);
     }
 }

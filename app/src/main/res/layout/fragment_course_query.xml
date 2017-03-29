@@ -74,9 +74,10 @@ tools:context="com.markwiggans.vtscheduler.fragments.ScheduleCreator">
 
             <ProgressBar
                 android:id="@+id/pbHeaderProgress"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" >
-            </ProgressBar>
+                style="@android:style/Widget.DeviceDefault.Light.ProgressBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible"></ProgressBar>
         </LinearLayout>
 
         <ListView
