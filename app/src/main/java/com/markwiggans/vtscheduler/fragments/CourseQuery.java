@@ -6,21 +6,27 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import com.markwiggans.vtscheduler.R;
 import com.markwiggans.vtscheduler.adapters.CourseAdapter;
 import com.markwiggans.vtscheduler.data.Course;
 import com.markwiggans.vtscheduler.database.CourseReaderContract;
+import com.markwiggans.vtscheduler.database.DataSource;
+import com.markwiggans.vtscheduler.database.DatabaseReader;
 import com.markwiggans.vtscheduler.database.DatabaseTask;
 import com.markwiggans.vtscheduler.database.Query;
 import com.markwiggans.vtscheduler.database.QueryResult;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
 
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -32,8 +38,10 @@ public class CourseQuery extends Fragment implements View.OnClickListener, Datab
     private Button submit;
     private EditText crn;
     private LinearLayout layout;
+    private AutoCompleteTextView department;
     private Context context;
     private LinearLayout linlaHeaderProgress;
+    private View view;
 
     public CourseQuery() {
         // Required empty public constructor
@@ -56,8 +64,17 @@ public class CourseQuery extends Fragment implements View.OnClickListener, Datab
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_course_query, container, false);
-        crn = (EditText) view.findViewById(R.id.editText);
+        view = inflater.inflate(R.layout.fragment_course_query, container, false);
+        crn = (EditText) view.findViewById(R.id.course_number);
+        department = (AutoCompleteTextView) view.findViewById(R.id.department);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, DataSource.getInstance(context).getDepartments());
+        adapter.sort(new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.toLowerCase().compareTo(o2.toLowerCase());
+            }
+        });
+        department.setAdapter(adapter);
         submit = (Button) view.findViewById(R.id.submit);
         submit.setOnClickListener(this);
         layout = (LinearLayout) view.findViewById(R.id.linear_layout);
@@ -86,16 +103,25 @@ public class CourseQuery extends Fragment implements View.OnClickListener, Datab
     @Override
     public void onClick(View v) {
         if(v.equals(submit)) {
+            InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            submit.setEnabled(false);
             linlaHeaderProgress.setVisibility(View.VISIBLE);
-            Query q = new Query(CourseReaderContract.CourseEntry.TABLE_NAME,
-                    CourseReaderContract.CourseEntry.COLUMN_NAME_COURSE_NUMBER + " = " + crn.getText().toString(), null);
-            new DatabaseTask(context).execute(q);
+            String selectString = CourseReaderContract.CourseEntry.COLUMN_NAME_COURSE_NUMBER + " LIKE '%" + crn.getText().toString() + "%'" +
+                    " AND " + CourseReaderContract.CourseEntry.COLUMN_NAME_DEPARTMENT_ID + " LIKE '%" + department.getText().toString() + "%'";
+            Query q = new Query(CourseReaderContract.CourseEntry.TABLE_NAME, selectString, null);
+            new DatabaseTask(this, context).execute(q);
         }
     }
 
     @Override
     public void onDatabaseTask(List<QueryResult> cursor) {
-        List<Course> courses = Course.createCourses(cursor.get(0).getCursor());
-        ListAdapter adapter = new CourseAdapter(context, courses);
+        submit.setEnabled(true);
+        Toast.makeText(context, "Got task back", Toast.LENGTH_SHORT).show();
+        linlaHeaderProgress.setVisibility(View.GONE);
+        CourseAdapter adapter = new CourseAdapter(context, R.id.list,
+                Course.createCourses(cursor.get(0).getCursor()));
+        ListView memberList = (ListView) view.findViewById(R.id.list);
+        memberList.setAdapter(adapter);
     }
 }

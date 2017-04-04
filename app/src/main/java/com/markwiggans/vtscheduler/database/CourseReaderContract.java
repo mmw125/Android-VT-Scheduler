@@ -4,9 +4,9 @@ import android.provider.BaseColumns;
 
 /**
  * Created by Mark Wiggans on 2/8/2017.
+ * This stores the table names and column names in the database
  * https://developer.android.com/training/basics/data-storage/databases.html
  */
-
 public class CourseReaderContract {
     private CourseReaderContract() {}
 

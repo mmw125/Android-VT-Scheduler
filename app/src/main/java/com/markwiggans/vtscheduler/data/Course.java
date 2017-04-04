@@ -40,35 +40,32 @@ public class Course {
         semesterId = c.getInt(6);
     }
 
-    private List<MeetingTimeList> meetingTimeLists;
     public List<MeetingTimeList> getMeetingTimeLists(Context context) {
-        if(meetingTimeLists == null) {
-            meetingTimeLists = DataSource.getInstance(context).getMeetingTimes(this);
-        }
-        return meetingTimeLists;
-    }
-
-    public void setMeetingTimeLists(List<MeetingTimeList> meetingTimeLists){
-        this.meetingTimeLists = meetingTimeLists;
-    }
-
-    public List<MeetingTimeList> getCachedMeetingTimeLists() {
-        return meetingTimeLists;
+        return DataSource.getInstance(context).getMeetingTimes(this);
     }
 
     public int getId() {
         return id;
     }
 
-    private List<CRN> crns;
     public List<CRN> getCRNs(Context context) {
-        if(crns == null) {
-            crns = new ArrayList<>();
-            for(MeetingTimeList list : this.getMeetingTimeLists(context)) {
-                crns.addAll(list.getCRNs());
-            }
+        ArrayList<CRN> crns = new ArrayList<>();
+        for (MeetingTimeList list : this.getMeetingTimeLists(context)) {
+            crns.addAll(list.getCRNs());
         }
         return crns;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getWholeName() {
+        return wholeName;
+    }
+
+    public String getType() {
+        return type;
     }
 
     @Override

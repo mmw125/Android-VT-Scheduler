@@ -21,6 +21,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.markwiggans.vtscheduler.database.DataSource;
+import com.markwiggans.vtscheduler.database.DatabaseTask;
 import com.markwiggans.vtscheduler.database.Query;
 import com.markwiggans.vtscheduler.fragments.CourseQuery;
 import com.markwiggans.vtscheduler.fragments.ScheduleCreator;

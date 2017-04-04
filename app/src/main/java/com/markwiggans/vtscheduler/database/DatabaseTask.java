@@ -12,14 +12,14 @@ import java.util.List;
 public class DatabaseTask extends AsyncTask<Query, Void, List<QueryResult>> {
     private Context context;
     private DatabaseTaskReceiver receiver;
+
     public DatabaseTask(Context context) {
+        this((DatabaseTaskReceiver) context, context);
+    }
+
+    public DatabaseTask(DatabaseTaskReceiver receiver, Context context) {
         this.context = context;
-        if(context instanceof DatabaseTaskReceiver) {
-            this.receiver = (DatabaseTaskReceiver) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement DatabaseTaskReceiver");
-        }
+        this.receiver = receiver;
     }
 
     @Override

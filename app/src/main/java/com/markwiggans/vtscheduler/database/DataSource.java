@@ -3,6 +3,7 @@ package com.markwiggans.vtscheduler.database;
 import android.content.Context;
 import android.database.Cursor;
 
+import com.markwiggans.vtscheduler.data.CRN;
 import com.markwiggans.vtscheduler.data.Course;
 import com.markwiggans.vtscheduler.data.MeetingTimeList;
 
@@ -56,6 +57,22 @@ public class DataSource {
         return courses;
     }
 
+    private List<String> departments;
+    public List<String> getDepartments() {
+        if(departments == null) {
+            departments = new ArrayList<>();
+            Query query = new Query(CourseReaderContract.CourseEntry.TABLE_NAME, new String[]{"DISTINCT " + CourseReaderContract.CourseEntry.COLUMN_NAME_DEPARTMENT_ID});
+            QueryResult result = query(query);
+            Cursor c = result.getCursor();
+            if (c.moveToFirst()) {
+                do {
+                    departments.add(c.getString(0));
+                } while (c.moveToNext());
+            }
+        }
+        return departments;
+    }
+
     /**
      * Gets the meeting times for many courses using the same database instance
      * @param courses the courses to find the meeting times for
@@ -81,9 +98,6 @@ public class DataSource {
      * @return the meeting times for the given course
      */
     public List<MeetingTimeList> getMeetingTimes(Course course) {
-        if(course.getCachedMeetingTimeLists() != null) {
-            return course.getCachedMeetingTimeLists();
-        }
         reader.openDataBase();
         String whereStatement = CourseReaderContract.MeetingTimeListEntry.COLUMN_NAME_COURSE_ID + " = " + course.getId();
         Cursor c = reader.query(CourseReaderContract.MeetingTimeListEntry.TABLE_NAME, whereStatement);
@@ -93,7 +107,6 @@ public class DataSource {
                 meetingTimeLists.add(new MeetingTimeList(c));
             } while (c.moveToNext());
         }
-        course.setMeetingTimeLists(meetingTimeLists);
         return meetingTimeLists;
     }
 

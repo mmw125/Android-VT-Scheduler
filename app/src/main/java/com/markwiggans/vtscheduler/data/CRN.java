@@ -4,10 +4,23 @@ import android.database.Cursor;
 
 import com.markwiggans.vtscheduler.database.CourseReaderContract;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Mark Wiggans on 3/19/2017.
  */
 public class CRN {
+    public static List<CRN> createCRNs(Cursor c) {
+        ArrayList<CRN> courses = new ArrayList<>();
+        if (c.moveToFirst()) {
+            do {
+                courses.add(new CRN(c));
+            } while (c.moveToNext());
+        }
+        return courses;
+    }
+
     private int id;
     private int crn;
     // private String crnText;
@@ -21,5 +34,13 @@ public class CRN {
         instructor = c.getString(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_NAME_INSTRUCTOR));
         location = c.getString(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_NAME_LOCATION));
         meetingTimesId = c.getInt(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_NAME_MEETING_TIMES_ID));
+    }
+
+    public int getCrn() {
+        return crn;
+    }
+
+    public String getInstructor() {
+        return instructor;
     }
 }

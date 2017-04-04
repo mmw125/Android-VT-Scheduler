@@ -15,9 +15,9 @@ import java.io.OutputStream;
 
 /**
  * Created by Mark Wiggans on 2/8/2017.
+ * Wrapper for the SQLiteDatabase object
  * http://www.vogella.com/tutorials/AndroidSQLite/article.html#sqlite-and-android
  */
-
 public class DatabaseReader extends SQLiteOpenHelper {
     private String DB_PATH = null;
     private static String DB_NAME = "externalDB.sqlite3";
