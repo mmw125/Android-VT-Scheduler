@@ -20,7 +20,6 @@ import com.markwiggans.vtscheduler.adapters.CourseAdapter;
 import com.markwiggans.vtscheduler.data.Course;
 import com.markwiggans.vtscheduler.database.CourseReaderContract;
 import com.markwiggans.vtscheduler.database.DataSource;
-import com.markwiggans.vtscheduler.database.DatabaseReader;
 import com.markwiggans.vtscheduler.database.DatabaseTask;
 import com.markwiggans.vtscheduler.database.Query;
 import com.markwiggans.vtscheduler.database.QueryResult;
@@ -65,7 +64,7 @@ public class CourseQuery extends Fragment implements View.OnClickListener, Datab
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_course_query, container, false);
-        crn = (EditText) view.findViewById(R.id.course_number);
+        crn = (EditText) view.findViewById(R.id.course_input);
         department = (AutoCompleteTextView) view.findViewById(R.id.department);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, DataSource.getInstance(context).getDepartments());
         adapter.sort(new Comparator<String>() {

@@ -110,6 +110,17 @@ public class DataSource {
         return meetingTimeLists;
     }
 
+    private List<String> courseNames;
+    public List<String> getCourseNames() {
+        if(courseNames == null) {
+            courseNames = new ArrayList<>();
+            for(Course c : getCourses()) {
+                courseNames.add(c.getCourseName());
+            }
+        }
+        return courseNames;
+    }
+
     protected QueryResult query(Query query) {
         try {
             reader.createDataBase();

@@ -6,15 +6,28 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.MultiAutoCompleteTextView;
 
 import com.markwiggans.vtscheduler.R;
+import com.markwiggans.vtscheduler.database.DataSource;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
+
+import java.util.Comparator;
 
 /**
  * Fragment for creating schedules
  */
-public class ScheduleCreator extends Fragment {
+public class ScheduleCreator extends Fragment implements View.OnClickListener{
     private MainActivityInteraction mListener;
+    private Context context;
+    private Button submit;
+    private LinearLayout layout;
+    private MultiAutoCompleteTextView courseInput;
+    private LinearLayout headerProgress;
+    private View view;
 
     public ScheduleCreator() {
         // Required empty public constructor
@@ -37,12 +50,28 @@ public class ScheduleCreator extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_schedule_creator, container, false);
+        View view = inflater.inflate(R.layout.fragment_schedule_creator, container, false);
+        submit = (Button) view.findViewById(R.id.submit);
+        submit.setOnClickListener(this);
+        layout = (LinearLayout) view.findViewById(R.id.linear_layout);
+        headerProgress = (LinearLayout) view.findViewById(R.id.linlaHeaderProgress);
+        courseInput = (MultiAutoCompleteTextView) view.findViewById(R.id.course_input);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, DataSource.getInstance(context).getCourseNames());
+        adapter.sort(new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.toLowerCase().compareTo(o2.toLowerCase());
+            }
+        });
+        courseInput.setAdapter(adapter);
+        courseInput.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+        return view;
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        this.context = context;
         if (context instanceof MainActivityInteraction) {
             mListener = (MainActivityInteraction) context;
         } else {
@@ -55,5 +84,11 @@ public class ScheduleCreator extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        context = null;
+    }
+
+    @Override
+    public void onClick(View v) {
+
     }
 }

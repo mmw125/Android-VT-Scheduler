@@ -68,6 +68,10 @@ public class Course {
         return type;
     }
 
+    public String getCourseName() {
+        return courseNumber + "-" + departmentId;
+    }
+
     @Override
     public String toString() {
         return wholeName;
