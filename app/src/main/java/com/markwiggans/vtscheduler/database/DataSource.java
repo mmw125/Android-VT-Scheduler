@@ -3,7 +3,6 @@ package com.markwiggans.vtscheduler.database;
 import android.content.Context;
 import android.database.Cursor;
 
-import com.markwiggans.vtscheduler.data.CRN;
 import com.markwiggans.vtscheduler.data.Course;
 import com.markwiggans.vtscheduler.data.MeetingTimeList;
 

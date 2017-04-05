@@ -69,7 +69,7 @@ public class Course {
     }
 
     public String getCourseName() {
-        return courseNumber + "-" + departmentId;
+        return departmentId + courseNumber;
     }
 
     @Override
