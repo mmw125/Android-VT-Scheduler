@@ -2,6 +2,7 @@ package com.markwiggans.vtscheduler.fragments;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,24 +12,30 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.MultiAutoCompleteTextView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.markwiggans.vtscheduler.R;
+import com.markwiggans.vtscheduler.data.CourseChip;
 import com.markwiggans.vtscheduler.database.DataSource;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
+import com.plumillonforge.android.chipview.Chip;
+import com.plumillonforge.android.chipview.ChipView;
+import com.plumillonforge.android.chipview.ChipViewAdapter;
 
 import java.util.Comparator;
 import java.util.List;
 
 /**
  * Fragment for creating schedules
+ * https://github.com/Plumillon/ChipView
+ * MIGHT BE BETTER >>> https://github.com/splitwise/TokenAutoComplete <<<
  */
 public class ScheduleCreator extends Fragment implements View.OnClickListener{
     private MainActivityInteraction mListener;
     private Context context;
     private Button submit;
     private LinearLayout layout;
-    private MultiAutoCompleteTextView courseInput;
+    private ChipView courseInput;
     private LinearLayout headerProgress;
     private View view;
 
@@ -58,20 +65,14 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener{
         submit.setOnClickListener(this);
         layout = (LinearLayout) view.findViewById(R.id.linear_layout);
         headerProgress = (LinearLayout) view.findViewById(R.id.linlaHeaderProgress);
-        courseInput = (MultiAutoCompleteTextView) view.findViewById(R.id.course_input);
+        courseInput = (ChipView) view.findViewById(R.id.course_input);
+        ChipViewAdapter adapter = new MainChipViewAdapter(context);
+        courseInput.setAdapter(adapter);
         DataSource.getInstance(context).getCourseNames(context, new DataSource.CourseNameReceiver() {
             @Override
-            public void receiveCourseNames(List<String> courseNames) {
-                Log.d("ScheduleCreator", "got course names");
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, courseNames);
-                adapter.sort(new Comparator<String>() {
-                    @Override
-                    public int compare(String o1, String o2) {
-                        return o1.toLowerCase().compareTo(o2.toLowerCase());
-                    }
-                });
-                courseInput.setAdapter(adapter);
-                courseInput.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+            public void receiveCourseNames(List<CourseChip> courseNames) {
+
+
             }
         });
         return view;
@@ -99,5 +100,92 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener{
     @Override
     public void onClick(View v) {
 
+    }
+
+    public class Tag implements Chip {
+        private String mName;
+        private int mType = 0;
+
+        public Tag(String name, int type) {
+            this(name);
+            mType = type;
+        }
+
+        public Tag(String name) {
+            mName = name;
+        }
+
+        @Override
+        public String getText() {
+            return mName;
+        }
+
+        public int getType() {
+            return mType;
+        }
+    }
+
+    public class MainChipViewAdapter extends ChipViewAdapter {
+        public MainChipViewAdapter(Context context) {
+            super(context);
+        }
+
+        @Override
+        public int getLayoutRes(int position) {
+            Tag tag = (Tag) getChip(position);
+
+            switch (tag.getType()) {
+                default:
+                case 2:
+                case 4:
+                    return 0;
+
+                case 1:
+                case 5:
+                    return R.layout.chip_double_close;
+
+                case 3:
+                    return R.layout.chip_close;
+            }
+        }
+
+        @Override
+        public int getBackgroundColor(int position) {
+            Tag tag = (Tag) getChip(position);
+
+            switch (tag.getType()) {
+                default:
+                    return 0;
+
+                case 1:
+                case 4:
+                    return getColor(R.color.blue);
+
+                case 2:
+                case 5:
+                    return getColor(R.color.purple);
+
+                case 3:
+                    return getColor(R.color.teal);
+            }
+        }
+
+        @Override
+        public int getBackgroundColorSelected(int position) {
+            return 0;
+        }
+
+        @Override
+        public int getBackgroundRes(int position) {
+            return 0;
+        }
+
+        @Override
+        public void onLayout(View view, int position) {
+            Tag tag = (Tag) getChip(position);
+
+            if (tag.getType() == 2)
+                ((TextView) view.findViewById(android.R.id.text1)).setTextColor(getColor(R.color.blue));
+        }
     }
 }
