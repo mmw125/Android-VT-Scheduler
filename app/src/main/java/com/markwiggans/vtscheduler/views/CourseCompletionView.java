@@ -15,8 +15,8 @@ import com.tokenautocomplete.TokenCompleteTextView;
 /**
  * Created by Mark Wiggans on 4/5/2017.
  */
-public class StringCompletionView extends TokenCompleteTextView<Course> {
-    public StringCompletionView(Context context, AttributeSet attrs) {
+public class CourseCompletionView extends TokenCompleteTextView<Course> {
+    public CourseCompletionView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 

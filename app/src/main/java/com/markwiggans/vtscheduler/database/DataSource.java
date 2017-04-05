@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.util.Log;
 
 import com.markwiggans.vtscheduler.data.Course;
-import com.markwiggans.vtscheduler.data.CourseChip;
 import com.markwiggans.vtscheduler.data.MeetingTimeList;
 
 import java.io.IOException;
@@ -142,10 +141,10 @@ public class DataSource {
         return meetingTimeLists;
     }
 
-    private List<CourseChip> courseNames;
+    private List<String> courseNames;
 
     public interface CourseNameReceiver{
-        public void receiveCourseNames(List<CourseChip> courseNames);
+        public void receiveCourseNames(List<String> courseNames);
     }
 
     public void getCourseNames(Context context, final CourseNameReceiver receiver) {
@@ -155,7 +154,7 @@ public class DataSource {
                 @Override
                 public void receiveCourses(List<Course> courses) {
                     for (Course c : courses) {
-                        courseNames.add(new CourseChip(c.getCourseName()));
+                        courseNames.add(c.getCourseName());
                     }
                     receiver.receiveCourseNames(courseNames);
                 }

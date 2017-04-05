@@ -72,6 +72,10 @@ public class Course {
         return departmentId + courseNumber;
     }
 
+    public String getCourseNameWithDash() {
+        return departmentId + "-" + courseNumber;
+    }
+
     @Override
     public String toString() {
         return wholeName;

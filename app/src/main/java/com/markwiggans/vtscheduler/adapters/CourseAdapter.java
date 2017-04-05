@@ -17,8 +17,14 @@ import java.util.List;
  * Created by Mark Wiggans on 3/27/2017.
  */
 public class CourseAdapter extends ArrayAdapter<Course> {
+    private boolean nameFirst;
     public CourseAdapter(@NonNull Context context, int id, List<Course> courses) {
+        this(context, id, courses, true);
+    }
+
+    public CourseAdapter(@NonNull Context context, int id, List<Course> courses, boolean nameFirst) {
         super(context, id, courses);
+        this.nameFirst = nameFirst;
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -26,10 +32,19 @@ public class CourseAdapter extends ArrayAdapter<Course> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.adapter_course, parent, false);
         }
         Course course = getItem(position);
+        String first, second;
+        if(nameFirst) {
+            first = course.getName();
+            second = course.getWholeName();
+        } else {
+            first = course.getCourseNameWithDash();
+            second = course.getName();
+        }
+
         TextView courseName = (TextView) convertView.findViewById(R.id.course_name);
-        courseName.setText(course.getName());
+        courseName.setText(first);
         TextView courseType = (TextView) convertView.findViewById(R.id.course_type);
-        courseType.setText(course.getWholeName());
+        courseType.setText(second);
         return convertView;
     }
 }
