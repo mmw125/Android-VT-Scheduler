@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.markwiggans.vtscheduler.data.Course;
 import com.markwiggans.vtscheduler.data.MeetingTimeList;
+import com.markwiggans.vtscheduler.data.Semester;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -173,5 +174,31 @@ public class DataSource {
         }
         reader.openDataBase();
         return new QueryResult(query, reader.query(query));
+    }
+
+    public interface SemesterReceiver {
+        public void receiveSemesters(List<Semester> courseNames);
+    }
+
+    private List<Semester> semesters;
+    public void getSemesters(Context context, final SemesterReceiver receiver) {
+        if (semesters == null) {
+            semesters = new ArrayList<>();
+            Query query = new Query(CourseReaderContract.SemesterEntry.TABLE_NAME);
+            new DatabaseTask(new DatabaseTask.DatabaseTaskReceiver() {
+                @Override
+                public void onDatabaseTask(List<QueryResult> results) {
+                    Cursor c = results.get(0).getCursor();
+                    if (c.moveToFirst()) {
+                        do {
+                            semesters.add(new Semester(c));
+                        } while (c.moveToNext());
+                    }
+                }
+            }, context).execute(query);
+
+        } else {
+            receiver.receiveSemesters(semesters);
+        }
     }
 }

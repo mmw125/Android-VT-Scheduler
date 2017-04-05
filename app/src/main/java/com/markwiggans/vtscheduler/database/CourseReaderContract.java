@@ -36,4 +36,10 @@ public class CourseReaderContract {
         public static final String COLUMN_NAME_LOCATION = "location";
         public static final String COLUMN_NAME_MEETING_TIMES_ID = "meeting_times_id";
     }
+
+    public static class SemesterEntry implements BaseColumns {
+        public static final String TABLE_NAME = "scheduler_server_semester";
+        public static final String COLUMN_NAME_ID = "id";
+        public static final String COLUMN_NAME_SEMESTER = "semester_name";
+    }
 }
