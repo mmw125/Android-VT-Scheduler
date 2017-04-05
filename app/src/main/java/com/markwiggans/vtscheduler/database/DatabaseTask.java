@@ -38,6 +38,6 @@ public class DatabaseTask extends AsyncTask<Query, Void, List<QueryResult>> {
     }
 
     public interface DatabaseTaskReceiver {
-        void onDatabaseTask(List<QueryResult> cursor);
+        void onDatabaseTask(List<QueryResult> results);
     }
 }

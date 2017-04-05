@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * Fragment for Quering courses
  */
-public class CourseQuery extends Fragment implements View.OnClickListener, DatabaseTask.DatabaseTaskReceiver{
+public class CourseQuery extends Fragment implements View.OnClickListener, DatabaseTask.DatabaseTaskReceiver, DataSource.DepartmentReceiver{
     private MainActivityInteraction mListener;
     private Button submit;
     private EditText crn;
@@ -66,14 +66,7 @@ public class CourseQuery extends Fragment implements View.OnClickListener, Datab
         view = inflater.inflate(R.layout.fragment_course_query, container, false);
         crn = (EditText) view.findViewById(R.id.course_input);
         department = (AutoCompleteTextView) view.findViewById(R.id.department);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, DataSource.getInstance(context).getDepartments());
-        adapter.sort(new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return o1.toLowerCase().compareTo(o2.toLowerCase());
-            }
-        });
-        department.setAdapter(adapter);
+        DataSource.getInstance(context).getDepartments(context, this);
         submit = (Button) view.findViewById(R.id.submit);
         submit.setOnClickListener(this);
         layout = (LinearLayout) view.findViewById(R.id.linear_layout);
@@ -122,5 +115,17 @@ public class CourseQuery extends Fragment implements View.OnClickListener, Datab
                 Course.createCourses(cursor.get(0).getCursor()));
         ListView memberList = (ListView) view.findViewById(R.id.list);
         memberList.setAdapter(adapter);
+    }
+
+    @Override
+    public void receiveDepartments(List<String> departments) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, departments);
+        adapter.sort(new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.toLowerCase().compareTo(o2.toLowerCase());
+            }
+        });
+        department.setAdapter(adapter);
     }
 }
