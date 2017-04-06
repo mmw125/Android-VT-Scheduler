@@ -125,9 +125,27 @@ public class MainActivity extends Activity implements MainActivityInteraction {
         }
     }
 
+    private Fragment courseQuery, scheduleCreator;
+
     @Override
     public void changeFragment(String fragmentName, String... params) {
-
+        Fragment fragment = null;
+        if(CourseQuery.COURSE_QUERY_FRAGMENT.equals(fragmentName)) {
+            if(courseQuery == null) {
+                courseQuery = new CourseQuery();
+            }
+            fragment = courseQuery;
+        } else if(ScheduleCreator.SCHEDULE_CREATOR_FRAGMENT.equals(fragmentName)) {
+            if(scheduleCreator == null) {
+                scheduleCreator = new ScheduleCreator();
+            }
+            fragment = scheduleCreator;
+        }
+        if(fragment != null) {
+            // update the main content by replacing fragments
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+        }
     }
 
     /*
@@ -145,16 +163,11 @@ public class MainActivity extends Activity implements MainActivityInteraction {
      * @param position the index in the drawer that was selected
      */
     private void selectItem(int position) {
-        Fragment fragment;
         if(position == 0) {
-            fragment = new CourseQuery();
+            changeFragment(CourseQuery.COURSE_QUERY_FRAGMENT);
         } else {
-            fragment = new ScheduleCreator();
+            changeFragment(ScheduleCreator.SCHEDULE_CREATOR_FRAGMENT);
         }
-        // update the main content by replacing fragments
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
-
         // update selected item and title, then close the drawer
         mDrawerList.setItemChecked(position, true);
         setTitle(menuOptions[position]);

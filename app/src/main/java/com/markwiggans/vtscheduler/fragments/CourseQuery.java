@@ -32,7 +32,8 @@ import java.util.List;
 /**
  * Fragment for Quering courses
  */
-public class CourseQuery extends Fragment implements View.OnClickListener, DatabaseTask.DatabaseTaskReceiver, DataSource.DepartmentReceiver{
+public class CourseQuery extends Fragment implements View.OnClickListener, DatabaseTask.DatabaseTaskReceiver, DataSource.DepartmentReceiver {
+    public static final String COURSE_QUERY_FRAGMENT = "QUERY_FRAGMENT";
     private MainActivityInteraction mListener;
     private Button submit;
     private EditText crn;
@@ -119,7 +120,7 @@ public class CourseQuery extends Fragment implements View.OnClickListener, Datab
 
     @Override
     public void receiveDepartments(List<String> departments) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, departments);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_dropdown_item_1line, departments);
         adapter.sort(new Comparator<String>() {
             @Override
             public int compare(String o1, String o2) {

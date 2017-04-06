@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -25,7 +26,8 @@ import java.util.List;
  * https://github.com/Plumillon/ChipView
  * MIGHT BE BETTER >>> https://github.com/splitwise/TokenAutoComplete <<<
  */
-public class ScheduleCreator extends Fragment implements View.OnClickListener{
+public class ScheduleCreator extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener{
+    public static final String SCHEDULE_CREATOR_FRAGMENT = "SCHEDULE_CREATOR_FRAGMENT";
     private MainActivityInteraction mListener;
     private Context context;
     private Button submit;
@@ -56,11 +58,12 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener{
         View view = inflater.inflate(R.layout.fragment_schedule_creator, container, false);
         submit = (Button) view.findViewById(R.id.submit);
         semesterSelector = (Spinner) view.findViewById(R.id.semester_selector);
-        semesterSelector.setOnClickListener(this);
+        semesterSelector.setOnItemSelectedListener(this);
         DataSource.getInstance(context).getSemesters(context, new DataSource.SemesterReceiver() {
             @Override
             public void receiveSemesters(List<Semester> courseNames) {
-
+                ArrayAdapter<Semester> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, courseNames);
+                semesterSelector.setAdapter(adapter);
             }
         });
         submit.setOnClickListener(this);
@@ -99,5 +102,15 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener{
         if(v.equals(semesterSelector)) {
             semesterSelector.getSelectedItem();
         }
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }
