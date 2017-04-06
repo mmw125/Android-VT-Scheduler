@@ -8,6 +8,4 @@ import com.markwiggans.vtscheduler.database.Query;
  */
 public interface MainActivityInteraction {
     public void changeFragment(String fragmentName, String... params);
-    public void startWait();
-    public void endWait();
 }

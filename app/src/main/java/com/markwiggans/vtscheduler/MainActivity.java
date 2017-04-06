@@ -130,17 +130,6 @@ public class MainActivity extends Activity implements MainActivityInteraction {
 
     }
 
-    @Override
-    public void startWait() {
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        setProgressBarIndeterminateVisibility(true);
-    }
-
-    @Override
-    public void endWait() {
-        setProgressBarIndeterminateVisibility(false);
-    }
-
     /*
      * The click listener for ListView in the navigation drawer
      */
