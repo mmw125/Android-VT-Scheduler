@@ -2,7 +2,6 @@ package com.markwiggans.vtscheduler.database;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Log;
 
 import com.markwiggans.vtscheduler.data.Course;
 import com.markwiggans.vtscheduler.data.MeetingTimeList;
@@ -47,9 +46,24 @@ public class DataSource {
      * Queries the database for all of the courses. This is a cached operation
      */
     public void getCourses(Context context, final CoursesReceiver receiver) {
+        getCourses(context, receiver, null);
+    }
+
+    public void getCourses(final Context context, final CoursesReceiver receiver, final Semester semester) {
         if (courses != null) {
-            receiver.receiveCourses(courses);
-            return;
+            if (semester == null) {
+                receiver.receiveCourses(courses);
+                return;
+            } else {
+                List<Course> outCourses = new ArrayList<>();
+                for (Course c : courses) {
+                    if (c.getSemesterId() == semester.getId()) {
+                        outCourses.add(c);
+                    }
+                }
+                receiver.receiveCourses(outCourses);
+                return;
+            }
         }
         Query query = new Query(CourseReaderContract.CourseEntry.TABLE_NAME);
         new DatabaseTask(new DatabaseTask.DatabaseTaskReceiver() {
@@ -62,7 +76,11 @@ public class DataSource {
                         courses.add(new Course(c));
                     } while (c.moveToNext());
                 }
-                receiver.receiveCourses(courses);
+                if (semester != null) {
+                    getCourses(context, receiver, semester);
+                } else {
+                    receiver.receiveCourses(courses);
+                }
             }
         }, context).execute(query);
 
@@ -144,7 +162,7 @@ public class DataSource {
 
     private List<String> courseNames;
 
-    public interface CourseNameReceiver{
+    public interface CourseNameReceiver {
         public void receiveCourseNames(List<String> courseNames);
     }
 
@@ -180,7 +198,7 @@ public class DataSource {
         public void receiveSemesters(List<Semester> courseNames);
     }
 
-    private List<Semester> semesters;
+    private List<Semester> semesters = null;
     public void getSemesters(Context context, final SemesterReceiver receiver) {
         if (semesters == null) {
             semesters = new ArrayList<>();
@@ -194,9 +212,9 @@ public class DataSource {
                             semesters.add(new Semester(c));
                         } while (c.moveToNext());
                     }
+                    receiver.receiveSemesters(semesters);
                 }
             }, context).execute(query);
-
         } else {
             receiver.receiveSemesters(semesters);
         }

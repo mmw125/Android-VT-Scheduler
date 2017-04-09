@@ -76,6 +76,10 @@ public class Course {
         return departmentId + "-" + courseNumber;
     }
 
+    public int getSemesterId() {
+        return semesterId;
+    }
+
     @Override
     public String toString() {
         return wholeName;

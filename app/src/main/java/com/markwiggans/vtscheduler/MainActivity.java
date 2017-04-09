@@ -2,7 +2,6 @@ package com.markwiggans.vtscheduler;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -14,15 +13,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.markwiggans.vtscheduler.database.DataSource;
-import com.markwiggans.vtscheduler.database.DatabaseTask;
-import com.markwiggans.vtscheduler.database.Query;
 import com.markwiggans.vtscheduler.fragments.CourseQuery;
 import com.markwiggans.vtscheduler.fragments.ScheduleCreator;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
@@ -31,6 +26,7 @@ import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
  * The Main Activity for the application
  */
 public class MainActivity extends Activity implements MainActivityInteraction {
+    public static final String LOG_STRING = "VT_Scheduler";
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -143,8 +139,7 @@ public class MainActivity extends Activity implements MainActivityInteraction {
         }
         if(fragment != null) {
             // update the main content by replacing fragments
-            FragmentManager fragmentManager = getFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+            getFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
         }
     }
 

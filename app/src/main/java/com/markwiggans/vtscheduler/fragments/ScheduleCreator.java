@@ -3,6 +3,7 @@ package com.markwiggans.vtscheduler.fragments;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 
+import com.markwiggans.vtscheduler.MainActivity;
 import com.markwiggans.vtscheduler.R;
 import com.markwiggans.vtscheduler.adapters.CourseAdapter;
 import com.markwiggans.vtscheduler.data.Course;
@@ -19,6 +21,7 @@ import com.markwiggans.vtscheduler.database.DataSource;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
 import com.markwiggans.vtscheduler.views.CourseCompletionView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -55,26 +58,24 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener, A
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(MainActivity.LOG_STRING, "Schedule Creator OnCreateView");
         View view = inflater.inflate(R.layout.fragment_schedule_creator, container, false);
         submit = (Button) view.findViewById(R.id.submit);
         semesterSelector = (Spinner) view.findViewById(R.id.semester_selector);
         semesterSelector.setOnItemSelectedListener(this);
+        semesterSelector.setAdapter(new ArrayAdapter<>(context,
+                android.R.layout.simple_spinner_dropdown_item, new ArrayList<Semester>()));
+        courseInput = (CourseCompletionView) view.findViewById(R.id.course_input);
         DataSource.getInstance(context).getSemesters(context, new DataSource.SemesterReceiver() {
             @Override
-            public void receiveSemesters(List<Semester> courseNames) {
-                ArrayAdapter<Semester> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, courseNames);
-                semesterSelector.setAdapter(adapter);
+            public void receiveSemesters(List<Semester> semesters) {
+                ArrayAdapter<Semester> semesterAdapter = (ArrayAdapter) semesterSelector.getAdapter();
+                semesterAdapter.addAll(semesters);
+                semesterAdapter.notifyDataSetChanged();
+                updateCourseAutocomplete((Semester) semesterSelector.getSelectedItem());
             }
         });
         submit.setOnClickListener(this);
-        courseInput = (CourseCompletionView) view.findViewById(R.id.course_input);
-        DataSource.getInstance(context).getCourses(context, new DataSource.CoursesReceiver() {
-            @Override
-            public void receiveCourses(List<Course> courses) {
-                CourseAdapter adapter = new CourseAdapter(context, 0, courses, false);
-                courseInput.setAdapter(adapter);
-            }
-        });
         return view;
     }
 
@@ -99,18 +100,48 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener, A
 
     @Override
     public void onClick(View v) {
-        if(v.equals(semesterSelector)) {
-            semesterSelector.getSelectedItem();
-        }
+
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        if (parent != null && parent.equals(semesterSelector)) {
+            if(courseInput.isEnabled()) {
+                updateCourseAutocomplete((Semester) semesterSelector.getSelectedItem());
+            }
+        }
+    }
 
+    public void removeAllCourses() {
+        courseInput.setText("");
+        for(Course c : courseInput.getObjects()) {
+            Log.d(MainActivity.LOG_STRING, "Removing " + c.toString());
+            courseInput.removeObject(c);
+        }
+    }
+
+    public void updateCourseAutocomplete(Semester selectedSemester) {
+        removeAllCourses();
+        courseInput.setEnabled(false);
+        DataSource.getInstance(context).getCourses(context, new DataSource.CoursesReceiver() {
+            @Override
+            public void receiveCourses(List<Course> courses) {
+                CourseAdapter adapter = (CourseAdapter) courseInput.getAdapter();
+                if(adapter == null) {
+                    adapter = new CourseAdapter(context, 0, courses, false);
+                    courseInput.setAdapter(adapter);
+                } else {
+                    adapter.clear();
+                    adapter.addAll(courses);
+                }
+                courseInput.setEnabled(true);
+            }
+        }, selectedSemester);
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-
+        removeAllCourses();
+        courseInput.setEnabled(false);
     }
 }
