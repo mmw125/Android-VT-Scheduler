@@ -9,6 +9,7 @@ import java.util.List;
 
 /**
  * Created by Mark Wiggans on 3/19/2017.
+ * Represents a CRN of a class
  */
 public class CRN {
     public static List<CRN> createCRNs(Cursor c) {
@@ -36,6 +37,10 @@ public class CRN {
         meetingTimesId = c.getInt(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_NAME_MEETING_TIMES_ID));
     }
 
+    /**
+     * Gets the numerical crn for this crn
+     * @return the crn number
+     */
     public int getCrn() {
         return crn;
     }

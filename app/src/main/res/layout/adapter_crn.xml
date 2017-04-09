@@ -6,24 +6,24 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/crn_number"
+        android:id="@+id/parent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="CRN NUMBER"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintLeft_creator="1"
+        android:text="@string/default_text"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintTop_creator="1" />
 
     <TextView
-        android:id="@+id/instructor"
+        android:id="@+id/child"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Instructor"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
-        app:layout_constraintRight_toRightOf="@+id/crn_number"
-        app:layout_constraintTop_toBottomOf="@+id/crn_number"
+        android:text="@string/default_text"
+        app:layout_constraintLeft_toRightOf="@+id/parent"
+        app:layout_constraintRight_toRightOf="@+id/parent"
+        app:layout_constraintTop_toBottomOf="@+id/parent"
         tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toRightOf="@+id/crn_number" />
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintTop_creator="1" />
 </android.support.constraint.ConstraintLayout>

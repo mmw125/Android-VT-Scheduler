@@ -15,6 +15,7 @@ import java.util.List;
 
 /**
  * Created by Mark Wiggans on 3/27/2017.
+ * Adapter for viewing courses
  */
 public class CourseAdapter extends ArrayAdapter<Course> {
     private boolean nameFirst;
@@ -27,7 +28,7 @@ public class CourseAdapter extends ArrayAdapter<Course> {
         this.nameFirst = nameFirst;
     }
 
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public @NonNull View getView(int position, View convertView, @NonNull ViewGroup parent) {
         if(convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.adapter_course, parent, false);
         }
@@ -41,9 +42,9 @@ public class CourseAdapter extends ArrayAdapter<Course> {
             second = course.getName();
         }
 
-        TextView courseName = (TextView) convertView.findViewById(R.id.course_name);
+        TextView courseName = (TextView) convertView.findViewById(R.id.parent);
         courseName.setText(first);
-        TextView courseType = (TextView) convertView.findViewById(R.id.course_type);
+        TextView courseType = (TextView) convertView.findViewById(R.id.child);
         courseType.setText(second);
         return convertView;
     }
