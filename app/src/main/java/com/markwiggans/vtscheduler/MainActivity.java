@@ -18,9 +18,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.markwiggans.vtscheduler.data.Course;
 import com.markwiggans.vtscheduler.fragments.CourseQuery;
 import com.markwiggans.vtscheduler.fragments.ScheduleCreator;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
+
+import java.util.List;
 
 /**
  * The Main Activity for the application
@@ -141,6 +144,11 @@ public class MainActivity extends Activity implements MainActivityInteraction {
             // update the main content by replacing fragments
             getFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
         }
+    }
+
+    @Override
+    public void generateSchedules(List<Course> courseList) {
+
     }
 
     /*

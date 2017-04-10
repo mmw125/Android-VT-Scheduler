@@ -8,6 +8,7 @@ import java.util.List;
 
 /**
  * Created by Mark Wiggans on 3/27/2017.
+ * AsyncTask that does database queries
  */
 public class DatabaseTask extends AsyncTask<Query, Void, List<QueryResult>> {
     private Context context;

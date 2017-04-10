@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.markwiggans.vtscheduler.MainActivity;
 import com.markwiggans.vtscheduler.R;
@@ -100,7 +101,13 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener, A
 
     @Override
     public void onClick(View v) {
+        if(v.equals(submit)) {
+            if(courseInput.getObjects().size() > 0) {
 
+            } else {
+                Toast.makeText(context, getString(R.string.no_courses_error), Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override
