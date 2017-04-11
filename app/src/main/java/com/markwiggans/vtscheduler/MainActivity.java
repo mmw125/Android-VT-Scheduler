@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.markwiggans.vtscheduler.data.Course;
 import com.markwiggans.vtscheduler.fragments.CourseQuery;
+import com.markwiggans.vtscheduler.fragments.LoadingScreen;
 import com.markwiggans.vtscheduler.fragments.ScheduleCreator;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
 
@@ -127,7 +128,7 @@ public class MainActivity extends Activity implements MainActivityInteraction {
     private Fragment courseQuery, scheduleCreator;
 
     @Override
-    public void changeFragment(String fragmentName, String... params) {
+    public void changeFragment(String fragmentName, Object... params) {
         Fragment fragment = null;
         if(CourseQuery.COURSE_QUERY_FRAGMENT.equals(fragmentName)) {
             if(courseQuery == null) {
@@ -139,6 +140,8 @@ public class MainActivity extends Activity implements MainActivityInteraction {
                 scheduleCreator = new ScheduleCreator();
             }
             fragment = scheduleCreator;
+        } else if(LoadingScreen.LOADING_SCREEN_FRAGMENT.equals(fragmentName)) {
+            fragment = LoadingScreen.newInstance((List<Course>) params[0]);
         }
         if(fragment != null) {
             // update the main content by replacing fragments
@@ -148,7 +151,7 @@ public class MainActivity extends Activity implements MainActivityInteraction {
 
     @Override
     public void generateSchedules(List<Course> courseList) {
-
+        changeFragment(LoadingScreen.LOADING_SCREEN_FRAGMENT, courseList);
     }
 
     /*

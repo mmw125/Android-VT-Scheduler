@@ -1,15 +1,18 @@
 package com.markwiggans.vtscheduler.fragments;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.markwiggans.vtscheduler.R;
+import com.markwiggans.vtscheduler.data.Course;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -20,6 +23,9 @@ import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
  * create an instance of this fragment.
  */
 public class LoadingScreen extends Fragment {
+    public static final String LOADING_SCREEN_FRAGMENT = "LOADING_SCREEN_FRAGMENT";
+    private static final String COURSE_IDS_PARAM = "COURSE_IDS_PARAM";
+    private static final char COURSE_IDS_PARAM_DILEMITER = ',';
     private MainActivityInteraction mListener;
 
     public LoadingScreen() {
@@ -30,16 +36,19 @@ public class LoadingScreen extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param courseList list of courses to show
      * @return A new instance of fragment LoadingScreen.
      */
-    // TODO: Rename and change types and number of parameters
-    public static LoadingScreen newInstance(String param1, String param2) {
+    public static LoadingScreen newInstance(List<Course> courseList) {
         LoadingScreen fragment = new LoadingScreen();
         Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
+        StringBuilder builder = new StringBuilder();
+        for(Course c : courseList) {
+            builder.append(c.getId());
+            builder.append(COURSE_IDS_PARAM_DILEMITER);
+        }
+        builder.deleteCharAt(builder.length() - 1);
+        args.putString(COURSE_IDS_PARAM, builder.toString());
         fragment.setArguments(args);
         return fragment;
     }
@@ -48,8 +57,7 @@ public class LoadingScreen extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
+
         }
     }
 
