@@ -102,11 +102,12 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener, A
     @Override
     public void onClick(View v) {
         if(v.equals(submit)) {
-            if(courseInput.getObjects().size() > 0) {
-
-            } else {
-                Toast.makeText(context, getString(R.string.no_courses_error), Toast.LENGTH_SHORT).show();
-            }
+            mListener.generateSchedules(courseInput.getObjects());
+//            if(courseInput.getObjects().size() > 0) {
+//                mListener.generateSchedules(courseInput.getObjects());
+//            } else {
+//                Toast.makeText(context, getString(R.string.no_courses_error), Toast.LENGTH_SHORT).show();
+//            }
         }
     }
 

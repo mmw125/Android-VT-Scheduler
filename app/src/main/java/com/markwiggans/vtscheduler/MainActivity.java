@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,6 +20,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.markwiggans.vtscheduler.data.Course;
+import com.markwiggans.vtscheduler.data.Schedule;
+import com.markwiggans.vtscheduler.database.ScheduleGenerationTask;
 import com.markwiggans.vtscheduler.fragments.CourseQuery;
 import com.markwiggans.vtscheduler.fragments.LoadingScreen;
 import com.markwiggans.vtscheduler.fragments.ScheduleCreator;
@@ -29,7 +32,7 @@ import java.util.List;
 /**
  * The Main Activity for the application
  */
-public class MainActivity extends Activity implements MainActivityInteraction {
+public class MainActivity extends Activity implements MainActivityInteraction, ScheduleGenerationTask.ScheduleGeneratorTaskReceiver {
     public static final String LOG_STRING = "VT_Scheduler";
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
@@ -141,7 +144,7 @@ public class MainActivity extends Activity implements MainActivityInteraction {
             }
             fragment = scheduleCreator;
         } else if(LoadingScreen.LOADING_SCREEN_FRAGMENT.equals(fragmentName)) {
-            fragment = LoadingScreen.newInstance((List<Course>) params[0]);
+            fragment = LoadingScreen.newInstance();
         }
         if(fragment != null) {
             // update the main content by replacing fragments
@@ -151,7 +154,15 @@ public class MainActivity extends Activity implements MainActivityInteraction {
 
     @Override
     public void generateSchedules(List<Course> courseList) {
-        changeFragment(LoadingScreen.LOADING_SCREEN_FRAGMENT, courseList);
+        new ScheduleGenerationTask(this).execute();
+        changeFragment(LoadingScreen.LOADING_SCREEN_FRAGMENT);
+    }
+
+    @Override
+    public void onSchedulesGenerated(List<Schedule> results) {
+        for(Schedule schedule : results) {
+            Log.d(MainActivity.LOG_STRING, schedule.toString());
+        }
     }
 
     /*

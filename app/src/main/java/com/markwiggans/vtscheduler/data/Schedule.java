@@ -14,4 +14,9 @@ public class Schedule {
     public List<CRN> getCrns() {
         return crns;
     }
+
+    @Override
+    public String toString() {
+        return crns.toString();
+    }
 }
