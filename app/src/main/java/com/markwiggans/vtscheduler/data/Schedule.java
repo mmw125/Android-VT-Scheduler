@@ -17,6 +17,11 @@ public class Schedule {
 
     @Override
     public String toString() {
-        return crns.toString();
+        StringBuilder builder = new StringBuilder();
+        for(CRN crn : crns) {
+            builder.append(crn.toString() + ", ");
+        }
+        builder.delete(builder.length() - 2, builder.length());
+        return builder.toString();
     }
 }

@@ -10,4 +10,5 @@ import java.util.List;
 public interface MainActivityInteraction {
     public void changeFragment(String fragmentName, Object... params);
     public void generateSchedules(List<Course> courseList);
+    public void showSlidingUpPanel(boolean show);
 }

@@ -2,14 +2,12 @@ package com.markwiggans.vtscheduler.fragments;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.markwiggans.vtscheduler.R;
-import com.markwiggans.vtscheduler.data.Course;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
 
 import java.util.List;

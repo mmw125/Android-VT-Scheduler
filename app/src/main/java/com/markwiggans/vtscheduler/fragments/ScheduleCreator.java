@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -102,6 +103,9 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener, A
     @Override
     public void onClick(View v) {
         if(v.equals(submit)) {
+            InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+            mListener.showSlidingUpPanel(true);
             mListener.generateSchedules(courseInput.getObjects());
 //            if(courseInput.getObjects().size() > 0) {
 //                mListener.generateSchedules(courseInput.getObjects());

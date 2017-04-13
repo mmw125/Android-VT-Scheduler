@@ -48,4 +48,8 @@ public class CRN {
     public String getInstructor() {
         return instructor;
     }
+
+    public String toString() {
+        return "" + crn;
+    }
 }

@@ -16,8 +16,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.markwiggans.vtscheduler.data.Course;
 import com.markwiggans.vtscheduler.data.Schedule;
@@ -26,17 +28,21 @@ import com.markwiggans.vtscheduler.fragments.CourseQuery;
 import com.markwiggans.vtscheduler.fragments.LoadingScreen;
 import com.markwiggans.vtscheduler.fragments.ScheduleCreator;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;
 
 import java.util.List;
 
 /**
  * The Main Activity for the application
  */
-public class MainActivity extends Activity implements MainActivityInteraction, ScheduleGenerationTask.ScheduleGeneratorTaskReceiver {
+public class MainActivity extends Activity implements MainActivityInteraction {
     public static final String LOG_STRING = "VT_Scheduler";
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
+    private SlidingUpPanelLayout slidingPanelLayout;
     private ActionBarDrawerToggle mDrawerToggle;
+    private LinearLayout dragView;
 
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
@@ -51,13 +57,31 @@ public class MainActivity extends Activity implements MainActivityInteraction, S
         menuOptions = getResources().getStringArray(R.array.menu_options);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        dragView = (LinearLayout) findViewById(R.id.dragView);
+        slidingPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+        slidingPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+                Log.i(LOG_STRING, "onPanelSlide, offset " + slideOffset);
+            }
 
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+                Log.i(LOG_STRING, "onPanelStateChanged " + newState);
+            }
+        });
+        slidingPanelLayout.setFadeOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                slidingPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+            }
+        });
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
         mDrawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, menuOptions));
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-
+        setActionBar((Toolbar) findViewById(R.id.main_toolbar));
         // enable ActionBar app icon to behave as action to toggle nav drawer
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
@@ -86,6 +110,8 @@ public class MainActivity extends Activity implements MainActivityInteraction, S
         if (savedInstanceState == null) {
             selectItem(0);
         }
+        slidingPanelLayout.setAnchorPoint(1.0f);
+        showSlidingUpPanel(false);
     }
 
     @Override
@@ -111,7 +137,7 @@ public class MainActivity extends Activity implements MainActivityInteraction, S
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.action_websearch:
                 // create intent to perform web search for this planet
                 Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
@@ -133,20 +159,20 @@ public class MainActivity extends Activity implements MainActivityInteraction, S
     @Override
     public void changeFragment(String fragmentName, Object... params) {
         Fragment fragment = null;
-        if(CourseQuery.COURSE_QUERY_FRAGMENT.equals(fragmentName)) {
-            if(courseQuery == null) {
+        if (CourseQuery.COURSE_QUERY_FRAGMENT.equals(fragmentName)) {
+            if (courseQuery == null) {
                 courseQuery = new CourseQuery();
             }
             fragment = courseQuery;
-        } else if(ScheduleCreator.SCHEDULE_CREATOR_FRAGMENT.equals(fragmentName)) {
-            if(scheduleCreator == null) {
+        } else if (ScheduleCreator.SCHEDULE_CREATOR_FRAGMENT.equals(fragmentName)) {
+            if (scheduleCreator == null) {
                 scheduleCreator = new ScheduleCreator();
             }
             fragment = scheduleCreator;
-        } else if(LoadingScreen.LOADING_SCREEN_FRAGMENT.equals(fragmentName)) {
+        } else if (LoadingScreen.LOADING_SCREEN_FRAGMENT.equals(fragmentName)) {
             fragment = LoadingScreen.newInstance();
         }
-        if(fragment != null) {
+        if (fragment != null) {
             // update the main content by replacing fragments
             getFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
         }
@@ -154,15 +180,24 @@ public class MainActivity extends Activity implements MainActivityInteraction, S
 
     @Override
     public void generateSchedules(List<Course> courseList) {
-        new ScheduleGenerationTask(this).execute();
-        changeFragment(LoadingScreen.LOADING_SCREEN_FRAGMENT);
+        showSlidingUpPanel(true);
+        LoadingScreen loadingScreen = new LoadingScreen();
+        getFragmentManager().beginTransaction().replace(R.id.slide_up_content, loadingScreen).commit();
+        new ScheduleGenerationTask(this, new ScheduleGenerationTask.ScheduleGeneratorTaskReceiver() {
+            @Override
+            public void onSchedulesGenerated(List<Schedule> results) {
+                for (Schedule schedule : results) {
+                    Log.d(MainActivity.LOG_STRING, schedule.toString());
+                }
+            }
+        }).execute();
     }
 
     @Override
-    public void onSchedulesGenerated(List<Schedule> results) {
-        for(Schedule schedule : results) {
-            Log.d(MainActivity.LOG_STRING, schedule.toString());
-        }
+    public void showSlidingUpPanel(final boolean show) {
+        Log.d(MainActivity.LOG_STRING, show ? "showing" : "hiding");
+        slidingPanelLayout.setPanelState(show ? SlidingUpPanelLayout.PanelState.COLLAPSED : SlidingUpPanelLayout.PanelState.HIDDEN);
+        slidingPanelLayout.invalidate();
     }
 
     /*
@@ -177,10 +212,11 @@ public class MainActivity extends Activity implements MainActivityInteraction, S
 
     /**
      * Called when an item in the drawer is selected with its index
+     *
      * @param position the index in the drawer that was selected
      */
     private void selectItem(int position) {
-        if(position == 0) {
+        if (position == 0) {
             changeFragment(CourseQuery.COURSE_QUERY_FRAGMENT);
         } else {
             changeFragment(ScheduleCreator.SCHEDULE_CREATOR_FRAGMENT);
@@ -193,12 +229,13 @@ public class MainActivity extends Activity implements MainActivityInteraction, S
 
     /**
      * Sets the title of the activity
+     *
      * @param title the string to set the title to
      */
     @Override
     public void setTitle(CharSequence title) {
         mTitle = title;
-        if(getActionBar() != null) {
+        if (getActionBar() != null) {
             getActionBar().setTitle(mTitle);
         }
     }
@@ -213,5 +250,15 @@ public class MainActivity extends Activity implements MainActivityInteraction, S
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (slidingPanelLayout != null &&
+                (slidingPanelLayout.getPanelState() == PanelState.EXPANDED || slidingPanelLayout.getPanelState() == PanelState.ANCHORED)) {
+            slidingPanelLayout.setPanelState(PanelState.COLLAPSED);
+        } else {
+            super.onBackPressed();
+        }
     }
 }
