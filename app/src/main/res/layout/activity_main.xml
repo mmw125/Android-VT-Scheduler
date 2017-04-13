@@ -6,7 +6,10 @@
     android:layout_height="match_parent"
     android:gravity="bottom"
     sothree:umanoPanelHeight="68dp"
-    sothree:umanoShadowHeight="4dp">
+    sothree:umanoShadowHeight="4dp"
+    sothree:umanoDragView="@+id/dragView"
+    sothree:umanoOverlay="true"
+    sothree:umanoScrollableView="@+id/list">
     <android.support.v4.widget.DrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
@@ -69,11 +72,69 @@
         android:focusable="false"
         android:orientation="vertical">
 
-        <FrameLayout
-            android:id="@+id/slide_up_content"
+        <Toolbar
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
-        </FrameLayout>
+            android:layout_height="68dp"
+            android:background="@color/colorPrimary"
+            android:orientation="horizontal"
+            android:weightSum="1"
+            android:id="@+id/toolbar"
+            android:layout_marginRight="0dp"
+            sothree:layout_constraintRight_toRightOf="parent"
+            android:layout_marginLeft="0dp"
+            sothree:layout_constraintLeft_toLeftOf="parent">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="13dp"
+                    android:text="Schedules"
+                    android:textAppearance="@android:style/TextAppearance.Material.Large"
+                    android:textSize="30sp" />
+
+            </RelativeLayout>
+
+        </Toolbar>
+        <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            tools:context="com.markwiggans.vtscheduler.fragments.LoadingScreen">
+
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="32dp"
+                android:layout_marginRight="32dp"
+                android:layout_marginTop="32dp"
+                android:text="@string/loading_screen_text"
+                android:textAppearance="@android:style/TextAppearance.Material.Large"
+                app:layout_constraintHorizontal_bias="0.437"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="32dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+        </android.support.constraint.ConstraintLayout>
     </LinearLayout>
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>

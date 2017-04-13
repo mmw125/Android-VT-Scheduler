@@ -1,6 +1,7 @@
 package com.markwiggans.vtscheduler.interfaces;
 
 import com.markwiggans.vtscheduler.data.Course;
+import com.markwiggans.vtscheduler.data.Schedule;
 
 import java.util.List;
 
@@ -11,4 +12,5 @@ public interface MainActivityInteraction {
     public void changeFragment(String fragmentName, Object... params);
     public void generateSchedules(List<Course> courseList);
     public void showSlidingUpPanel(boolean show);
+    public List<Schedule> getSchedules();
 }

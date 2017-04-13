@@ -107,11 +107,6 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener, A
             imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
             mListener.showSlidingUpPanel(true);
             mListener.generateSchedules(courseInput.getObjects());
-//            if(courseInput.getObjects().size() > 0) {
-//                mListener.generateSchedules(courseInput.getObjects());
-//            } else {
-//                Toast.makeText(context, getString(R.string.no_courses_error), Toast.LENGTH_SHORT).show();
-//            }
         }
     }
 

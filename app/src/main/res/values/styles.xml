@@ -1,12 +1,8 @@
 <resources>
-
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Material.NoActionBar">
-        <!--<item name="android:windowActionBarOverlay">false</item>-->
+    <style name="AppTheme" parent="android:Theme.Material">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <!--<item name="android:windowActionBar">false</item>-->
     </style>
     <style name="ActionBar" parent="ThemeOverlay.AppCompat.ActionBar">
         <item name="android:displayOptions">homeAsUp</item>

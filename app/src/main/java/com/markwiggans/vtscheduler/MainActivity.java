@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,6 +28,7 @@ import com.markwiggans.vtscheduler.database.ScheduleGenerationTask;
 import com.markwiggans.vtscheduler.fragments.CourseQuery;
 import com.markwiggans.vtscheduler.fragments.LoadingScreen;
 import com.markwiggans.vtscheduler.fragments.ScheduleCreator;
+import com.markwiggans.vtscheduler.fragments.ScheduleFragment;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;
@@ -36,7 +38,7 @@ import java.util.List;
 /**
  * The Main Activity for the application
  */
-public class MainActivity extends Activity implements MainActivityInteraction {
+public class MainActivity extends AppCompatActivity implements MainActivityInteraction {
     public static final String LOG_STRING = "VT_Scheduler";
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
@@ -47,6 +49,7 @@ public class MainActivity extends Activity implements MainActivityInteraction {
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     private String[] menuOptions;
+    private List<Schedule> schedules;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,12 +65,12 @@ public class MainActivity extends Activity implements MainActivityInteraction {
         slidingPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
-                Log.i(LOG_STRING, "onPanelSlide, offset " + slideOffset);
+//                Log.i(LOG_STRING, "onPanelSlide, offset " + slideOffset);
             }
 
             @Override
             public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
-                Log.i(LOG_STRING, "onPanelStateChanged " + newState);
+//                Log.i(LOG_STRING, "onPanelStateChanged " + newState);
             }
         });
         slidingPanelLayout.setFadeOnClickListener(new View.OnClickListener() {
@@ -110,8 +113,7 @@ public class MainActivity extends Activity implements MainActivityInteraction {
         if (savedInstanceState == null) {
             selectItem(0);
         }
-        slidingPanelLayout.setAnchorPoint(1.0f);
-        showSlidingUpPanel(false);
+//        showSlidingUpPanel(false);
     }
 
     @Override
@@ -182,13 +184,13 @@ public class MainActivity extends Activity implements MainActivityInteraction {
     public void generateSchedules(List<Course> courseList) {
         showSlidingUpPanel(true);
         LoadingScreen loadingScreen = new LoadingScreen();
-        getFragmentManager().beginTransaction().replace(R.id.slide_up_content, loadingScreen).commit();
+//        getFragmentManager().beginTransaction().replace(R.id.slide_up_content, loadingScreen).commit();
         new ScheduleGenerationTask(this, new ScheduleGenerationTask.ScheduleGeneratorTaskReceiver() {
             @Override
             public void onSchedulesGenerated(List<Schedule> results) {
-                for (Schedule schedule : results) {
-                    Log.d(MainActivity.LOG_STRING, schedule.toString());
-                }
+//                schedules = results;
+//                getFragmentManager().beginTransaction().replace(R.id.slide_up_content, ScheduleFragment.newInstance()).commit();
+//                slidingPanelLayout.invalidate();
             }
         }).execute();
     }
@@ -260,5 +262,10 @@ public class MainActivity extends Activity implements MainActivityInteraction {
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public List<Schedule> getSchedules() {
+        return schedules;
     }
 }
