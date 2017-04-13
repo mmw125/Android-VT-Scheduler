@@ -24,7 +24,7 @@
 
         <!-- MAIN CONTENT -->
         <ListView
-            android:id="@+id/list"
+            android:id="@+id/panel_up_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1">

@@ -1,21 +1,10 @@
 package com.markwiggans.vtscheduler;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,7 +43,7 @@ public class Main extends Activity {
 
         mLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
         textView = (TextView) findViewById(R.id.list_main);
-        listview = (ListView) findViewById(R.id.list);
+        listview = (ListView) findViewById(R.id.panel_up_list);
     }
 
     /**

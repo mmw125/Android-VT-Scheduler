@@ -112,9 +112,9 @@ public class CourseQuery extends Fragment implements View.OnClickListener, Datab
         submit.setEnabled(true);
         Toast.makeText(context, "Got task back", Toast.LENGTH_SHORT).show();
         linlaHeaderProgress.setVisibility(View.GONE);
-        CourseAdapter adapter = new CourseAdapter(context, R.id.list,
+        CourseAdapter adapter = new CourseAdapter(context, R.id.panel_up_list,
                 Course.createCourses(cursor.get(0).getCursor()));
-        ListView memberList = (ListView) view.findViewById(R.id.list);
+        ListView memberList = (ListView) view.findViewById(R.id.panel_up_list);
         memberList.setAdapter(adapter);
     }
 

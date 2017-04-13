@@ -1,6 +1,5 @@
 package com.markwiggans.vtscheduler;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.SearchManager;
 import android.content.Intent;
@@ -19,20 +18,24 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
+import com.markwiggans.vtscheduler.adapters.CourseAdapter;
+import com.markwiggans.vtscheduler.adapters.ScheduleAdapter;
 import com.markwiggans.vtscheduler.data.Course;
 import com.markwiggans.vtscheduler.data.Schedule;
 import com.markwiggans.vtscheduler.database.ScheduleGenerationTask;
 import com.markwiggans.vtscheduler.fragments.CourseQuery;
 import com.markwiggans.vtscheduler.fragments.LoadingScreen;
 import com.markwiggans.vtscheduler.fragments.ScheduleCreator;
-import com.markwiggans.vtscheduler.fragments.ScheduleFragment;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,6 +48,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private SlidingUpPanelLayout slidingPanelLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private LinearLayout dragView;
+
+    private ListView panelUpList;
+    private TextView panelUpLabel;
+    private ProgressBar panelUpProgressBar;
 
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
@@ -61,24 +68,20 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
         dragView = (LinearLayout) findViewById(R.id.dragView);
-        slidingPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
-        slidingPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
-            @Override
-            public void onPanelSlide(View panel, float slideOffset) {
-//                Log.i(LOG_STRING, "onPanelSlide, offset " + slideOffset);
-            }
 
-            @Override
-            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
-//                Log.i(LOG_STRING, "onPanelStateChanged " + newState);
-            }
-        });
+        slidingPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+        panelUpList = (ListView) findViewById(R.id.panel_up_list);
+        panelUpLabel = (TextView) findViewById(R.id.panel_up_label);
+        panelUpProgressBar = (ProgressBar) findViewById(R.id.panel_up_progress_bar);
+
         slidingPanelLayout.setFadeOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 slidingPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
             }
         });
+
+        panelUpList.setAdapter(new ScheduleAdapter(this, R.id.panel_up_list, new ArrayList<Schedule>()));
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
@@ -111,9 +114,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         if (savedInstanceState == null) {
-            selectItem(0);
+            selectItem(1);
         }
-//        showSlidingUpPanel(false);
     }
 
     @Override
@@ -183,14 +185,19 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     @Override
     public void generateSchedules(List<Course> courseList) {
         showSlidingUpPanel(true);
-        LoadingScreen loadingScreen = new LoadingScreen();
-//        getFragmentManager().beginTransaction().replace(R.id.slide_up_content, loadingScreen).commit();
+        slidingPanelLayout.setAnchorPoint(1.0f);
+        slidingPanelLayout.setPanelState(PanelState.COLLAPSED);
+        panelUpLabel.setText("Loading");
+        panelUpProgressBar.setVisibility(View.VISIBLE);
+        slidingPanelLayout.setClickable(false);
         new ScheduleGenerationTask(this, new ScheduleGenerationTask.ScheduleGeneratorTaskReceiver() {
             @Override
             public void onSchedulesGenerated(List<Schedule> results) {
-//                schedules = results;
-//                getFragmentManager().beginTransaction().replace(R.id.slide_up_content, ScheduleFragment.newInstance()).commit();
-//                slidingPanelLayout.invalidate();
+                slidingPanelLayout.setClickable(true);
+                panelUpLabel.setText("Generated Schedules");
+                panelUpProgressBar.setVisibility(View.INVISIBLE);
+                schedules = results;
+                panelUpList.setAdapter(new ScheduleAdapter(MainActivity.this, R.id.panel_up_label, results));
             }
         }).execute();
     }
@@ -199,7 +206,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     public void showSlidingUpPanel(final boolean show) {
         Log.d(MainActivity.LOG_STRING, show ? "showing" : "hiding");
         slidingPanelLayout.setPanelState(show ? SlidingUpPanelLayout.PanelState.COLLAPSED : SlidingUpPanelLayout.PanelState.HIDDEN);
-        slidingPanelLayout.invalidate();
     }
 
     /*

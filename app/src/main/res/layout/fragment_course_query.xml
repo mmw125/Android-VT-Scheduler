@@ -110,7 +110,7 @@
         </LinearLayout>
 
         <ListView
-            android:id="@+id/list"
+            android:id="@+id/panel_up_list"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="1"
