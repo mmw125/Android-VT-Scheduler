@@ -13,7 +13,11 @@ import android.widget.ListView;
 import com.markwiggans.vtscheduler.MainActivity;
 import com.markwiggans.vtscheduler.R;
 import com.markwiggans.vtscheduler.adapters.ScheduleAdapter;
+import com.markwiggans.vtscheduler.data.Schedule;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A fragment representing a list of Items.
@@ -22,9 +26,11 @@ import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
  * interface.
  */
 public class ScheduleFragment extends Fragment {
+    private static final String SCHEDULES_INDEXES = "schedules_indexes";
     private MainActivityInteraction mListener;
     private ListView scheduleList;
     private Context context;
+    private ArrayList<Integer> courseIndices;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -33,13 +39,21 @@ public class ScheduleFragment extends Fragment {
     public ScheduleFragment() {
     }
 
-    public static ScheduleFragment newInstance() {
-        return new ScheduleFragment();
+    public static ScheduleFragment newInstance(ArrayList<Integer> scheduleIndexes) {
+        ScheduleFragment fragment = new ScheduleFragment();
+        Bundle args = new Bundle();
+        args.putIntegerArrayList(SCHEDULES_INDEXES, scheduleIndexes);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(savedInstanceState != null) {
+            courseIndices = savedInstanceState.getIntegerArrayList(SCHEDULES_INDEXES);
+            scheduleList.setAdapter(new ScheduleAdapter(context, R.id.schedule_list, Schedule.getSchedulesByIndex(courseIndices)));
+        }
     }
 
     @Override
@@ -47,7 +61,6 @@ public class ScheduleFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_schedule_list, container, false);
         scheduleList = (ListView) view.findViewById(R.id.schedule_list);
-        scheduleList.setAdapter(new ScheduleAdapter(context, 0, mListener.getSchedules()));
         return view;
     }
 
@@ -62,6 +75,12 @@ public class ScheduleFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnListFragmentInteractionListener");
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedState) {
+        savedState.putIntegerArrayList(SCHEDULES_INDEXES, courseIndices);
+        super.onSaveInstanceState(savedState);
     }
 
     @Override

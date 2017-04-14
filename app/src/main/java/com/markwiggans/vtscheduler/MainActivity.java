@@ -31,6 +31,7 @@ import com.markwiggans.vtscheduler.database.ScheduleGenerationTask;
 import com.markwiggans.vtscheduler.fragments.CourseQuery;
 import com.markwiggans.vtscheduler.fragments.LoadingScreen;
 import com.markwiggans.vtscheduler.fragments.ScheduleCreator;
+import com.markwiggans.vtscheduler.fragments.ScheduleFragment;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;
@@ -49,7 +50,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private ActionBarDrawerToggle mDrawerToggle;
     private LinearLayout dragView;
 
-    private ListView panelUpList;
     private TextView panelUpLabel;
     private ProgressBar panelUpProgressBar;
 
@@ -70,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         dragView = (LinearLayout) findViewById(R.id.dragView);
 
         slidingPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
-        panelUpList = (ListView) findViewById(R.id.panel_up_list);
         panelUpLabel = (TextView) findViewById(R.id.panel_up_label);
         panelUpProgressBar = (ProgressBar) findViewById(R.id.panel_up_progress_bar);
 
@@ -81,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             }
         });
 
-        panelUpList.setAdapter(new ScheduleAdapter(this, R.id.panel_up_list, new ArrayList<Schedule>()));
+//        panelUpList.setAdapter(new ScheduleAdapter(this, R.id.panel_up_list, new ArrayList<Schedule>()));
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
@@ -183,21 +182,21 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     @Override
-    public void generateSchedules(List<Course> courseList) {
+    public void generateSchedules(ArrayList<Course> courseList) {
         showSlidingUpPanel(true);
-        slidingPanelLayout.setAnchorPoint(1.0f);
+        slidingPanelLayout.setAnchorPoint(0.3f);
         slidingPanelLayout.setPanelState(PanelState.COLLAPSED);
         panelUpLabel.setText("Loading");
         panelUpProgressBar.setVisibility(View.VISIBLE);
-        slidingPanelLayout.setClickable(false);
+        getFragmentManager().beginTransaction().replace(R.id.panel_up_content, new LoadingScreen()).commit();
         new ScheduleGenerationTask(this, new ScheduleGenerationTask.ScheduleGeneratorTaskReceiver() {
             @Override
             public void onSchedulesGenerated(List<Schedule> results) {
-                slidingPanelLayout.setClickable(true);
+                slidingPanelLayout.setAnchorPoint(1.0f);
                 panelUpLabel.setText("Generated Schedules");
                 panelUpProgressBar.setVisibility(View.INVISIBLE);
                 schedules = results;
-                panelUpList.setAdapter(new ScheduleAdapter(MainActivity.this, R.id.panel_up_label, results));
+                getFragmentManager().beginTransaction().replace(R.id.panel_up_content, ScheduleFragment.newInstance(Schedule.getSchedulesIds(schedules))).commit();
             }
         }).execute();
     }

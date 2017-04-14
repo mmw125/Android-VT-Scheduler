@@ -1,7 +1,9 @@
 package com.markwiggans.vtscheduler.data;
 
 import android.database.Cursor;
+import android.util.Log;
 
+import com.markwiggans.vtscheduler.MainActivity;
 import com.markwiggans.vtscheduler.database.CourseReaderContract;
 
 import java.util.ArrayList;
@@ -16,7 +18,9 @@ public class CRN {
         ArrayList<CRN> courses = new ArrayList<>();
         if (c.moveToFirst()) {
             do {
-                courses.add(new CRN(c));
+                CRN crn = new CRN(c);
+                courses.add(crn);
+                Log.d(MainActivity.LOG_STRING, crn.toString());
             } while (c.moveToNext());
         }
         return courses;

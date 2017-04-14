@@ -19,18 +19,14 @@ import java.util.List;
 
 /**
  * Created by Mark Wiggans on 3/27/2017.
- * Adapter for viewing courses
+ * Adapter for viewing schedules
  */
 public class ScheduleAdapter extends ArrayAdapter<Schedule> {
     private boolean nameFirst;
     private Context context;
-    public ScheduleAdapter(@NonNull Context context, int id, List<Schedule> schedules) {
-        this(context, id, schedules, true);
-    }
 
-    public ScheduleAdapter(@NonNull Context context, int id, List<Schedule> schedules, boolean nameFirst) {
+    public ScheduleAdapter(@NonNull Context context, int id, List<Schedule> schedules) {
         super(context, id, schedules);
-        this.nameFirst = nameFirst;
         this.context = context;
     }
 
@@ -40,7 +36,7 @@ public class ScheduleAdapter extends ArrayAdapter<Schedule> {
         }
         Schedule schedule = getItem(position);
         ListView listView = (ListView) convertView.findViewById(R.id.crn_list);
-        listView.setAdapter(new CRNAdapter(context, schedule.getCrns()));
+        listView.setAdapter(new CRNAdapter(context, R.id.crn_list, schedule.getCrns()));
         return convertView;
     }
 }

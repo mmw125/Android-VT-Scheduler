@@ -18,8 +18,8 @@ import java.util.List;
  * Adapter for viewing crns
  */
 public class CRNAdapter extends ArrayAdapter<CRN> {
-    public CRNAdapter(@NonNull Context context, List<CRN> courses) {
-        super(context, 0, courses);
+    public CRNAdapter(@NonNull Context context, int id, List<CRN> courses) {
+        super(context, id, courses);
     }
 
     public @NonNull View getView(int position, View convertView, @NonNull ViewGroup parent) {

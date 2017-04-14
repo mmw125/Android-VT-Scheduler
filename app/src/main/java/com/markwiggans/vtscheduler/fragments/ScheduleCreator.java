@@ -106,7 +106,7 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener, A
             InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
             mListener.showSlidingUpPanel(true);
-            mListener.generateSchedules(courseInput.getObjects());
+            mListener.generateSchedules(new ArrayList<>(courseInput.getObjects()));
         }
     }
 

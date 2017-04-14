@@ -108,8 +108,8 @@
                     android:layout_marginEnd="22dp" />
         </RelativeLayout>
 
-        <ListView
-            android:id="@+id/panel_up_list"
+        <FrameLayout
+            android:id="@+id/panel_up_content"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
