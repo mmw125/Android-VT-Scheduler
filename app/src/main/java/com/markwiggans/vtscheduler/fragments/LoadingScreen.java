@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link LoadingScreen.MainActivityInteraction} interface
+ * {@link MainActivityInteraction} interface
  * to handle interaction events.
  * Use the {@link LoadingScreen#newInstance} factory method to
  * create an instance of this fragment.
@@ -46,18 +46,21 @@ public class LoadingScreen extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_loading_screen, container, false);
+        View view =  inflater.inflate(R.layout.fragment_loading_screen, container, false);
+        mListener.setToolbarTitle(getString(R.string.loading));
+        mListener.setToolbarLoadingIcon(true);
+        return view;
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-//        if (context instanceof MainActivityInteraction) {
-//            mListener = (MainActivityInteraction) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
+        if (context instanceof MainActivityInteraction) {
+            mListener = (MainActivityInteraction) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
     }
 
     @Override

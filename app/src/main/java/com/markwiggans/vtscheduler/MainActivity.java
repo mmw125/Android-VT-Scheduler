@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -184,15 +185,15 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         showSlidingUpPanel(true);
         slidingPanelLayout.setAnchorPoint(0.3f);
         slidingPanelLayout.setPanelState(PanelState.COLLAPSED);
-        panelUpLabel.setText("Loading");
+        setToolbarTitle("Loading");
         panelUpProgressBar.setVisibility(View.VISIBLE);
         getFragmentManager().beginTransaction().replace(R.id.panel_up_content, new LoadingScreen()).commit();
         new ScheduleGenerationTask(this, new ScheduleGenerationTask.ScheduleGeneratorTaskReceiver() {
             @Override
             public void onSchedulesGenerated(List<Schedule> results) {
                 slidingPanelLayout.setAnchorPoint(1.0f);
-                panelUpLabel.setText("Generated Schedules");
-                panelUpProgressBar.setVisibility(View.INVISIBLE);
+                setToolbarTitle("Generated Schedules");
+                setToolbarLoadingIcon(false);
                 schedules = results;
                 getFragmentManager().beginTransaction().replace(R.id.panel_up_content, ScheduleFragment.newInstance(Schedule.getSchedulesIds(schedules))).commit();
             }
@@ -201,8 +202,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     @Override
     public void showSlidingUpPanel(final boolean show) {
-        Log.d(MainActivity.LOG_STRING, show ? "showing" : "hiding");
-        slidingPanelLayout.setPanelState(show ? SlidingUpPanelLayout.PanelState.COLLAPSED : SlidingUpPanelLayout.PanelState.HIDDEN);
+
     }
 
     /*
@@ -270,5 +270,15 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     @Override
     public List<Schedule> getSchedules() {
         return schedules;
+    }
+
+    @Override
+    public void setToolbarTitle(String title) {
+        panelUpLabel.setText(title);
+    }
+
+    @Override
+    public void setToolbarLoadingIcon(boolean show) {
+        panelUpProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 }

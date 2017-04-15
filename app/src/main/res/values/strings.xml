@@ -16,9 +16,9 @@
     <string name="default_text">default_text</string>
     <string name="submit_text">Submit</string>
     <string name="no_courses_error">You must enter some number of courses</string>
-    <string name="loading_screen_text">We are currently loading.</string>
-    <string name="loading_screen_do_in_background">Do in background</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="loading">Loading&#8230;</string>
+    <string name="loading_screen_text">We are currently loading.</string>
+
+    <string name="generated_schedules_label">Generated Schedules</string>
 </resources>

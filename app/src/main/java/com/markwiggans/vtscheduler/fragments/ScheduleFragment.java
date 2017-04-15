@@ -59,6 +59,10 @@ public class ScheduleFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_schedule_list, container, false);
         scheduleList = (ListView) view.findViewById(R.id.list);
         scheduleList.setAdapter(new ScheduleAdapter(context, R.id.list, Schedule.getSchedulesByIndex(courseIndices)));
+
+        mListener.setToolbarLoadingIcon(false);
+        mListener.setToolbarTitle(getString(R.string.generated_schedules_label));
+
         return view;
     }
 

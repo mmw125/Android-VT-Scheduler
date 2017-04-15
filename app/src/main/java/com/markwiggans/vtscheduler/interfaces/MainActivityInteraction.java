@@ -14,4 +14,6 @@ public interface MainActivityInteraction {
     public void generateSchedules(ArrayList<Course> courseList);
     public void showSlidingUpPanel(boolean show);
     public List<Schedule> getSchedules();
+    public void setToolbarTitle(String title);
+    public void setToolbarLoadingIcon(boolean show);
 }
