@@ -31,12 +31,12 @@ public class ScheduleGenerationTask extends AsyncTask<Course, Void, List<Schedul
     protected List<Schedule> doInBackground(Course... params) {
         //TODO: This is where the schedules should be generated
         //Put in some code to generate two schedules for testing
-        try {
-            //Sleep to make execution time seem realistic
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            //Sleep to make execution time seem realistic
+//            Thread.sleep(5000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         List<Schedule> schedules = new ArrayList<>();
         Query query0 = new Query(CourseReaderContract.CRNEntry.TABLE_NAME, "crn = 12613 or crn = 18154", null);
         Query query1 = new Query(CourseReaderContract.CRNEntry.TABLE_NAME, "crn = 12613 or crn = 18154", null);

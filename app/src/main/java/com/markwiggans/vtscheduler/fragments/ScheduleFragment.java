@@ -3,21 +3,17 @@ package com.markwiggans.vtscheduler.fragments;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ListView;
 
-import com.markwiggans.vtscheduler.MainActivity;
 import com.markwiggans.vtscheduler.R;
 import com.markwiggans.vtscheduler.adapters.ScheduleAdapter;
 import com.markwiggans.vtscheduler.data.Schedule;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A fragment representing a list of Items.
@@ -50,9 +46,10 @@ public class ScheduleFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(savedInstanceState != null) {
+        if(savedInstanceState == null) {
+            courseIndices = getArguments().getIntegerArrayList(SCHEDULES_INDEXES);
+        } else {
             courseIndices = savedInstanceState.getIntegerArrayList(SCHEDULES_INDEXES);
-            scheduleList.setAdapter(new ScheduleAdapter(context, R.id.schedule_list, Schedule.getSchedulesByIndex(courseIndices)));
         }
     }
 
@@ -60,7 +57,8 @@ public class ScheduleFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_schedule_list, container, false);
-        scheduleList = (ListView) view.findViewById(R.id.schedule_list);
+        scheduleList = (ListView) view.findViewById(R.id.list);
+        scheduleList.setAdapter(new ScheduleAdapter(context, R.id.list, Schedule.getSchedulesByIndex(courseIndices)));
         return view;
     }
 
@@ -79,8 +77,8 @@ public class ScheduleFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle savedState) {
-        savedState.putIntegerArrayList(SCHEDULES_INDEXES, courseIndices);
         super.onSaveInstanceState(savedState);
+        savedState.putIntegerArrayList(SCHEDULES_INDEXES, courseIndices);
     }
 
     @Override

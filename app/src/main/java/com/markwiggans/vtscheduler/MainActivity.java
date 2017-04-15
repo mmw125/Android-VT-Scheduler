@@ -23,8 +23,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
-import com.markwiggans.vtscheduler.adapters.CourseAdapter;
-import com.markwiggans.vtscheduler.adapters.ScheduleAdapter;
 import com.markwiggans.vtscheduler.data.Course;
 import com.markwiggans.vtscheduler.data.Schedule;
 import com.markwiggans.vtscheduler.database.ScheduleGenerationTask;
