@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.markwiggans.vtscheduler.R;
 import com.markwiggans.vtscheduler.adapters.CourseAdapter;
@@ -81,7 +80,6 @@ public class CourseQuery extends Fragment implements View.OnClickListener, Datab
         this.context = context;
         if (context instanceof MainActivityInteraction) {
             mListener = (MainActivityInteraction) context;
-            mListener.setSelected(getString(R.string.search_courses));
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement MainActivityInteraction");
@@ -117,7 +115,6 @@ public class CourseQuery extends Fragment implements View.OnClickListener, Datab
     @Override
     public void onDatabaseTask(List<QueryResult> cursor) {
         submit.setEnabled(true);
-        Toast.makeText(context, "Got task back", Toast.LENGTH_SHORT).show();
         linlaHeaderProgress.setVisibility(View.GONE);
         CourseAdapter adapter = new CourseAdapter(context, R.id.panel_up_list,
                 Course.createCourses(cursor.get(0).getCursor()));

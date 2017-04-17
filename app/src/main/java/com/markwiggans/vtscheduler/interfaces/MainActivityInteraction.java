@@ -1,6 +1,7 @@
 package com.markwiggans.vtscheduler.interfaces;
 
 import com.markwiggans.vtscheduler.data.Course;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;
 
 import java.util.ArrayList;
 
@@ -35,4 +36,6 @@ public interface MainActivityInteraction {
      * @param title the name of the fragment
      */
     void setSelected(String title);
+
+    PanelState getSlidingUpPanelStatus();
 }

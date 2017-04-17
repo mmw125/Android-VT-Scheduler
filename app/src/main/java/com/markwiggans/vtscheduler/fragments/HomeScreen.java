@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.markwiggans.vtscheduler.R;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;
 
 /**
  * Home Screen
@@ -51,6 +52,9 @@ public class HomeScreen extends Fragment implements View.OnClickListener {
         recentQueries = (CardView) view.findViewById(R.id.recent_queries_list);
         noRecentQueriesText = (TextView) view.findViewById(R.id.no_recent_queries_text);
 
+        if(!mListener.getSlidingUpPanelStatus().equals(PanelState.HIDDEN)) {
+            fab.setVisibility(View.GONE);
+        }
         fab.setOnClickListener(this);
 
         return view;

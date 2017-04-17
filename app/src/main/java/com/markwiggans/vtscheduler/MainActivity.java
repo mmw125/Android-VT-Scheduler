@@ -205,8 +205,19 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            selectItem(position, true);
+            selectItem(position);
         }
+    }
+
+    private String titleToFragmentName(String title) {
+        if(title.equals(getString(R.string.home))) {
+            return HomeScreen.HOME_SCREEN_FRAGMENT;
+        } else if(title.equals(getString(R.string.search_courses))) {
+            return CourseQuery.COURSE_QUERY_FRAGMENT;
+        } else if(title.equals(getString(R.string.create_schedule))) {
+            return ScheduleCreator.SCHEDULE_CREATOR_FRAGMENT;
+        }
+        return null;
     }
 
     /**
@@ -214,14 +225,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
      *
      * @param position the index in the drawer that was selected
      */
-    private void selectItem(int position, boolean changeFragment) {
-        if(changeFragment) {
-            switch (position){
-                case 0: changeFragment(HomeScreen.HOME_SCREEN_FRAGMENT); break;
-                case 1: changeFragment(CourseQuery.COURSE_QUERY_FRAGMENT); break;
-                case 2: changeFragment(ScheduleCreator.SCHEDULE_CREATOR_FRAGMENT); break;
-            }
-        }
+    private void selectItem(int position) {
+        String[] items = getResources().getStringArray(R.array.menu_options);
+        changeFragment(titleToFragmentName(items[position]));
+
         // update selected item and title, then close the drawer
         mDrawerList.setItemChecked(position, true);
         setTitle(menuOptions[position]);
@@ -273,12 +280,18 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     @Override
     public void setSelected(String title) {
+        currentFragment = titleToFragmentName(title);
         String[] arr = getResources().getStringArray(R.array.menu_options);
         for (int i = 0; i < arr.length; i++) {
             if (arr[i].equals(title)) {
-                selectItem(i, false);
+                selectItem(i);
                 return;
             }
         }
+    }
+
+    @Override
+    public PanelState getSlidingUpPanelStatus() {
+        return slidingPanelLayout.getVisibility() == View.GONE ? PanelState.HIDDEN : slidingPanelLayout.getPanelState();
     }
 }
