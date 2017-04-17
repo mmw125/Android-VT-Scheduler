@@ -15,7 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -23,9 +22,9 @@ import android.widget.Toast;
 import android.widget.Toolbar;
 
 import com.markwiggans.vtscheduler.data.Course;
-import com.markwiggans.vtscheduler.data.Schedule;
 import com.markwiggans.vtscheduler.database.ScheduleGenerationTask;
 import com.markwiggans.vtscheduler.fragments.CourseQuery;
+import com.markwiggans.vtscheduler.fragments.HomeScreen;
 import com.markwiggans.vtscheduler.fragments.ScheduleCreator;
 import com.markwiggans.vtscheduler.fragments.ScheduleFragment;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
@@ -33,7 +32,6 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The Main Activity for the application
@@ -53,7 +51,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     private String[] menuOptions;
-    private List<Schedule> schedules;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,8 +78,16 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             panelUpFragment = new ScheduleFragment();
             getFragmentManager().beginTransaction().replace(R.id.fragment_container, panelUpFragment, ScheduleFragment.TAG_SCHEDULE_FRAGMENT).commit();
         }
+        createDrawer();
 
-//        panelUpList.setAdapter(new ScheduleAdapter(this, R.id.panel_up_list, new ArrayList<Schedule>()));
+        slidingPanelLayout.setPanelState(PanelState.HIDDEN);
+
+        if (savedInstanceState == null)
+            selectItem(0);
+
+    }
+
+    public void createDrawer() {
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
@@ -113,12 +118,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-        if (savedInstanceState == null) {
-            selectItem(1);
-        }
-
-        slidingPanelLayout.setPanelState(PanelState.HIDDEN);
     }
 
     @Override
@@ -128,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         return super.onCreateOptionsMenu(menu);
     }
 
-    /*
+    /**
      * Called whenever we call invalidateOptionsMenu()
      */
     @Override
@@ -161,12 +160,17 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         }
     }
 
-    private Fragment courseQuery, scheduleCreator;
+    private Fragment courseQuery, scheduleCreator, homeScreen;
 
     @Override
     public void changeFragment(String fragmentName, Object... params) {
         Fragment fragment = null;
-        if (CourseQuery.COURSE_QUERY_FRAGMENT.equals(fragmentName)) {
+        if (HomeScreen.HOME_SCREEN_FRAGMENT.equals(fragmentName)) {
+            if (homeScreen == null) {
+                homeScreen = new HomeScreen();
+            }
+            fragment = homeScreen;
+        } else if(CourseQuery.COURSE_QUERY_FRAGMENT.equals(fragmentName)) {
             if (courseQuery == null) {
                 courseQuery = new CourseQuery();
             }
@@ -179,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         }
         if (fragment != null) {
             // update the main content by replacing fragments
-            getFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
+            getFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).addToBackStack(null).commit();
         }
     }
 
@@ -205,10 +209,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
      * @param position the index in the drawer that was selected
      */
     private void selectItem(int position) {
-        if (position == 0) {
-            changeFragment(CourseQuery.COURSE_QUERY_FRAGMENT);
-        } else {
-            changeFragment(ScheduleCreator.SCHEDULE_CREATOR_FRAGMENT);
+        switch (position){
+            case 0: changeFragment(HomeScreen.HOME_SCREEN_FRAGMENT); break;
+            case 1: changeFragment(CourseQuery.COURSE_QUERY_FRAGMENT); break;
+            case 2: changeFragment(ScheduleCreator.SCHEDULE_CREATOR_FRAGMENT); break;
         }
         // update selected item and title, then close the drawer
         mDrawerList.setItemChecked(position, true);

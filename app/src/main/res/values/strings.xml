@@ -1,9 +1,10 @@
 <resources>
     <string name="app_name">VT Scheduler</string>
     <string-array name="menu_options">
+        <item>Home</item>
         <item>Search Courses</item>
         <item>Create Schedule</item>
-        <item>Load Schedule</item>
+        <!--<item>Load Schedule</item>-->
     </string-array>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
@@ -21,4 +22,7 @@
     <string name="loading_screen_text">We are currently loading.</string>
 
     <string name="generated_schedules_label">Generated Schedules</string>
+    <string name="title_activity_home">Home</string>
+
+    <string name="no_recent_queries_text">There are no recent queries</string>
 </resources>
