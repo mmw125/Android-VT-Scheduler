@@ -12,7 +12,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.markwiggans.vtscheduler.MainActivity;
 import com.markwiggans.vtscheduler.R;
@@ -60,7 +59,6 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener, A
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(MainActivity.LOG_STRING, "Schedule Creator OnCreateView");
         View view = inflater.inflate(R.layout.fragment_schedule_creator, container, false);
         submit = (Button) view.findViewById(R.id.submit);
         semesterSelector = (Spinner) view.findViewById(R.id.semester_selector);
@@ -105,7 +103,6 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener, A
         if(v.equals(submit)) {
             InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
-            mListener.showSlidingUpPanel(true);
             mListener.generateSchedules(new ArrayList<>(courseInput.getObjects()));
         }
     }
@@ -119,6 +116,9 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener, A
         }
     }
 
+    /**
+     * Removes all of the course chips from the input
+     */
     public void removeAllCourses() {
         courseInput.setText("");
         for(Course c : courseInput.getObjects()) {
@@ -127,6 +127,10 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener, A
         }
     }
 
+    /**
+     * Updates the course autocomplete to be just for the courses during the selected semester
+     * @param selectedSemester the semester to use for the autocomplete
+     */
     public void updateCourseAutocomplete(Semester selectedSemester) {
         removeAllCourses();
         courseInput.setEnabled(false);
