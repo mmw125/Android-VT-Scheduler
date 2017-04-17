@@ -82,9 +82,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
         slidingPanelLayout.setPanelState(PanelState.HIDDEN);
 
-        if (savedInstanceState == null)
-            selectItem(0);
-
+        if (savedInstanceState == null) {
+            homeScreen = new HomeScreen();
+            getFragmentManager().beginTransaction().replace(R.id.content_frame, homeScreen).commit();
+        }
     }
 
     public void createDrawer() {
@@ -161,9 +162,14 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     private Fragment courseQuery, scheduleCreator, homeScreen;
+    private String currentFragment;
 
     @Override
     public void changeFragment(String fragmentName, Object... params) {
+        if(fragmentName.equals(currentFragment)) {
+            return;
+        }
+        currentFragment = fragmentName;
         Fragment fragment = null;
         if (HomeScreen.HOME_SCREEN_FRAGMENT.equals(fragmentName)) {
             if (homeScreen == null) {
@@ -199,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            selectItem(position);
+            selectItem(position, true);
         }
     }
 
@@ -208,11 +214,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
      *
      * @param position the index in the drawer that was selected
      */
-    private void selectItem(int position) {
-        switch (position){
-            case 0: changeFragment(HomeScreen.HOME_SCREEN_FRAGMENT); break;
-            case 1: changeFragment(CourseQuery.COURSE_QUERY_FRAGMENT); break;
-            case 2: changeFragment(ScheduleCreator.SCHEDULE_CREATOR_FRAGMENT); break;
+    private void selectItem(int position, boolean changeFragment) {
+        if(changeFragment) {
+            switch (position){
+                case 0: changeFragment(HomeScreen.HOME_SCREEN_FRAGMENT); break;
+                case 1: changeFragment(CourseQuery.COURSE_QUERY_FRAGMENT); break;
+                case 2: changeFragment(ScheduleCreator.SCHEDULE_CREATOR_FRAGMENT); break;
+            }
         }
         // update selected item and title, then close the drawer
         mDrawerList.setItemChecked(position, true);
@@ -261,5 +269,16 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         panelUpProgressBar.setVisibility(loading ? View.VISIBLE : View.GONE);
         slidingPanelLayout.setAnchorPoint(loading ? 0.3f : 1.0f);
         slidingPanelLayout.setPanelState(loading ? PanelState.COLLAPSED : PanelState.EXPANDED);
+    }
+
+    @Override
+    public void setSelected(String title) {
+        String[] arr = getResources().getStringArray(R.array.menu_options);
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i].equals(title)) {
+                selectItem(i, false);
+                return;
+            }
+        }
     }
 }

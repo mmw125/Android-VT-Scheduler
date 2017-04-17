@@ -1,10 +1,14 @@
 <resources>
     <string name="app_name">VT Scheduler</string>
+
+    <string name="home">Home</string>
+    <string name="search_courses">Search Courses</string>
+    <string name="create_schedule">Create Schedule</string>
+
     <string-array name="menu_options">
-        <item>Home</item>
-        <item>Search Courses</item>
-        <item>Create Schedule</item>
-        <!--<item>Load Schedule</item>-->
+        <item>@string/home</item>
+        <item>@string/search_courses</item>
+        <item>@string/create_schedule</item>
     </string-array>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>

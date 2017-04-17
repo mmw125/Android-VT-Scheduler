@@ -29,4 +29,10 @@ public interface MainActivityInteraction {
      * @param loading if a loading icon should be displayed
      */
     void setPanelUpToolbar(String title, boolean loading);
+
+    /**
+     * Lets the activity know when the fragment has been changed
+     * @param title the name of the fragment
+     */
+    void setSelected(String title);
 }

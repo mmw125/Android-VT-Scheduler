@@ -92,6 +92,12 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener, A
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        mListener.setSelected(getString(R.string.create_schedule));
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;

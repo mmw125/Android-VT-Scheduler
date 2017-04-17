@@ -81,10 +81,17 @@ public class CourseQuery extends Fragment implements View.OnClickListener, Datab
         this.context = context;
         if (context instanceof MainActivityInteraction) {
             mListener = (MainActivityInteraction) context;
+            mListener.setSelected(getString(R.string.search_courses));
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement MainActivityInteraction");
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mListener.setSelected(getString(R.string.search_courses));
     }
 
     @Override
