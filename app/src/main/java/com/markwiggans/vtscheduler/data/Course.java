@@ -11,6 +11,7 @@ import java.util.List;
 
 /**
  * Created by Mark Wiggans on 3/19/2017.
+ * Represents a Course
  */
 public class Course implements Serializable{
     public static List<Course> createCourses(Cursor c) {
@@ -54,16 +55,16 @@ public class Course implements Serializable{
         return departmentId + courseNumber;
     }
 
-    public String getCourseNameWithDash() {
-        return departmentId + "-" + courseNumber;
-    }
-
     public String getSemester() {
         return semester;
     }
 
+    public String getDisplayName() {
+        return getWholeName() + " " + getType();
+    }
+
     @Override
     public String toString() {
-        return wholeName;
+        return getDisplayName();
     }
 }

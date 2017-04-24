@@ -36,9 +36,9 @@ public class CourseAdapter extends ArrayAdapter<Course> {
         String first, second;
         if(nameFirst) {
             first = course.getName();
-            second = course.getWholeName();
+            second = course.getDisplayName();
         } else {
-            first = course.getCourseNameWithDash();
+            first = course.getDisplayName();
             second = course.getName();
         }
 

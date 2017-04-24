@@ -14,6 +14,7 @@ import com.tokenautocomplete.TokenCompleteTextView;
 
 /**
  * Created by Mark Wiggans on 4/5/2017.
+ * View for Autocomplete on Course objects
  */
 public class CourseCompletionView extends TokenCompleteTextView<Course> {
     public CourseCompletionView(Context context, AttributeSet attrs) {
@@ -24,7 +25,7 @@ public class CourseCompletionView extends TokenCompleteTextView<Course> {
     protected View getViewForObject(Course course) {
         LayoutInflater l = (LayoutInflater) getContext().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         TextView view = (TextView) l.inflate(R.layout.string_token, (ViewGroup) getParent(), false);
-        view.setText(course.getCourseNameWithDash());
+        view.setText(course.getWholeName());
         return view;
     }
 
