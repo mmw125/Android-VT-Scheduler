@@ -28,7 +28,7 @@ public class CRNAdapter extends ArrayAdapter<CRN> {
         }
         CRN item = getItem(position);
         TextView crn_number = (TextView) convertView.findViewById(R.id.parent);
-        crn_number.setText(item.getCrn() + "");
+        crn_number.setText(item.getCRN() + "");
         TextView instructor = (TextView) convertView.findViewById(R.id.child);
         instructor.setText(item.getInstructor());
         return convertView;

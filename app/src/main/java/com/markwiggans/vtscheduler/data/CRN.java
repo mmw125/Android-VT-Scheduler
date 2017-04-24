@@ -26,24 +26,22 @@ public class CRN {
         return courses;
     }
 
-    private int id;
     private int crn;
     // private String crnText;
-    private String instructor;
-    private String location;
+    private String instructor, location, semester;
 
     public CRN(Cursor c) {
-        id = c.getInt(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_NAME_ID));
         crn = c.getInt(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_NAME_CRN));
         instructor = c.getString(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_NAME_INSTRUCTOR));
         location = c.getString(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_NAME_LOCATION));
+        semester = c.getString(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER));
     }
 
     /**
      * Gets the numerical crn for this crn
      * @return the crn number
      */
-    public int getCrn() {
+    public int getCRN() {
         return crn;
     }
 
@@ -53,5 +51,13 @@ public class CRN {
 
     public String toString() {
         return "" + crn;
+    }
+
+    public String getLocation() {
+        return this.location;
+    }
+
+    public String getSemester() {
+        return this.semester;
     }
 }
