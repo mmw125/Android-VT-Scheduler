@@ -8,18 +8,13 @@ import android.database.Cursor;
 
 public class Semester {
     private String name;
-    private int id;
+
     public Semester(Cursor cursor) {
-        id = cursor.getInt(0);
-        name = cursor.getString(1);
+        name = cursor.getString(0);
     }
 
     public String getName() {
         return name;
-    }
-
-    public int getId() {
-        return id;
     }
 
     @Override

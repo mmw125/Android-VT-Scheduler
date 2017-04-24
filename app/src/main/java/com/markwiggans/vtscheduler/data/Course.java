@@ -5,13 +5,14 @@ import android.database.Cursor;
 
 import com.markwiggans.vtscheduler.database.DataSource;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Mark Wiggans on 3/19/2017.
  */
-public class Course {
+public class Course implements Serializable{
     public static List<Course> createCourses(Cursor c) {
         ArrayList<Course> courses = new ArrayList<>();
         if (c.moveToFirst()) {
@@ -22,38 +23,19 @@ public class Course {
         return courses;
     }
 
-    private int id;
-    private String wholeName;
-    private String name;
-    private String courseNumber;
-    private String type;
-    private String departmentId;
-    private int semesterId;
+    private String wholeName, name, courseNumber, type, departmentId, semester;
 
     public Course(Cursor c) {
-        id = c.getInt(0);
-        wholeName = c.getString(1);
-        name = c.getString(2);
-        courseNumber = c.getString(3);
-        type = c.getString(4);
-        departmentId = c.getString(5);
-        semesterId = c.getInt(6);
-    }
-
-    public List<MeetingTimeList> getMeetingTimeLists(Context context) {
-        return DataSource.getInstance(context).getMeetingTimes(this);
-    }
-
-    public int getId() {
-        return id;
+        wholeName = c.getString(0);     // For example CS-2114
+        name = c.getString(1);          // Softw Des & Data Structures
+        courseNumber = c.getString(2);  // 2114
+        type = c.getString(3);          // Lecture
+        departmentId = c.getString(4);  // CS
+        semester = c.getString(5);      // Sprint 2017
     }
 
     public List<CRN> getCRNs(Context context) {
-        ArrayList<CRN> crns = new ArrayList<>();
-        for (MeetingTimeList list : this.getMeetingTimeLists(context)) {
-            crns.addAll(list.getCRNs());
-        }
-        return crns;
+        return DataSource.getInstance(context).getCRNs(this);
     }
 
     public String getName() {
@@ -76,8 +58,8 @@ public class Course {
         return departmentId + "-" + courseNumber;
     }
 
-    public int getSemesterId() {
-        return semesterId;
+    public String getSemester() {
+        return semester;
     }
 
     @Override

@@ -31,14 +31,12 @@ public class CRN {
     // private String crnText;
     private String instructor;
     private String location;
-    private int meetingTimesId;
 
     public CRN(Cursor c) {
         id = c.getInt(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_NAME_ID));
         crn = c.getInt(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_NAME_CRN));
         instructor = c.getString(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_NAME_INSTRUCTOR));
         location = c.getString(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_NAME_LOCATION));
-        meetingTimesId = c.getInt(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_NAME_MEETING_TIMES_ID));
     }
 
     /**

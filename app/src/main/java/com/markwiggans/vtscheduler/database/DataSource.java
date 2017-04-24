@@ -3,8 +3,8 @@ package com.markwiggans.vtscheduler.database;
 import android.content.Context;
 import android.database.Cursor;
 
+import com.markwiggans.vtscheduler.data.CRN;
 import com.markwiggans.vtscheduler.data.Course;
-import com.markwiggans.vtscheduler.data.MeetingTimeList;
 import com.markwiggans.vtscheduler.data.Semester;
 
 import java.io.IOException;
@@ -37,7 +37,7 @@ public class DataSource {
     }
 
     public interface CoursesReceiver {
-        public void receiveCourses(List<Course> courses);
+        void receiveCourses(List<Course> courses);
     }
 
     private List<Course> courses;
@@ -57,7 +57,7 @@ public class DataSource {
             } else {
                 List<Course> outCourses = new ArrayList<>();
                 for (Course c : courses) {
-                    if (c.getSemesterId() == semester.getId()) {
+                    if (c.getSemester().equals(semester.getName())) {
                         outCourses.add(c);
                     }
                 }
@@ -87,7 +87,7 @@ public class DataSource {
     }
 
     public interface DepartmentReceiver {
-        public void receiveDepartments(List<String> departments);
+        void receiveDepartments(List<String> departments);
     }
 
     private List<String> departments;
@@ -121,25 +121,25 @@ public class DataSource {
         }, context).execute(query);
     }
 
-    /**
-     * Gets the meeting times for many courses using the same database instance
-     *
-     * @param courses the courses to find the meeting times for
-     * @return the meeting times for the given courses
-     */
-    public List<MeetingTimeList>[] getManyMeetingTimes(List<Course> courses) {
-        List<MeetingTimeList>[] arr = (List<MeetingTimeList>[]) new Object[courses.size()];
-        try {
-            reader.createDataBase();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        reader.openDataBase();
-        for (int i = 0; i < courses.size(); i++) {
-            arr[i] = this.getMeetingTimes(courses.get(i));
-        }
-        return arr;
-    }
+//    /**
+//     * Gets the meeting times for many courses using the same database instance
+//     *
+//     * @param courses the courses to find the meeting times for
+//     * @return the meeting times for the given courses
+//     */
+//    public List<MeetingTimeList>[] getManyMeetingTimes(List<Course> courses) {
+//        List<MeetingTimeList>[] arr = (List<MeetingTimeList>[]) new Object[courses.size()];
+//        try {
+//            reader.createDataBase();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        reader.openDataBase();
+//        for (int i = 0; i < courses.size(); i++) {
+//            arr[i] = this.getMeetingTimes(courses.get(i));
+//        }
+//        return arr;
+//    }
 
     /**
      * Gets the meeting times for one course
@@ -147,23 +147,25 @@ public class DataSource {
      * @param course the course to get the meeting times for
      * @return the meeting times for the given course
      */
-    public List<MeetingTimeList> getMeetingTimes(Course course) {
+    public List<CRN> getCRNs(Course course) {
         reader.openDataBase();
-        String whereStatement = CourseReaderContract.MeetingTimeListEntry.COLUMN_NAME_COURSE_ID + " = " + course.getId();
-        Cursor c = reader.query(CourseReaderContract.MeetingTimeListEntry.TABLE_NAME, whereStatement);
-        List<MeetingTimeList> meetingTimeLists = new ArrayList<>();
+        String whereStatement = CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = " + course.getSemester() + " AND " +
+                CourseReaderContract.CRNEntry.COLUMN_COURSE_WHOLE_NAME + " = " + course.getWholeName() + " AND " +
+                CourseReaderContract.CRNEntry.COLUMN_COURSE_TYPE + " = " + course.getType();
+        Cursor c = reader.query(CourseReaderContract.CRNEntry.TABLE_NAME, whereStatement);
+        List<CRN> crns = new ArrayList<>();
         if (c.moveToFirst()) {
             do {
-                meetingTimeLists.add(new MeetingTimeList(c));
+                crns.add(new CRN(c));
             } while (c.moveToNext());
         }
-        return meetingTimeLists;
+        return crns;
     }
 
     private List<String> courseNames;
 
     public interface CourseNameReceiver {
-        public void receiveCourseNames(List<String> courseNames);
+        void receiveCourseNames(List<String> courseNames);
     }
 
     public void getCourseNames(Context context, final CourseNameReceiver receiver) {
@@ -195,14 +197,14 @@ public class DataSource {
     }
 
     public interface SemesterReceiver {
-        public void receiveSemesters(List<Semester> courseNames);
+        void receiveSemesters(List<Semester> semesters);
     }
 
     private List<Semester> semesters = null;
     public void getSemesters(Context context, final SemesterReceiver receiver) {
         if (semesters == null) {
             semesters = new ArrayList<>();
-            Query query = new Query(CourseReaderContract.SemesterEntry.TABLE_NAME);
+            Query query = new Query(CourseReaderContract.CourseEntry.TABLE_NAME, new String[]{"distinct " + CourseReaderContract.CourseEntry.COLUMN_NAME_SEMESTER_ID});
             new DatabaseTask(new DatabaseTask.DatabaseTaskReceiver() {
                 @Override
                 public void onDatabaseTask(List<QueryResult> results) {
