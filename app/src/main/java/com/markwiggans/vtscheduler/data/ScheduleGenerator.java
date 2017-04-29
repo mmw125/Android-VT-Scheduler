@@ -15,8 +15,6 @@ public class ScheduleGenerator {
        permuatations.clear();
        ArrayList<Course> mergedList = new ArrayList<>();
 
-
-
        for(Object elementA : courseAList){
            for(Object elementB : courseBList){
                mergedList.clear();
@@ -29,10 +27,18 @@ public class ScheduleGenerator {
                    mergedList.add((Course)elementA);
                    mergedList.add((Course)elementB);
                }
+
+
            }
        }
 
-
         return new ArrayList<>();
+   }
+
+   public ArrayList<CRN> checkForConflicts(ArrayList<CRN> mergedList){
+       for(int i = 0; i < mergedList.size(); i++){
+
+       }
+       return new ArrayList<CRN>();
    }
 }

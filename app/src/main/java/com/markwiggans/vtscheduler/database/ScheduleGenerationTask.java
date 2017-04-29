@@ -30,6 +30,9 @@ public class ScheduleGenerationTask extends AsyncTask<Course, Void, List<Schedul
     @Override
     protected List<Schedule> doInBackground(Course... params) {
         //TODO: This is where the schedules should be generated
+
+
+
         //Put in some code to generate two schedules for testing
         try {
             //Sleep to make execution time seem realistic

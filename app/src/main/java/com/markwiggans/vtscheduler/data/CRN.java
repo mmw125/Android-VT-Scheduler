@@ -1,10 +1,12 @@
 package com.markwiggans.vtscheduler.data;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
 import com.markwiggans.vtscheduler.MainActivity;
 import com.markwiggans.vtscheduler.database.CourseReaderContract;
+import com.markwiggans.vtscheduler.database.DataSource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,12 +31,16 @@ public class CRN {
     private int crn;
     // private String crnText;
     private String instructor, location, semester;
+    private ArrayList<MeetingTime> meetingTimes;
 
     public CRN(Cursor c) {
         crn = c.getInt(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_NAME_CRN));
         instructor = c.getString(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_NAME_INSTRUCTOR));
         location = c.getString(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_NAME_LOCATION));
         semester = c.getString(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER));
+
+        meetingTimes = new ArrayList<>();
+        meetingTimes.clear();
     }
 
     /**
@@ -59,5 +65,13 @@ public class CRN {
 
     public String getSemester() {
         return this.semester;
+    }
+
+    public ArrayList<MeetingTime> getMeetingTimes(){
+        return meetingTimes;
+    }
+
+    public void updateMeetingTimes(Context c){
+        meetingTimes = (ArrayList<MeetingTime>)DataSource.getInstance(c).getMeetingTimes(this);
     }
 }
