@@ -32,7 +32,7 @@ public class Course implements Serializable{
         courseNumber = c.getString(2);  // 2114
         type = c.getString(3);          // Lecture
         departmentId = c.getString(4);  // CS
-        semester = c.getString(5);      // Sprint 2017
+        semester = c.getString(5);      // Spring 2017
     }
 
     public List<CRN> getCRNs(Context context) {

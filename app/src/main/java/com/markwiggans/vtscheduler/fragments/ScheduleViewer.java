@@ -4,11 +4,16 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.markwiggans.vtscheduler.R;
+import com.markwiggans.vtscheduler.adapters.ScheduleViewerAdapter;
+import com.markwiggans.vtscheduler.data.Schedule;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -19,14 +24,13 @@ import com.markwiggans.vtscheduler.R;
  * create an instance of this fragment.
  */
 public class ScheduleViewer extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+
+    // View Objects
+    private RecyclerView mRecyclerView;
+    private ScheduleViewerAdapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
+    private ArrayList<Schedule> schedulesList;
 
     private OnFragmentInteractionListener mListener;
 
@@ -43,22 +47,28 @@ public class ScheduleViewer extends Fragment {
      * @return A new instance of fragment ScheduleViewer.
      */
     // TODO: Rename and change types and number of parameters
-    public static ScheduleViewer newInstance(String param1, String param2) {
+    public static ScheduleViewer newInstance(/*String param1, String param2*/) {
+        /*
         ScheduleViewer fragment = new ScheduleViewer();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+
         fragment.setArguments(args);
         return fragment;
+        */
+        return new ScheduleViewer();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+        // Initialize ArrayList wth saved schedules
+        setRetainInstance(true);
+        if(savedInstanceState == null) {
+            schedulesList = new ArrayList<>();
         }
+
+
+
     }
 
     @Override
