@@ -13,7 +13,7 @@ import java.util.List;
  * Created by Mark Wiggans on 3/19/2017.
  * Represents a Course
  */
-public class Course implements Serializable{
+public class Course {
     public static List<Course> createCourses(Cursor c) {
         ArrayList<Course> courses = new ArrayList<>();
         if (c.moveToFirst()) {
