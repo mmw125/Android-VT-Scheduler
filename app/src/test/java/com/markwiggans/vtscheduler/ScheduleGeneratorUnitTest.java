@@ -5,4 +5,6 @@ package com.markwiggans.vtscheduler;
  */
 
 public class ScheduleGeneratorUnitTest {
+
+
 }

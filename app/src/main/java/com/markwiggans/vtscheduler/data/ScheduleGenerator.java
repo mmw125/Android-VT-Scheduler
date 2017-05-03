@@ -2,6 +2,8 @@ package com.markwiggans.vtscheduler.data;
 
 import android.app.admin.DeviceAdminInfo;
 import android.content.Context;
+import android.util.Log;
+import android.widget.Toast;
 
 import java.lang.reflect.Array;
 import java.util.ArrayDeque;
@@ -18,6 +20,7 @@ import java.util.Objects;
 public class ScheduleGenerator {
 
     public static List<Schedule> generateSchedules(Context context, ArrayList<Course> desiredCourses) {
+        Log.d("schedule_gen", "desiredCourses size = "+desiredCourses.size());
         // Creating Array list to hold list of crns
         ArrayList<ArrayList<DateTimeCRN>> crnsList = new ArrayList<ArrayList<DateTimeCRN>>();
         crnsList.clear();
@@ -71,7 +74,7 @@ public class ScheduleGenerator {
             crnsList.add(courseCRNSList);
         }
 
-
+        Log.d("schedule_gen", "corseCRNSList size = "+courseCRNSList.size());
         // Done creating lsit generting perms now
         ArrayList<ArrayList<DateTimeCRN>> results =  permperm(crnsList);
 

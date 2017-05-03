@@ -34,11 +34,15 @@ public class ScheduleGenerationTask extends AsyncTask<Course, Void, List<Schedul
         this.receiver = receiver;
     }
 
+
+    //TODO: Fix issue where params is empty and not actually containing courses entered by user
     @Override
     protected List<Schedule> doInBackground(Course... params) {
         //TODO: This is where the schedules should be generated
-        return ScheduleGenerator.generateSchedules(context, new ArrayList<Course>(Arrays.asList(params)));
-        /*
+        Log.d("schedule_gen", "Arrays.asList(params) size = "+Arrays.asList(params).size());
+        List<Schedule> schedules = new ArrayList<>();
+        schedules.addAll(ScheduleGenerator.generateSchedules(context, new ArrayList<Course>(Arrays.asList(params))));
+
         //Put in some code to generate two schedules for testing
         try {
             //Sleep to make execution time seem realistic
@@ -46,14 +50,13 @@ public class ScheduleGenerationTask extends AsyncTask<Course, Void, List<Schedul
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        List<Schedule> schedules = new ArrayList<>();
-        Query query0 = new Query(CourseReaderContract.CRNEntry.TABLE_NAME, "crn = 12613 or crn = 18154", null);
-        Query query1 = new Query(CourseReaderContract.CRNEntry.TABLE_NAME, "crn = 12613 or crn = 18154", null);
+        Query query0 = new Query(CourseReaderContract.CRNEntry.TABLE_NAME, "crn = 18154", null);
+        Query query1 = new Query(CourseReaderContract.CRNEntry.TABLE_NAME, "crn = 18154", null);
         List<QueryResult> results = new DatabaseTask(null, context).doInBackground(query0, query1);
         schedules.add(new Schedule(CRN.createCRNs(results.get(0).getCursor())));
         schedules.add(new Schedule(CRN.createCRNs(results.get(1).getCursor())));
         return schedules;
-        */
+
     }
 
     @Override
