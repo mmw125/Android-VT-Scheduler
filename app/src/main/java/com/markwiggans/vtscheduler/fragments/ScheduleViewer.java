@@ -3,11 +3,12 @@ package com.markwiggans.vtscheduler.fragments;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 
 import com.markwiggans.vtscheduler.R;
 import com.markwiggans.vtscheduler.adapters.ScheduleViewerAdapter;
@@ -23,8 +24,8 @@ import java.util.ArrayList;
  * Use the {@link ScheduleViewer#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ScheduleViewer extends Fragment {
-
+public class ScheduleViewer extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+    public static final String SAVED_SCHEDULES_FRAGMENT = "SAVED_SCHEDULES_FRAGMENT";
 
     // View Objects
     private RecyclerView mRecyclerView;
@@ -42,8 +43,6 @@ public class ScheduleViewer extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment ScheduleViewer.
      */
     // TODO: Rename and change types and number of parameters
@@ -63,10 +62,9 @@ public class ScheduleViewer extends Fragment {
         super.onCreate(savedInstanceState);
         // Initialize ArrayList wth saved schedules
         setRetainInstance(true);
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             schedulesList = new ArrayList<>();
         }
-
 
 
     }
@@ -100,6 +98,21 @@ public class ScheduleViewer extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
+    @Override
+    public void onClick(View v) {
+
     }
 
     /**
