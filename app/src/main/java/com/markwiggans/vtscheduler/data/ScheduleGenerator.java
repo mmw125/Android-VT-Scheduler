@@ -79,17 +79,15 @@ public class ScheduleGenerator {
         ArrayList<ArrayList<DateTimeCRN>> results =  permperm(crnsList);
 
         List<Schedule> schedulesList = new ArrayList<>();
-        schedulesList.clear();
         ArrayList<CRN> temp = new ArrayList<>();
 
         for (ArrayList<DateTimeCRN> s : results){
-            temp.clear();
-            for(DateTimeCRN c: s){
+            for(DateTimeCRN c : s){
                 temp.add(c.getCRNObject());
             }
             schedulesList.add(new Schedule(temp));
+            temp.clear();
         }
-
         return schedulesList;
     }
 
