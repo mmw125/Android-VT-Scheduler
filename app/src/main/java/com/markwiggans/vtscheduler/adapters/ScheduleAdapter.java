@@ -7,13 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
-import com.markwiggans.vtscheduler.MainActivity;
 import com.markwiggans.vtscheduler.R;
 import com.markwiggans.vtscheduler.data.CRN;
-import com.markwiggans.vtscheduler.data.Course;
 import com.markwiggans.vtscheduler.data.Schedule;
 
 import java.util.List;
@@ -42,6 +39,7 @@ public class ScheduleAdapter extends ArrayAdapter<Schedule> {
         for(CRN c : schedule.getCrns()) {
             s = s + " " + c.getCRN();
         }
+        textView.setText(s);
         return convertView;
     }
 }
