@@ -5,6 +5,9 @@ import android.os.AsyncTask;
 
 import com.markwiggans.vtscheduler.database.DataSource;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,5 +82,16 @@ public class Schedule {
 
     public int getIndex() {
         return index;
+    }
+
+    public JSONObject toJSON() {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("semester", crns.get(0).getSemester());
+            obj.put("crns", crns);
+        } catch(JSONException e) {
+            e.printStackTrace();
+        }
+        return obj;
     }
 }
