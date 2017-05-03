@@ -148,12 +148,12 @@ public class DataSource {
         return crns;
     }
 
-    public List<MeetingTime> getMeetingTimes(CRN crn) {
+    public ArrayList<MeetingTime> getMeetingTimes(CRN crn) {
         reader.openDataBase();
         String whereStatement = CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_CRN_SEMESTER + " = '" + crn.getSemester()
                 + "' AND " + CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_CRN_CRN + " = " + crn.getCRN();
         Cursor c = reader.query(CourseReaderContract.MeetingTimeEntry.TABLE_NAME, whereStatement);
-        List<MeetingTime> mtl = new ArrayList<>();
+        ArrayList<MeetingTime> mtl = new ArrayList<>();
         if (c.moveToFirst()) {
             do {
                 mtl.add(new MeetingTime(c));

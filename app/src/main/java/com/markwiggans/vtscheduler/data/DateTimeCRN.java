@@ -9,9 +9,9 @@ import android.support.annotation.NonNull;
 import java.util.ArrayList;
 
 /**
- * Helper class to simply be used to merge meeting times fof crnsinto easy to manage form
+ * Helper class to simply be used to merge meeting times of crns into easy to manage form
  */
-public class DateTimeCRN /*implements Comparable<DateTimeCRN>*/{
+public class DateTimeCRN implements Comparable<DateTimeCRN>{
 
     private int CRN;
     private int startTime;
@@ -40,5 +40,8 @@ public class DateTimeCRN /*implements Comparable<DateTimeCRN>*/{
         return this.endTime;
     }
 
-
+    @Override
+    public int compareTo(@NonNull DateTimeCRN o) {
+        return 0;
+    }
 }

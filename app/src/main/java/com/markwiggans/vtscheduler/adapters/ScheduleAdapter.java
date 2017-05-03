@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.markwiggans.vtscheduler.MainActivity;
 import com.markwiggans.vtscheduler.R;
+import com.markwiggans.vtscheduler.data.CRN;
 import com.markwiggans.vtscheduler.data.Course;
 import com.markwiggans.vtscheduler.data.Schedule;
 
@@ -22,7 +23,6 @@ import java.util.List;
  * Adapter for viewing schedules
  */
 public class ScheduleAdapter extends ArrayAdapter<Schedule> {
-    private boolean nameFirst;
     private Context context;
 
     public ScheduleAdapter(@NonNull Context context, int id, List<Schedule> schedules) {
@@ -35,8 +35,13 @@ public class ScheduleAdapter extends ArrayAdapter<Schedule> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.adapter_schedule, parent, false);
         }
         Schedule schedule = getItem(position);
-        ListView listView = (ListView) convertView.findViewById(R.id.crn_list);
-        listView.setAdapter(new CRNAdapter(context, R.id.crn_list, schedule.getCrns()));
+//        ListView listView = (ListView) convertView.findViewById(R.id.crn_list);
+//        listView.setAdapter(new CRNAdapter(context, 0, schedule.getCrns()));
+        TextView textView = (TextView) convertView.findViewById(R.id.text_view);
+        String s = "";
+        for(CRN c : schedule.getCrns()) {
+            s = s + " " + c.getCRN();
+        }
         return convertView;
     }
 }

@@ -40,7 +40,6 @@ public class CRN {
         semester = c.getString(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER));
 
         meetingTimes = new ArrayList<>();
-        meetingTimes.clear();
     }
 
     /**
@@ -72,6 +71,6 @@ public class CRN {
     }
 
     public void updateMeetingTimes(Context c){
-        meetingTimes = (ArrayList<MeetingTime>)DataSource.getInstance(c).getMeetingTimes(this);
+        meetingTimes = DataSource.getInstance(c).getMeetingTimes(this);
     }
 }
