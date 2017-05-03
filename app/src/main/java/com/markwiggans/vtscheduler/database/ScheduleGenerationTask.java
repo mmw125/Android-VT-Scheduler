@@ -2,13 +2,20 @@ package com.markwiggans.vtscheduler.database;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.markwiggans.vtscheduler.data.CRN;
 import com.markwiggans.vtscheduler.data.Course;
 import com.markwiggans.vtscheduler.data.Schedule;
+import com.markwiggans.vtscheduler.data.ScheduleGenerator;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by Mark Wiggans on 3/27/2017.
@@ -30,9 +37,8 @@ public class ScheduleGenerationTask extends AsyncTask<Course, Void, List<Schedul
     @Override
     protected List<Schedule> doInBackground(Course... params) {
         //TODO: This is where the schedules should be generated
-
-
-
+        return ScheduleGenerator.generateSchedules(context, new ArrayList<Course>(Arrays.asList(params)));
+        /*
         //Put in some code to generate two schedules for testing
         try {
             //Sleep to make execution time seem realistic
@@ -47,11 +53,13 @@ public class ScheduleGenerationTask extends AsyncTask<Course, Void, List<Schedul
         schedules.add(new Schedule(CRN.createCRNs(results.get(0).getCursor())));
         schedules.add(new Schedule(CRN.createCRNs(results.get(1).getCursor())));
         return schedules;
+        */
     }
 
     @Override
     protected void onPostExecute(List<Schedule> result) {
         receiver.onSchedulesGenerated(result);
+        Toast.makeText(context, "Finished generation of schedules!", Toast.LENGTH_SHORT).show();
     }
 
     public interface ScheduleGeneratorTaskReceiver {

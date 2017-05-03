@@ -196,6 +196,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     @Override
     public void generateSchedules(ArrayList<Course> courseList) {
         panelUpFragment.startLoading();
+        Toast.makeText(getApplicationContext(), "Starting generation of schedules!", Toast.LENGTH_SHORT).show();
         new ScheduleGenerationTask(this, panelUpFragment).execute();
     }
 

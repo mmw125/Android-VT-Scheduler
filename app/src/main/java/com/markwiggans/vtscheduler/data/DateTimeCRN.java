@@ -16,10 +16,16 @@ public class DateTimeCRN /*implements Comparable<DateTimeCRN>*/{
     private int CRN;
     private int startTime;
     private int endTime;
-    public DateTimeCRN(int CRN, int startTime, int endTime ){
+    private CRN crn;
+
+    public DateTimeCRN(int CRN, int startTime, int endTime, CRN crn ){
         this.CRN = CRN;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.crn = crn;
+    }
+    public CRN getCRNObject(){
+        return this.crn;
     }
 
     public int getCRN(){
