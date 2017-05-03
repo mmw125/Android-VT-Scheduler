@@ -135,9 +135,9 @@ public class DataSource {
      */
     public List<CRN> getCRNs(Course course) {
         reader.openDataBase();
-        String whereStatement = CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = " + course.getSemester() + " AND " +
-                CourseReaderContract.CRNEntry.COLUMN_COURSE_WHOLE_NAME + " = " + course.getWholeName() + " AND " +
-                CourseReaderContract.CRNEntry.COLUMN_COURSE_TYPE + " = " + course.getType();
+        String whereStatement = CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = '" + course.getSemester() + "' AND " +
+                CourseReaderContract.CRNEntry.COLUMN_COURSE_WHOLE_NAME + " = '" + course.getWholeName() + "' AND " +
+                CourseReaderContract.CRNEntry.COLUMN_COURSE_TYPE + " = '" + course.getType() + "'";
         Cursor c = reader.query(CourseReaderContract.CRNEntry.TABLE_NAME, whereStatement);
         List<CRN> crns = new ArrayList<>();
         if (c.moveToFirst()) {
@@ -150,8 +150,8 @@ public class DataSource {
 
     public List<MeetingTime> getMeetingTimes(CRN crn) {
         reader.openDataBase();
-        String whereStatement = CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_CRN_SEMESTER + " = " + crn.getSemester()
-                + " AND " + CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_CRN_CRN + " = " + crn.getCRN();
+        String whereStatement = CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_CRN_SEMESTER + " = '" + crn.getSemester()
+                + "' AND " + CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_CRN_CRN + " = " + crn.getCRN();
         Cursor c = reader.query(CourseReaderContract.MeetingTimeEntry.TABLE_NAME, whereStatement);
         List<MeetingTime> mtl = new ArrayList<>();
         if (c.moveToFirst()) {
