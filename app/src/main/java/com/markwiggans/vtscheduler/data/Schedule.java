@@ -1,5 +1,10 @@
 package com.markwiggans.vtscheduler.data;
 
+import android.content.Context;
+import android.os.AsyncTask;
+
+import com.markwiggans.vtscheduler.database.DataSource;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +12,25 @@ import java.util.List;
  * Created by Mark Wiggans on 4/10/2017.
  */
 public class Schedule {
+    interface ScheduleReceiver {
+        void receiveSchedule(Schedule schedule);
+    }
+
+    public static void createScheduleFromServerResponse(final Context context, final ScheduleReceiver receiver, final String semester, final int[] crns) {
+        new AsyncTask<Object, Object, List<CRN>>(){
+            @Override
+            protected List<CRN> doInBackground(Object... params) {
+                return DataSource.getInstance(context).getCRNs(semester, crns);
+            }
+
+            @Override
+            protected void onPostExecute(List<CRN> crns) {
+                super.onPostExecute(crns);
+                receiver.receiveSchedule(new Schedule(crns));
+            }
+        }.execute();
+    }
+
     private static ArrayList<Schedule> schedules = new ArrayList<>();
     public static List<Schedule> getSchedulesByIndex(List<Integer> index) {
         List<Schedule> outList = new ArrayList<>();

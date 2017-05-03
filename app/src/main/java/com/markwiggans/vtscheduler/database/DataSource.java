@@ -148,6 +148,18 @@ public class DataSource {
         return crns;
     }
 
+    public List<CRN> getCRNs(String semester, int[] crns) {
+        String whereString = CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = '" + semester + "'";
+        for (int i : crns) {
+            if (whereString.length() != 0) {
+                whereString += " or ";
+            }
+            whereString += CourseReaderContract.CRNEntry.COLUMN_NAME_CRN + " = " + i;
+        }
+        Query q = new Query(CourseReaderContract.CRNEntry.TABLE_NAME, whereString, null);
+        return CRN.createCRNs(query(q).getCursor());
+    }
+
     public ArrayList<MeetingTime> getMeetingTimes(CRN crn) {
         reader.openDataBase();
         String whereStatement = CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_CRN_SEMESTER + " = '" + crn.getSemester()
