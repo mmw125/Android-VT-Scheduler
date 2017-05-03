@@ -87,7 +87,7 @@ public class Schedule {
     public JSONObject toJSON() {
         JSONObject obj = new JSONObject();
         try {
-            obj.put("semester", crns.get(0).getSemester());
+            obj.put("semester", crns.size() > 0 ? crns.get(0).getSemester() : "none");
             obj.put("crns", crns);
         } catch(JSONException e) {
             e.printStackTrace();
