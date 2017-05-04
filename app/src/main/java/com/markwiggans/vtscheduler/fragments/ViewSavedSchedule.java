@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -65,7 +66,7 @@ public class ViewSavedSchedule extends Fragment implements View.OnClickListener 
     @Override
     public void onResume() {
         super.onResume();
-        mListener.setSelected(getString(R.string.search_courses));
+        mListener.setSelected(getString(R.string.view_saved_schedules));
     }
 
     @Override
@@ -77,6 +78,8 @@ public class ViewSavedSchedule extends Fragment implements View.OnClickListener 
     @Override
     public void onClick(View v) {
         if(v.equals(submit)) {
+            InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
             mListener.loadSchedule(crn.getText().toString());
         }
     }
