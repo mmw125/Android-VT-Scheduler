@@ -60,12 +60,7 @@ public class ScheduleAdapter extends ArrayAdapter<Schedule> implements AdapterVi
             sem = schedule.getCrns().get(0).getSemester();
         }
 
-        CRN[] l = new CRN[schedule.getCrns().size()];
-        for(int i = 0; i < schedule.getCrns().size(); i++){
-            l[i] = schedule.getCrns().get(i);
-        }
-
-        new NetworkTask(context, true, sem,l , "").execute();
+        new NetworkTask(context, true, sem, schedule.getCrns().toArray(new CRN[schedule.getCrns().size()]) , "").execute();
         //new NetworkTask(context, false, "",null ,"5095e598-3096-11e7-bf9b-0a3764d8e951").execute();
 
         //Toast.makeText(context, context.getString(R.string.saving), Toast.LENGTH_LONG).show();

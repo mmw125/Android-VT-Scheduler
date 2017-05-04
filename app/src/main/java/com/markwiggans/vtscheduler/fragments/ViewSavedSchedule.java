@@ -1,6 +1,7 @@
 package com.markwiggans.vtscheduler.fragments;
 
 import android.app.Fragment;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.database.CursorJoiner;
 import android.os.Bundle;
@@ -35,6 +36,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
+import static android.content.ClipDescription.MIMETYPE_TEXT_PLAIN;
+import static android.content.Context.CLIPBOARD_SERVICE;
 
 
 /**
@@ -71,6 +75,15 @@ public class ViewSavedSchedule extends Fragment implements View.OnClickListener,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_view_saved_schedule, container, false);
         crn = (EditText) view.findViewById(R.id.id_input);
+
+        // automatically add uuid to editext
+        /*ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(CLIPBOARD_SERVICE);
+        String label = clipboard.getPrimaryClip().getDescription().getLabel().toString();
+        if(label.equals("Schedule_UUID")){
+            crn.setText(clipboard.getPrimaryClip().toString());
+        }*/
+
+
         getResults = (TextView)view.findViewById(R.id.getResults);
         submit = (Button) view.findViewById(R.id.submit);
         submit.setOnClickListener(this);
@@ -105,7 +118,9 @@ public class ViewSavedSchedule extends Fragment implements View.OnClickListener,
         if(v.equals(submit)) {
             //mListener.loadSchedule(crn.getText().toString());
             new NetworkTask(getContext(), false, "",null ,crn.getText().toString()){
-               //@Override
+
+                // Doing this so that I can access the data from onPostExecute
+                @Override
                 protected void onPostExecute( JSONObject result ) {
 
                     super.onPostExecute(result);

@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.markwiggans.vtscheduler.data.CRN;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -70,14 +71,15 @@ public class NetworkTask extends AsyncTask<String, Void, JSONObject> {
     protected void onPostExecute(JSONObject result) {
         if(post){
             ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clip = ClipData.newPlainText("Schedule UUID", this.uuid);
+            ClipData clip = ClipData.newPlainText("Schedule_UUID", this.uuid);
             clipboard.setPrimaryClip(clip);
 
-            Toast.makeText(context, "Copied UUID to clipboard", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Shared Successful, we have copied UUID to clipboard", Toast.LENGTH_SHORT).show();
         }
         else{
             // returning data back to caller
             //((GetCompleted)this.context).onGetComplete(this.getResults);
+            Toast.makeText(context, "Retrieved Successfully", Toast.LENGTH_SHORT).show();
         }
 
         //activity.NetworkingFlagUpdate(false);
@@ -124,7 +126,7 @@ public class NetworkTask extends AsyncTask<String, Void, JSONObject> {
                 for(int i = 0; i < this.crns.length; i++){
                     crnsList[i] = this.crns[i].getCRN();
                 }
-                credentials.put("crns", crnsList);
+                credentials.put("crns", new JSONArray(crnsList));
 
                 URL url = new URL("http://ec2-54-191-60-136.us-west-2.compute.amazonaws.com:8080/share");
 

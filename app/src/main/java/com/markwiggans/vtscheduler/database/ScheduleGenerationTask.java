@@ -47,6 +47,7 @@ public class ScheduleGenerationTask extends AsyncTask<Course, Void, List<Schedul
     @Override
     protected void onPostExecute(List<Schedule> result) {
         receiver.onSchedulesGenerated(result);
+        Toast.makeText(context, "Finished generation of schedules!", Toast.LENGTH_SHORT).show();
     }
 
     public interface ScheduleGeneratorTaskReceiver {
