@@ -81,7 +81,6 @@ public class MeetingTime implements Comparable<MeetingTime>{
             Date d = SHORT_HOUR_TIME.parse(time);
             return (d.getHours() * 60) + d.getMinutes();
         } catch (ParseException e) {
-            e.printStackTrace();
             return 0;
         }
     }

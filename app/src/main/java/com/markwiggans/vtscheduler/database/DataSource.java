@@ -43,6 +43,15 @@ public class DataSource {
 
     private List<Course> courses;
 
+    public Course getCorrespondingCourse(final CRN crn) {
+        String whereStr = CourseReaderContract.CourseEntry.COLUMN_NAME_WHOLE_NAME + " = '" + crn.getCourseWholeName()
+                + "' and " + CourseReaderContract.CourseEntry.COLUMN_NAME_TYPE + " = '" + crn.getType()
+                + "' and " + CourseReaderContract.CourseEntry.COLUMN_NAME_SEMESTER_ID + " = '" + crn.getSemester();
+        Query q = new Query(CourseReaderContract.CourseEntry.TABLE_NAME, whereStr, null);
+        List<Course> courses = Course.createCourses(query(q).getCursor());
+        return courses.size() > 0 ? courses.get(0) : null;
+    }
+
     public void getCourse(Context context, final CoursesReceiver receiver, final CRN crn) {
         getCourses(context, new CoursesReceiver() {
             @Override
@@ -167,9 +176,7 @@ public class DataSource {
     public List<CRN> getCRNs(String semester, int[] crns) {
         String whereString = CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = '" + semester + "'";
         for (int i : crns) {
-            if (whereString.length() != 0) {
-                whereString += " or ";
-            }
+            whereString += crns[0] == i ? " and " : " or ";
             whereString += CourseReaderContract.CRNEntry.COLUMN_NAME_CRN + " = " + i;
         }
         Query q = new Query(CourseReaderContract.CRNEntry.TABLE_NAME, whereString, null);

@@ -18,6 +18,7 @@ import java.util.List;
 
 /**
  * Created by Mark Wiggans on 4/10/2017.
+ * Represents a schedule in memory
  */
 public class Schedule implements Comparable<Schedule>{
     @Override
@@ -84,7 +85,8 @@ public class Schedule implements Comparable<Schedule>{
     public String toString() {
         StringBuilder builder = new StringBuilder();
         for(CRN crn : crns) {
-            builder.append(crn.toString() + ", ");
+            builder.append(crn.toString());
+            builder.append(", ");
         }
         builder.delete(builder.length() - 2, builder.length());
         return builder.toString();
@@ -106,14 +108,19 @@ public class Schedule implements Comparable<Schedule>{
     }
 
     private int score = -1;
+
     public int getScore() {
+        return getScore(null);
+    }
+
+    public int getScore(Context context) {
         if(score != -1) {
             return score;
         }
         score = 0;
         ArrayList<MeetingTime> meetingTimes = new ArrayList<>();
         for(CRN crn : getCrns()) {
-            meetingTimes.addAll(crn.getMeetingTimes());
+            meetingTimes.addAll(crn.getMeetingTimes(context));
         }
         Collections.sort(meetingTimes);
         MeetingTime start = meetingTimes.get(0);
@@ -135,7 +142,7 @@ public class Schedule implements Comparable<Schedule>{
     public ArrayList<WeekViewEvent> toCalendars(Context context, int month, int year) {
         ArrayList<WeekViewEvent> events = new ArrayList<>();
         for(CRN crn : getCrns()) {
-            for(MeetingTime m : crn.getMeetingTimes()) {
+            for(MeetingTime m : crn.getMeetingTimes(context)) {
                 Calendar startTime = Calendar.getInstance();
                 int startTimeInt = MeetingTime.timeToInt(m.getStartTimeString());
                 startTime.set(Calendar.HOUR_OF_DAY, startTimeInt / 60);

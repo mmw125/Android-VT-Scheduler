@@ -120,33 +120,7 @@ public class ViewSavedSchedule extends Fragment implements View.OnClickListener,
     @Override
     public void onClick(View v) {
         if(v.equals(submit)) {
-            //mListener.loadSchedule(crn.getText().toString());
-            new NetworkTask(getContext(), false, "",null ,crn.getText().toString()){
-
-                // Doing this so that I can access the data from onPostExecute
-                @Override
-                protected void onPostExecute( JSONObject result ) {
-
-                    super.onPostExecute(result);
-                    // Do something with result here
-                    Toast.makeText(getActivity(), "Schedule Data retrieved", Toast.LENGTH_SHORT).show();
-                    try{
-                        //getResults.setText(result.toString(4));
-
-                        JSONArray JSONCrnsArray = result.getJSONArray("crns");
-                        int[] crnsArray = new int[JSONCrnsArray.length()];
-                        for(int i = 0; i < JSONCrnsArray.length(); i++){
-                            crnsArray[i] = JSONCrnsArray.getInt(i);
-                        }
-                        displaySchedule(result.getString("semester"), crnsArray);
-                    }catch(Exception e){
-                        getResults.setText(result.toString());
-                        Log.d("Scheduler", e.toString());
-                    }
-
-
-                }
-            }.execute();
+            mListener.loadSchedule(crn.getText().toString());
         }
     }
 
@@ -159,20 +133,10 @@ public class ViewSavedSchedule extends Fragment implements View.OnClickListener,
             getResults.setText(result.toString());
             Log.d("Scheduler", e.toString());
         }
-
-
     }
-
-    public void displaySchedule(String semester, int[] crnsArray){
-        Schedule.createScheduleFromServerResponse(getContext(), this, semester, crnsArray);
-    }
-
-
 
     @Override
     public void receiveSchedule(Schedule schedule) {
         //ToDo: Display schedule in the getResults TextView
     }
-
-
 }

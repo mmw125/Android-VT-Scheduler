@@ -95,12 +95,26 @@ public class CRN {
         return builder.toString();
     }
 
+    public ArrayList<MeetingTime> getMeetingTimes(Context context) {
+        if(context != null && getMeetingTimes() == null) {
+            updateMeetingTimes(context);
+        }
+        return getMeetingTimes();
+    }
+
     public ArrayList<MeetingTime> getMeetingTimes(){
         return meetingTimes;
     }
 
     void updateMeetingTimes(Context c){
         meetingTimes = DataSource.getInstance(c).getMeetingTimes(this);
+    }
+
+    public Course getCourse(Context context) {
+        if(getCourse() == null && context != null) {
+            course = DataSource.getInstance(context).getCorrespondingCourse(this);
+        }
+        return getCourse();
     }
 
     public Course getCourse() {

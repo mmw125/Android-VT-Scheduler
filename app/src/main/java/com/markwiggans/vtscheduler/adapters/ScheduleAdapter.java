@@ -42,7 +42,7 @@ public class ScheduleAdapter extends ArrayAdapter<Schedule> implements AdapterVi
         }
         Schedule schedule = getItem(position);
         TextView textView = (TextView) convertView.findViewById(R.id.parent);
-        textView.setText(context.getString(R.string.score_display, schedule.getScore()));
+        textView.setText(context.getString(R.string.score_display, schedule.getScore(context)));
         textView = (TextView) convertView.findViewById(R.id.text_view);
         String s = "";
         for (CRN c : schedule.getCrns()) {
