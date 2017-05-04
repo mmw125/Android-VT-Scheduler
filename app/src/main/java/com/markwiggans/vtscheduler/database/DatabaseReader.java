@@ -1,5 +1,6 @@
 package com.markwiggans.vtscheduler.database;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -7,6 +8,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import com.markwiggans.vtscheduler.data.CRN;
+import com.markwiggans.vtscheduler.data.Schedule;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -46,7 +50,7 @@ public class DatabaseReader extends SQLiteOpenHelper {
         SQLiteDatabase checkDB = null;
         try {
             String myPath = DB_PATH + DB_NAME;
-            checkDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+            checkDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READWRITE);
         }catch (SQLiteException e) {
 
         }
@@ -72,7 +76,7 @@ public class DatabaseReader extends SQLiteOpenHelper {
 
     public void openDataBase() throws SQLException {
         String myPath = DB_PATH + DB_NAME;
-        myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+        myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READWRITE);
     }
 
     public synchronized void close() {
@@ -122,5 +126,23 @@ public class DatabaseReader extends SQLiteOpenHelper {
      */
     public Cursor query(String table, String selection) {
         return myDataBase.query(table, null, selection, null, null, null, null, null);
+    }
+
+    public void insert(Schedule schedule, String uuid) {
+        ContentValues values = new ContentValues();
+        values.put(CourseReaderContract.ScheduleEntry.COLUMN_NAME_SCHEDULE_UUID, uuid);
+        int id = (int) (Math.random() * 10000);
+        values.put(CourseReaderContract.ScheduleEntry.COLUMN_NAME_ID, id);
+        values.put(CourseReaderContract.ScheduleEntry.COLUMN_NAME_NAME, " ");
+        myDataBase.insert(CourseReaderContract.ScheduleEntry.TABLE_NAME,
+                CourseReaderContract.ScheduleEntry.COLUMN_NAME_NAME + ", " + CourseReaderContract.ScheduleEntry.COLUMN_NAME_SCHEDULE_UUID + ", " + CourseReaderContract.ScheduleEntry.COLUMN_NAME_ID, values);
+        for(CRN crn : schedule.getCrns()) {
+            values = new ContentValues();
+            values.put(CourseReaderContract.ScheduleItemEntry.COLUMN_NAME_CRN_CRN, crn.getCRN());
+            values.put(CourseReaderContract.ScheduleItemEntry.COLUMN_NAME_CRN_SEMESTER, crn.getSemester());
+            values.put(CourseReaderContract.ScheduleItemEntry.COLUMN_NAME_SCHEDULE_ID, id);
+            myDataBase.insert(CourseReaderContract.ScheduleItemEntry.TABLE_NAME,
+                    CourseReaderContract.ScheduleItemEntry.COLUMN_NAME_CRN_CRN + ", " + CourseReaderContract.ScheduleItemEntry.COLUMN_NAME_CRN_SEMESTER + ", " + CourseReaderContract.ScheduleItemEntry.COLUMN_NAME_SCHEDULE_ID, values);
+        }
     }
 }

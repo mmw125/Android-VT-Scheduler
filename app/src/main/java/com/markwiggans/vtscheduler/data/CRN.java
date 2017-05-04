@@ -34,7 +34,7 @@ public class CRN {
     private ArrayList<MeetingTime> meetingTimes;
     private Course course;
 
-    private CRN(Cursor c) {
+    public CRN(Cursor c) {
         this(null, c);
     }
 

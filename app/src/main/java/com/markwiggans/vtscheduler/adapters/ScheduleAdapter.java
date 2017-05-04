@@ -17,6 +17,7 @@ import com.markwiggans.vtscheduler.NetworkTask;
 import com.markwiggans.vtscheduler.R;
 import com.markwiggans.vtscheduler.data.CRN;
 import com.markwiggans.vtscheduler.data.Schedule;
+import com.markwiggans.vtscheduler.database.DataSource;
 
 import org.json.JSONObject;
 
@@ -58,7 +59,7 @@ public class ScheduleAdapter extends ArrayAdapter<Schedule> implements AdapterVi
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        Schedule schedule = getItem(position);
+        final Schedule schedule = getItem(position);
 
         String sem = "";
         if(schedule.getCrns().size() >= 1){
@@ -79,6 +80,7 @@ public class ScheduleAdapter extends ArrayAdapter<Schedule> implements AdapterVi
                 ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
                 ClipData clip = ClipData.newPlainText("Schedule_UUID", str);
                 clipboard.setPrimaryClip(clip);
+                DataSource.getInstance(getContext()).saveSchedule(schedule, str);
                 Toast.makeText(context, "Copied UUID to clipboard", Toast.LENGTH_SHORT).show();
             }
         }.execute();

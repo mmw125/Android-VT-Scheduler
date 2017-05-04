@@ -6,6 +6,7 @@ import android.database.Cursor;
 import com.markwiggans.vtscheduler.data.CRN;
 import com.markwiggans.vtscheduler.data.Course;
 import com.markwiggans.vtscheduler.data.MeetingTime;
+import com.markwiggans.vtscheduler.data.Schedule;
 import com.markwiggans.vtscheduler.data.Semester;
 
 import java.io.IOException;
@@ -66,6 +67,23 @@ public class DataSource {
                 receiver.receiveCourses(null);
             }
         }, new Semester(crn.getSemester()));
+    }
+
+    public interface ScheduleReceiver {
+        void receiveSchedules(List<Schedule> schdules);
+    }
+
+    public void getSavedSchedules(final Context context, final ScheduleReceiver receiver) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Query items = new Query(CourseReaderContract.ScheduleItemEntry.TABLE_NAME);
+                Cursor itemCursor = query(items).getCursor();
+                Query schedules = new Query(CourseReaderContract.ScheduleEntry.TABLE_NAME);
+                Cursor scheduleCursor = query(schedules).getCursor();
+                receiver.receiveSchedules(Schedule.createSchedulesFromDatabase(context, scheduleCursor, itemCursor));
+            }
+        }).start();
     }
 
     /**
@@ -150,6 +168,25 @@ public class DataSource {
                 receiver.receiveDepartments(departments);
             }
         }, context).execute(query);
+    }
+
+    /**
+     * Gets the meeting times for one course
+     *
+     * @param course the course to get the meeting times for
+     * @return the meeting times for the given course
+     */
+    public CRN getCRN(int crn, String semester) {
+        reader.openDataBase();
+        String whereStatement = CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = '" + semester + "' AND " +
+                CourseReaderContract.CRNEntry.COLUMN_NAME_CRN + " = " + crn;
+        Cursor c = reader.query(CourseReaderContract.CRNEntry.TABLE_NAME, whereStatement);
+        if (c.moveToFirst()) {
+            do {
+                return new CRN(c);
+            } while (c.moveToNext());
+        }
+        return null;
     }
 
     /**
@@ -255,5 +292,9 @@ public class DataSource {
         } else {
             receiver.receiveSemesters(semesters);
         }
+    }
+
+    public void saveSchedule(Schedule schedule, String uuid) {
+        reader.insert(schedule, uuid);
     }
 }
