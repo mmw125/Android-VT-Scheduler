@@ -60,7 +60,9 @@ public class ScheduleAdapter extends ArrayAdapter<Schedule> implements AdapterVi
             l[i] = schedule.getCrns().get(i);
         }
 
-        new NetworkTask(context, true, "Spring 2017",l , "").execute();
+        //new NetworkTask(context, true, "Spring 2017",l , "").execute();
+        new NetworkTask(context, false, "",null ,"5095e598-3096-11e7-bf9b-0a3764d8e951").execute();
+
         Toast.makeText(context, context.getString(R.string.saving), Toast.LENGTH_LONG).show();
         getItem(position).toString();
 

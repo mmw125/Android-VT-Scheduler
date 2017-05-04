@@ -12,6 +12,7 @@ import com.markwiggans.vtscheduler.data.CRN;
 
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -106,7 +107,6 @@ public class NetworkTask extends AsyncTask<String, Void, String> {
         try {
             System.setProperty("http.keepAlive", "false");
             Log.d("Scheduler", "Creating connection to server for logging in.. url "+ context.getString(R.string.login_url));
-            HttpURLConnection urlConnection = null;
             if(post){
 
                 JSONObject credentials = new JSONObject();
@@ -115,9 +115,7 @@ public class NetworkTask extends AsyncTask<String, Void, String> {
                 for(int i = 0; i < this.crns.length; i++){
                     crnsList[i] = this.crns[i].getCRN();
                 }
-                credentials.put("unique_id", crnsList);
-
-
+                credentials.put("crns", crnsList);
 
                 URL url = new URL("http://ec2-54-191-60-136.us-west-2.compute.amazonaws.com:8080/share");
 
@@ -138,7 +136,7 @@ public class NetworkTask extends AsyncTask<String, Void, String> {
                 final int HttpResultCode = conn.getResponseCode();
                 is = HttpResultCode >= 400 ? conn.getErrorStream() : conn.getInputStream();
 
-                Log.d("FitEx", "Reposne is: " + HttpResultCode);
+                Log.d("Scheduler", "Reposne is: " + HttpResultCode);
                 if (HttpResultCode == HttpURLConnection.HTTP_OK) {
                     BufferedReader streamReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
                     StringBuilder responseStrBuilder = new StringBuilder();
@@ -167,11 +165,50 @@ public class NetworkTask extends AsyncTask<String, Void, String> {
 
             }
             else{
+
                 URL url = new URL("http://ec2-54-191-60-136.us-west-2.compute.amazonaws.com:8080/share/"+this.uuid);
-                conn = (HttpURLConnection) (url).openConnection();
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(READ_TIMEOUT_MS /* milliseconds */);
+                conn.setConnectTimeout(CONNECT_TIMEOUT_MS /* milliseconds */);
+                conn.setRequestProperty("Accept", "application/json");
+                conn.setRequestMethod("GET");
+
+                //InputStream in = new BufferedInputStream(conn.getInputStream());
+
+                conn.connect();
+
+                Log.d("Scheduler", "Sending schedule information to server... url "+ url.toString());
+
+                final int HttpResultCode = conn.getResponseCode();
+                is = HttpResultCode >= 400 ? conn.getErrorStream() : conn.getInputStream();
+
+                Log.d("Scheduler", "Response is: " + HttpResultCode);
+                if (HttpResultCode == HttpURLConnection.HTTP_OK) {
+                    BufferedReader streamReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                    StringBuilder responseStrBuilder = new StringBuilder();
+
+                    String inputStr;
+                    while ((inputStr = streamReader.readLine()) != null)
+                        responseStrBuilder.append(inputStr);
+                    JSONObject j = new JSONObject(responseStrBuilder.toString());
+
+                    Log.d("Scheduler",j.toString(4));
+
+                    Map<String, List<String>> headerFields = conn.getHeaderFields();
+                    //List<String> cookiesHeader = headerFields.get(context.getString(R.string.cookies_header));
+                    //cookie = cookiesHeader.get(0).substring(0, cookiesHeader.get(0).indexOf(";"));
+                    saveInSharedPreferences(cookie);
+                    //result =Constants.STATUS_LOGGED_IN;
+                } else if(HttpResultCode==401){
+                    Log.d("Scheduler", "Did not receive HTTP_OK from server!:"+401);
+                    //result=Constants.STATUS_RELOGIN;
+                }else{
+                    //result=Constants.STATUS_OFFLINE;
+                    Log.d("Scheduler", "Did not receive HTTP_OK from server!--other");
+
+                }
 
             }
-            
             conn.disconnect();
         } catch (Exception e) {
             e.printStackTrace();
