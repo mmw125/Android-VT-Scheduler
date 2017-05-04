@@ -55,15 +55,20 @@ public class ScheduleAdapter extends ArrayAdapter<Schedule> implements AdapterVi
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         Schedule schedule = getItem(position);
 
+        String sem = "";
+        if(schedule.getCrns().size() >= 1){
+            sem = schedule.getCrns().get(0).getSemester();
+        }
+
         CRN[] l = new CRN[schedule.getCrns().size()];
         for(int i = 0; i < schedule.getCrns().size(); i++){
             l[i] = schedule.getCrns().get(i);
         }
 
-        //new NetworkTask(context, true, "Spring 2017",l , "").execute();
-        new NetworkTask(context, false, "",null ,"5095e598-3096-11e7-bf9b-0a3764d8e951").execute();
+        new NetworkTask(context, true, sem,l , "").execute();
+        //new NetworkTask(context, false, "",null ,"5095e598-3096-11e7-bf9b-0a3764d8e951").execute();
 
-        Toast.makeText(context, context.getString(R.string.saving), Toast.LENGTH_LONG).show();
+        //Toast.makeText(context, context.getString(R.string.saving), Toast.LENGTH_LONG).show();
         getItem(position).toString();
 
         return true;

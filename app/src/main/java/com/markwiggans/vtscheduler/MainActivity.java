@@ -28,6 +28,7 @@ import com.markwiggans.vtscheduler.fragments.HomeScreen;
 import com.markwiggans.vtscheduler.fragments.ScheduleCreator;
 import com.markwiggans.vtscheduler.fragments.ScheduleFragment;
 import com.markwiggans.vtscheduler.fragments.ViewSavedSchedule;
+import com.markwiggans.vtscheduler.interfaces.GetCompleted;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;

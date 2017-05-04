@@ -1,9 +1,10 @@
 package com.markwiggans.vtscheduler;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.os.AsyncTask;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -12,7 +13,6 @@ import com.markwiggans.vtscheduler.data.CRN;
 
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,14 +24,11 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
-
-import static android.R.attr.password;
-
 /**
  * Created by Andrey on 3/1/2017.
  */
 
-public class NetworkTask extends AsyncTask<String, Void, String> {
+public class NetworkTask extends AsyncTask<String, Void, JSONObject> {
     public static final int READ_TIMEOUT_MS = 20000;
     public static final int CONNECT_TIMEOUT_MS = 20000;
     private String uuid;
@@ -40,6 +37,7 @@ public class NetworkTask extends AsyncTask<String, Void, String> {
     private boolean post;
     private Context context;
     private String result = "";
+    private JSONObject getResults;
 
     public NetworkTask(Context context, boolean post, String semester, CRN[] crns, String uuid) {
         this.uuid = uuid;
@@ -50,16 +48,16 @@ public class NetworkTask extends AsyncTask<String, Void, String> {
     }
 
     @Override
-    protected String doInBackground(String... params) {
+    protected JSONObject doInBackground(String... params) {
         //String result = Constants.STATUS_OFFLINE;
         try {
             // Send the entered username and password to the server and check for success
-            attemptLogin();
+            return attemptRequestToServer();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return result;
+        return new JSONObject();
     }
 
     @Override
@@ -69,7 +67,18 @@ public class NetworkTask extends AsyncTask<String, Void, String> {
         return;
     }
     @Override
-    protected void onPostExecute(String result) {
+    protected void onPostExecute(JSONObject result) {
+        if(post){
+            ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("Schedule UUID", this.uuid);
+            clipboard.setPrimaryClip(clip);
+
+            Toast.makeText(context, "Copied UUID to clipboard", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            // returning data back to caller
+            //((GetCompleted)this.context).onGetComplete(this.getResults);
+        }
 
         //activity.NetworkingFlagUpdate(false);
         //activity.LoginStatus(result);
@@ -98,7 +107,7 @@ public class NetworkTask extends AsyncTask<String, Void, String> {
         editor.apply();
     }
 
-    private String attemptLogin() throws IOException {
+    private JSONObject attemptRequestToServer() throws IOException {
         InputStream is = null;
         String cookie = "empty cookie";
         String result="relogin";
@@ -148,10 +157,14 @@ public class NetworkTask extends AsyncTask<String, Void, String> {
 
                     Log.d("Scheduler",j.toString(4));
 
-                    Map<String, List<String>> headerFields = conn.getHeaderFields();
+                    // storing it in this.uuid
+                    this.uuid = j.getString("unique_id");
+                    this.getResults = j;
+
+                    //Map<String, List<String>> headerFields = conn.getHeaderFields();
                     //List<String> cookiesHeader = headerFields.get(context.getString(R.string.cookies_header));
                     //cookie = cookiesHeader.get(0).substring(0, cookiesHeader.get(0).indexOf(";"));
-                    saveInSharedPreferences(cookie);
+                    //saveInSharedPreferences(cookie);
                     //result =Constants.STATUS_LOGGED_IN;
                 } else if(HttpResultCode==401){
                     Log.d("Scheduler", "Did not receive HTTP_OK from server!:"+401);
@@ -192,12 +205,15 @@ public class NetworkTask extends AsyncTask<String, Void, String> {
                         responseStrBuilder.append(inputStr);
                     JSONObject j = new JSONObject(responseStrBuilder.toString());
 
+                    // storing get request results in object to pass back
+                    this.getResults = j;
+
                     Log.d("Scheduler",j.toString(4));
 
                     Map<String, List<String>> headerFields = conn.getHeaderFields();
                     //List<String> cookiesHeader = headerFields.get(context.getString(R.string.cookies_header));
                     //cookie = cookiesHeader.get(0).substring(0, cookiesHeader.get(0).indexOf(";"));
-                    saveInSharedPreferences(cookie);
+                    //saveInSharedPreferences(cookie);
                     //result =Constants.STATUS_LOGGED_IN;
                 } else if(HttpResultCode==401){
                     Log.d("Scheduler", "Did not receive HTTP_OK from server!:"+401);
@@ -222,6 +238,6 @@ public class NetworkTask extends AsyncTask<String, Void, String> {
 
         }
 
-        return result;
+        return this.getResults;
     }
 }
