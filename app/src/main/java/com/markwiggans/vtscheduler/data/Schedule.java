@@ -2,6 +2,7 @@ package com.markwiggans.vtscheduler.data;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 
 import com.markwiggans.vtscheduler.database.DataSource;
 
@@ -9,12 +10,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by Mark Wiggans on 4/10/2017.
  */
-public class Schedule {
+public class Schedule implements Comparable<Schedule>{
+    @Override
+    public int compareTo(@NonNull Schedule o) {
+        return this.getScore() - o.getScore();
+    }
+
     interface ScheduleReceiver {
         void receiveSchedule(Schedule schedule);
     }
@@ -93,5 +100,31 @@ public class Schedule {
             e.printStackTrace();
         }
         return obj;
+    }
+
+    private int score = -1;
+    public int getScore() {
+        if(score != -1) {
+            return score;
+        }
+        score = 0;
+        ArrayList<MeetingTime> meetingTimes = new ArrayList<>();
+        for(CRN crn : getCrns()) {
+            meetingTimes.addAll(crn.getMeetingTimes());
+        }
+        Collections.sort(meetingTimes);
+        MeetingTime start = meetingTimes.get(0);
+        MeetingTime end = meetingTimes.get(0);
+        for(int i = 1; i < meetingTimes.size(); i++) {
+            if(meetingTimes.get(i).getDay().equals(start.getDay())) {
+                end = meetingTimes.get(i);
+            } else {
+                score += end.getEndTime() - start.getStartTime();
+                start = meetingTimes.get(i);
+                end = meetingTimes.get(i);
+            }
+        }
+        score += end.getEndTime() - start.getStartTime();
+        return score;
     }
 }

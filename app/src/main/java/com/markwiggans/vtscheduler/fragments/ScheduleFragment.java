@@ -16,6 +16,7 @@ import com.markwiggans.vtscheduler.database.ScheduleGenerationTask;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -93,8 +94,9 @@ public class ScheduleFragment extends Fragment implements ScheduleGenerationTask
      */
     private void refreshView() {
         if(schedulesIndices != null) {
-            scheduleList.setAdapter(new ScheduleAdapter(context, R.id.list,
-                    Schedule.getSchedulesByIndex(schedulesIndices)));
+            List<Schedule> schedules = Schedule.getSchedulesByIndex(schedulesIndices);
+            Collections.sort(schedules);
+            scheduleList.setAdapter(new ScheduleAdapter(context, R.id.list, schedules));
             mListener.setPanelUpToolbar(getString(R.string.generated_schedules_label), false);
         } else {
             mListener.setPanelUpToolbar(getString(R.string.loading), true);

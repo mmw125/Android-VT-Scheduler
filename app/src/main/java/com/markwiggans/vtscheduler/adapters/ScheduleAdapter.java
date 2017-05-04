@@ -32,9 +32,9 @@ public class ScheduleAdapter extends ArrayAdapter<Schedule> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.adapter_schedule, parent, false);
         }
         Schedule schedule = getItem(position);
-//        ListView listView = (ListView) convertView.findViewById(R.id.crn_list);
-//        listView.setAdapter(new CRNAdapter(context, 0, schedule.getCrns()));
-        TextView textView = (TextView) convertView.findViewById(R.id.text_view);
+        TextView textView = (TextView) convertView.findViewById(R.id.parent);
+        textView.setText("Score " + schedule.getScore());
+        textView = (TextView) convertView.findViewById(R.id.text_view);
         String s = "";
         for(CRN c : schedule.getCrns()) {
             s = s + " " + c.getCRN();
