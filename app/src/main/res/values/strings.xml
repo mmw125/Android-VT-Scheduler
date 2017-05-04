@@ -40,4 +40,5 @@
     <string name="saving">Saving&#8230;</string>
     <string name="saving_reminder">Long Press to Save</string>
     <string name="unique_identifier">Unique Identifier</string>
+    <string name="login_url">http://ec2-54-191-60-136.us-west-2.compute.amazonaws.com:8080/share</string>
 </resources>

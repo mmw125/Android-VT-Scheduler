@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.markwiggans.vtscheduler.NetworkTask;
 import com.markwiggans.vtscheduler.R;
 import com.markwiggans.vtscheduler.data.CRN;
 import com.markwiggans.vtscheduler.data.Schedule;
@@ -52,8 +53,17 @@ public class ScheduleAdapter extends ArrayAdapter<Schedule> implements AdapterVi
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        Schedule schedule = getItem(position);
+
+        CRN[] l = new CRN[schedule.getCrns().size()];
+        for(int i = 0; i < schedule.getCrns().size(); i++){
+            l[i] = schedule.getCrns().get(i);
+        }
+
+        new NetworkTask(context, true, "Spring 2017",l , "").execute();
         Toast.makeText(context, context.getString(R.string.saving), Toast.LENGTH_LONG).show();
         getItem(position).toString();
+
         return true;
     }
 
