@@ -25,7 +25,7 @@ public class Schedule implements Comparable<Schedule>{
         return this.getScore() - o.getScore();
     }
 
-    interface ScheduleReceiver {
+    public interface ScheduleReceiver {
         void receiveSchedule(Schedule schedule);
     }
 

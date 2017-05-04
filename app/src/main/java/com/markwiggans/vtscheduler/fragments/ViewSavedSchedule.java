@@ -22,7 +22,9 @@ import android.widget.Toast;
 import com.markwiggans.vtscheduler.NetworkTask;
 import com.markwiggans.vtscheduler.R;
 import com.markwiggans.vtscheduler.adapters.CourseAdapter;
+import com.markwiggans.vtscheduler.data.CRN;
 import com.markwiggans.vtscheduler.data.Course;
+import com.markwiggans.vtscheduler.data.Schedule;
 import com.markwiggans.vtscheduler.database.CourseReaderContract;
 import com.markwiggans.vtscheduler.database.DataSource;
 import com.markwiggans.vtscheduler.database.DatabaseTask;
@@ -31,6 +33,7 @@ import com.markwiggans.vtscheduler.database.QueryResult;
 import com.markwiggans.vtscheduler.interfaces.GetCompleted;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -44,7 +47,7 @@ import static android.content.Context.CLIPBOARD_SERVICE;
 /**
  * Fragment for Quering courses
  */
-public class ViewSavedSchedule extends Fragment implements View.OnClickListener, GetCompleted {
+public class ViewSavedSchedule extends Fragment implements View.OnClickListener, GetCompleted, Schedule.ScheduleReceiver {
     public static final String SAVED_SCHEDULES_FRAGMENT = "VIEW_SAVED";
     private MainActivityInteraction mListener;
     private Button submit;
@@ -128,11 +131,20 @@ public class ViewSavedSchedule extends Fragment implements View.OnClickListener,
                     // Do something with result here
                     Toast.makeText(getActivity(), "Schedule Data retrieved", Toast.LENGTH_SHORT).show();
                     try{
-                        getResults.setText(result.toString(4));
+                        //getResults.setText(result.toString(4));
+
+                        JSONArray JSONCrnsArray = result.getJSONArray("crns");
+                        int[] crnsArray = new int[JSONCrnsArray.length()];
+                        for(int i = 0; i < JSONCrnsArray.length(); i++){
+                            crnsArray[i] = JSONCrnsArray.getInt(i);
+                        }
+                        displaySchedule(result.getString("semester"), crnsArray);
                     }catch(Exception e){
                         getResults.setText(result.toString());
                         Log.d("Scheduler", e.toString());
                     }
+
+
                 }
             }.execute();
         }
@@ -150,4 +162,17 @@ public class ViewSavedSchedule extends Fragment implements View.OnClickListener,
 
 
     }
+
+    public void displaySchedule(String semester, int[] crnsArray){
+        Schedule.createScheduleFromServerResponse(getContext(), this, semester, crnsArray);
+    }
+
+
+
+    @Override
+    public void receiveSchedule(Schedule schedule) {
+        //ToDo: Display schedule in the getResults TextView
+    }
+
+
 }
