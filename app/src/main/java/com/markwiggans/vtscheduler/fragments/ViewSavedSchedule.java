@@ -76,6 +76,7 @@ public class ViewSavedSchedule extends Fragment implements View.OnClickListener,
         view = inflater.inflate(R.layout.fragment_view_saved_schedule, container, false);
         crn = (EditText) view.findViewById(R.id.id_input);
 
+        crn.isLongClickable();
         // automatically add uuid to editext
         /*ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(CLIPBOARD_SERVICE);
         String label = clipboard.getPrimaryClip().getDescription().getLabel().toString();

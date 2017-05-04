@@ -1,7 +1,10 @@
 package com.markwiggans.vtscheduler.adapters;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +17,8 @@ import com.markwiggans.vtscheduler.NetworkTask;
 import com.markwiggans.vtscheduler.R;
 import com.markwiggans.vtscheduler.data.CRN;
 import com.markwiggans.vtscheduler.data.Schedule;
+
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -60,7 +65,24 @@ public class ScheduleAdapter extends ArrayAdapter<Schedule> implements AdapterVi
             sem = schedule.getCrns().get(0).getSemester();
         }
 
-        new NetworkTask(context, true, sem, schedule.getCrns().toArray(new CRN[schedule.getCrns().size()]) , "").execute();
+        new NetworkTask(context, true, sem, schedule.getCrns().toArray(new CRN[schedule.getCrns().size()]) , ""){
+
+            // Doing this so that I can access the data from onPostExecute
+            @Override
+            protected void onPostExecute( JSONObject result ) {
+                String str = "";
+                try{
+                    str = result.getString("unique_id:");
+                }catch (Exception e){
+                    Log.d("Scheduler", e.toString());
+                }
+                super.onPostExecute(result);
+                ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("Schedule_UUID", str);
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(context,"Copied UUID to clipboard",Toast.LENGTH_SHORT).show();
+            }
+        }.execute();
         //new NetworkTask(context, false, "",null ,"5095e598-3096-11e7-bf9b-0a3764d8e951").execute();
 
         //Toast.makeText(context, context.getString(R.string.saving), Toast.LENGTH_LONG).show();

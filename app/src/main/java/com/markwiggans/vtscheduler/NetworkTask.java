@@ -70,11 +70,10 @@ public class NetworkTask extends AsyncTask<String, Void, JSONObject> {
     @Override
     protected void onPostExecute(JSONObject result) {
         if(post){
-            ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clip = ClipData.newPlainText("Schedule_UUID", this.uuid);
-            clipboard.setPrimaryClip(clip);
-
-            Toast.makeText(context, "Shared Successful, we have copied UUID to clipboard", Toast.LENGTH_SHORT).show();
+//            ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+//            ClipData clip = ClipData.newPlainText("Schedule_UUID", this.uuid);
+//            clipboard.setPrimaryClip(clip);
+            Toast.makeText(context, "Shared Successfully!", Toast.LENGTH_SHORT).show();
         }
         else{
             // returning data back to caller
@@ -147,7 +146,7 @@ public class NetworkTask extends AsyncTask<String, Void, JSONObject> {
                 final int HttpResultCode = conn.getResponseCode();
                 is = HttpResultCode >= 400 ? conn.getErrorStream() : conn.getInputStream();
 
-                Log.d("Scheduler", "Reposne is: " + HttpResultCode);
+                Log.d("Scheduler", "Response is: " + HttpResultCode);
                 if (HttpResultCode == HttpURLConnection.HTTP_OK) {
                     BufferedReader streamReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
                     StringBuilder responseStrBuilder = new StringBuilder();
@@ -156,12 +155,12 @@ public class NetworkTask extends AsyncTask<String, Void, JSONObject> {
                     while ((inputStr = streamReader.readLine()) != null)
                         responseStrBuilder.append(inputStr);
                     JSONObject j = new JSONObject(responseStrBuilder.toString());
-
+                    this.getResults = j;
                     Log.d("Scheduler",j.toString(4));
 
                     // storing it in this.uuid
                     this.uuid = j.getString("unique_id");
-                    this.getResults = j;
+
 
                     //Map<String, List<String>> headerFields = conn.getHeaderFields();
                     //List<String> cookiesHeader = headerFields.get(context.getString(R.string.cookies_header));

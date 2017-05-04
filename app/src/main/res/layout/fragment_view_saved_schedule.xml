@@ -19,7 +19,8 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.markwiggans.vtscheduler.views.CourseCompletionView
+    <!--<com.markwiggans.vtscheduler.views.CourseCompletionView-->
+    <EditText
         android:id="@+id/id_input"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -29,7 +30,6 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
-        android:textIsSelectable="true"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
