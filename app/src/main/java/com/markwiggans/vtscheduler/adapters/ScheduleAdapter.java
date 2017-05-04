@@ -1,6 +1,7 @@
 package com.markwiggans.vtscheduler.adapters;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ClipData;
@@ -96,7 +97,8 @@ public class ScheduleAdapter extends ArrayAdapter<Schedule> implements AdapterVi
 
         FragmentTransaction ft = this.fragmentManager.beginTransaction();
         //FragmentTransaction ft = parent.getFragmentManager().beginTransaction();
-        ft.replace(R.id.content_frame, new ScheduleWeekViewFragment()).addToBackStack(null).commit();
+        Fragment frag = ScheduleWeekViewFragment.newInstance(schedule);
+        ft.replace(R.id.content_frame, frag).addToBackStack(null).commit();
 
         return true;
     }

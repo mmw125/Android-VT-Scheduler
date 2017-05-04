@@ -11,6 +11,7 @@ import com.markwiggans.vtscheduler.database.DataSource;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -20,7 +21,7 @@ import java.util.List;
  * Created by Mark Wiggans on 4/10/2017.
  * Represents a schedule in memory
  */
-public class Schedule implements Comparable<Schedule>{
+public class Schedule implements Comparable<Schedule>, Serializable{
     @Override
     public int compareTo(@NonNull Schedule o) {
         return this.getScore() - o.getScore();

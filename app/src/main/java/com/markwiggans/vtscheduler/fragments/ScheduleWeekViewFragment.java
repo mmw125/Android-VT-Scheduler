@@ -17,9 +17,11 @@ import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
 
 import java.io.Serializable;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 import com.markwiggans.vtscheduler.R;
@@ -31,6 +33,13 @@ import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
+
+import static com.markwiggans.vtscheduler.data.MeetingTime.Day.FRIDAY;
+import static com.markwiggans.vtscheduler.data.MeetingTime.Day.SATURDAY;
+import static com.markwiggans.vtscheduler.data.MeetingTime.Day.SUNDAY;
+import static com.markwiggans.vtscheduler.data.MeetingTime.Day.THURSDAY;
+import static com.markwiggans.vtscheduler.data.MeetingTime.Day.WEDNESDAY;
+import static com.markwiggans.vtscheduler.data.MeetingTime.SHORT_HOUR_TIME;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -154,13 +163,51 @@ public class ScheduleWeekViewFragment extends Fragment implements
             for(MeetingTime t: crn.getMeetingTimes()){
                 Calendar startTime = Calendar.getInstance();
                 //startTime.set(Calendar.DAY_OF_WEEK, );
-                startTime.set(Calendar.HOUR, t.getStartTime());
+                try{
+                    Date d = SHORT_HOUR_TIME.parse(t.getStartTimeString());
+                    startTime.set(Calendar.HOUR, d.getHours());
+                    startTime.set(Calendar.MINUTE, d.getMinutes());
+
+                    switch(t.getDay()) {
+
+                        case MONDAY: startTime.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+                        case TUESDAY: startTime.set(Calendar.DAY_OF_WEEK, Calendar.TUESDAY);
+                        case WEDNESDAY:startTime.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
+                        case THURSDAY: startTime.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
+                        case FRIDAY: startTime.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
+                        case SATURDAY: startTime.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
+                        case SUNDAY: startTime.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+                        default: startTime.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+                    }
+
+                } catch (ParseException e) {
+
+                }
+
+
                 startTime.set(Calendar.MINUTE, 0);
                 startTime.set(Calendar.MONTH, newMonth-1);
                 startTime.set(Calendar.YEAR, newYear);
                 Calendar endTime = (Calendar) startTime.clone();
-                endTime.set(Calendar.HOUR, t.getEndTime());
-                endTime.set(Calendar.MONTH, newMonth-1);
+                try{
+                    Date d = SHORT_HOUR_TIME.parse(t.getStartTimeString());
+                    endTime.set(Calendar.HOUR, d.getHours());
+                    endTime.set(Calendar.MINUTE, d.getMinutes());
+
+                    switch(t.getDay()) {
+
+                        case MONDAY: endTime.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+                        case TUESDAY: endTime.set(Calendar.DAY_OF_WEEK, Calendar.TUESDAY);
+                        case WEDNESDAY:endTime.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
+                        case THURSDAY: endTime.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
+                        case FRIDAY: endTime.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
+                        case SATURDAY: endTime.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
+                        case SUNDAY: endTime.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+                        default: endTime.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+                    }
+                } catch (ParseException e) {
+
+                }
                 WeekViewEvent event = new WeekViewEvent(1, crn.getCourseWholeName(), startTime, endTime);
                 event.setColor(color);
                 events.add(event);
