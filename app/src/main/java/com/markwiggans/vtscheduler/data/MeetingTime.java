@@ -3,6 +3,10 @@ package com.markwiggans.vtscheduler.data;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by Mark Wiggans on 3/19/2017.
  * Used to hold a time that a crn meets
@@ -16,10 +20,10 @@ public class MeetingTime implements Comparable<MeetingTime>{
     public MeetingTime(Cursor c) {
         id = c.getInt(0);
         day = Day.stringToDay(c.getString(1));
-        startTime = c.getInt(2) + day.toInt();
         startTimeString = c.getString(3);
-        endTime = c.getInt(4) + day.toInt();
+        startTime = timeToInt(startTimeString) + day.toInt();
         endTimeString = c.getString(5);
+        endTime = timeToInt(endTimeString) + day.toInt();
         crn = c.getInt(6);
         semester = c.getString(7);
     }
@@ -69,5 +73,16 @@ public class MeetingTime implements Comparable<MeetingTime>{
     @Override
     public int compareTo(@NonNull MeetingTime o) {
         return this.getStartTime() - o.getStartTime();
+    }
+
+    public static final SimpleDateFormat SHORT_HOUR_TIME = new SimpleDateFormat("hh:mma");
+    public static int timeToInt(String time) {
+        try{
+            Date d = SHORT_HOUR_TIME.parse(time);
+            return (d.getHours() * 60) + d.getMinutes();
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 }

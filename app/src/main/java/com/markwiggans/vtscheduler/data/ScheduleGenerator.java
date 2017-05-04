@@ -3,14 +3,16 @@ package com.markwiggans.vtscheduler.data;
 import android.content.Context;
 import android.util.Log;
 
+import com.markwiggans.vtscheduler.MainActivity;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by Anirudha Simha on 4/25/2017.
+ * Class to that dose the schedule generation for database.ScheduleGenerationTask
  */
-
 public class ScheduleGenerator {
 
     public static List<Schedule> generateSchedules(Context context, ArrayList<Course> desiredCourses) {
@@ -76,7 +78,7 @@ public class ScheduleGenerator {
             for (CRN elementB : courseBList) {
                 permutation = new ArrayList<>();
 
-                if (courseAList.get(0) instanceof ArrayList<?>) {
+                if (elementA instanceof ArrayList<?>) {
                     permutation.addAll((ArrayList<CRN>) elementA);
                 } else {
                     permutation.add((CRN) elementA);
@@ -109,12 +111,9 @@ public class ScheduleGenerator {
             for (int i = 0; i < crnsList.size(); i++) {
                 if (i == 0) {
                     permutationsList.addAll(perm(crnsList.get(0), crnsList.get(1)));
-                } else if (i > 1 && i < crnsList.size() - 1) {
+                } else if (i > 1 && i < crnsList.size()) {
                     permutationsList = perm(permutationsList, crnsList.get(i));
-                } else {
-                    // do nothing on the last one since it was already permutated or the second one sonce ti was already permutated as well
                 }
-
             }
         }
         return permutationsList;

@@ -7,13 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
-import com.markwiggans.vtscheduler.MainActivity;
 import com.markwiggans.vtscheduler.R;
 import com.markwiggans.vtscheduler.data.CRN;
-import com.markwiggans.vtscheduler.data.Course;
 import com.markwiggans.vtscheduler.data.Schedule;
 
 import java.util.List;
@@ -35,13 +32,18 @@ public class ScheduleAdapter extends ArrayAdapter<Schedule> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.adapter_schedule, parent, false);
         }
         Schedule schedule = getItem(position);
-//        ListView listView = (ListView) convertView.findViewById(R.id.crn_list);
-//        listView.setAdapter(new CRNAdapter(context, 0, schedule.getCrns()));
-        TextView textView = (TextView) convertView.findViewById(R.id.text_view);
+        TextView textView = (TextView) convertView.findViewById(R.id.parent);
+        textView.setText(context.getString(R.string.score_display, schedule.getScore()));
+        textView = (TextView) convertView.findViewById(R.id.text_view);
         String s = "";
         for(CRN c : schedule.getCrns()) {
-            s = s + " " + c.getCRN();
+            if(s.length() > 0) {
+                s += "\n";
+            }
+            String courseStr = c.getCourse() == null ? "" : c.getCourse().getWholeName();
+            s += courseStr + " " + c.getCRN() + " " + c.getInstructor();
         }
+        textView.setText(s);
         return convertView;
     }
 }

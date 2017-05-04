@@ -35,7 +35,7 @@ public class Course {
         semester = c.getString(5);      // Spring 2017
     }
 
-    public List<CRN> getCRNs(Context context) {
+    List<CRN> getCRNs(Context context) {
         return DataSource.getInstance(context).getCRNs(this);
     }
 
@@ -60,7 +60,7 @@ public class Course {
     }
 
     public String getDisplayName() {
-        return getWholeName() + " " + getType();
+        return getCourseName() + " " + getType();
     }
 
     @Override

@@ -46,7 +46,7 @@ public class DataSource {
     /**
      * Queries the database for all of the courses. This is a cached operation
      */
-    public void getCourses(Context context, final CoursesReceiver receiver) {
+    private void getCourses(Context context, final CoursesReceiver receiver) {
         getCourses(context, receiver, null);
     }
 
@@ -142,10 +142,22 @@ public class DataSource {
         List<CRN> crns = new ArrayList<>();
         if (c.moveToFirst()) {
             do {
-                crns.add(new CRN(c));
+                crns.add(new CRN(course, c));
             } while (c.moveToNext());
         }
         return crns;
+    }
+
+    public List<CRN> getCRNs(String semester, int[] crns) {
+        String whereString = CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = '" + semester + "'";
+        for (int i : crns) {
+            if (whereString.length() != 0) {
+                whereString += " or ";
+            }
+            whereString += CourseReaderContract.CRNEntry.COLUMN_NAME_CRN + " = " + i;
+        }
+        Query q = new Query(CourseReaderContract.CRNEntry.TABLE_NAME, whereString, null);
+        return CRN.createCRNs(query(q).getCursor());
     }
 
     public ArrayList<MeetingTime> getMeetingTimes(CRN crn) {
@@ -164,7 +176,7 @@ public class DataSource {
 
     private List<String> courseNames;
 
-    public interface CourseNameReceiver {
+    interface CourseNameReceiver {
         void receiveCourseNames(List<String> courseNames);
     }
 
@@ -186,7 +198,7 @@ public class DataSource {
         }
     }
 
-    protected QueryResult query(Query query) {
+    QueryResult query(Query query) {
         try {
             reader.createDataBase();
         } catch (IOException e) {

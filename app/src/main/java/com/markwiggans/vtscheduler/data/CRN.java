@@ -32,14 +32,19 @@ public class CRN {
     // private String crnText;
     private String instructor, location, semester;
     private ArrayList<MeetingTime> meetingTimes;
+    private Course course;
 
-    public CRN(Cursor c) {
+    private CRN(Cursor c) {
+        this(null, c);
+    }
+
+    public CRN(Course course, Cursor c) {
         crn = c.getInt(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_NAME_CRN));
         instructor = c.getString(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_NAME_INSTRUCTOR));
         location = c.getString(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_NAME_LOCATION));
         semester = c.getString(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER));
-
-        meetingTimes = new ArrayList<>();
+        this.course = course;
+        meetingTimes = null;
     }
 
     /**
@@ -66,11 +71,15 @@ public class CRN {
         return this.semester;
     }
 
-    public ArrayList<MeetingTime> getMeetingTimes(){
+    ArrayList<MeetingTime> getMeetingTimes(){
         return meetingTimes;
     }
 
-    public void updateMeetingTimes(Context c){
+    void updateMeetingTimes(Context c){
         meetingTimes = DataSource.getInstance(c).getMeetingTimes(this);
+    }
+
+    public Course getCourse() {
+        return course;
     }
 }
