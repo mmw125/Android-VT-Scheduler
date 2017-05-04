@@ -145,6 +145,5 @@ public class ScheduleFragment extends Fragment implements ScheduleGenerationTask
     @Override
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
-        refreshView();
     }
 }
