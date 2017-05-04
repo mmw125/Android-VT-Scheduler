@@ -33,11 +33,15 @@ public class ScheduleAdapter extends ArrayAdapter<Schedule> {
         }
         Schedule schedule = getItem(position);
         TextView textView = (TextView) convertView.findViewById(R.id.parent);
-        textView.setText("Score " + schedule.getScore());
+        textView.setText(context.getString(R.string.score_display, schedule.getScore()));
         textView = (TextView) convertView.findViewById(R.id.text_view);
         String s = "";
         for(CRN c : schedule.getCrns()) {
-            s = s + " " + c.getCRN();
+            if(s.length() > 0) {
+                s += "\n";
+            }
+            String courseStr = c.getCourse() == null ? "" : c.getCourse().getWholeName();
+            s += courseStr + " " + c.getCRN() + " " + c.getInstructor();
         }
         textView.setText(s);
         return convertView;

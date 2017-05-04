@@ -25,7 +25,7 @@ public class CourseCompletionView extends TokenCompleteTextView<Course> {
     protected View getViewForObject(Course course) {
         LayoutInflater l = (LayoutInflater) getContext().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         TextView view = (TextView) l.inflate(R.layout.string_token, (ViewGroup) getParent(), false);
-        view.setText(course.getWholeName());
+        view.setText(course.toString());
         return view;
     }
 
