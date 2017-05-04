@@ -30,7 +30,7 @@ public class CRN {
 
     private int crn;
     // private String crnText;
-    private String instructor, location, semester;
+    private String instructor, location, semester, type, courseWholeName;
     private ArrayList<MeetingTime> meetingTimes;
     private Course course;
 
@@ -43,6 +43,8 @@ public class CRN {
         instructor = c.getString(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_NAME_INSTRUCTOR));
         location = c.getString(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_NAME_LOCATION));
         semester = c.getString(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER));
+        type = c.getString(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_COURSE_TYPE));
+        courseWholeName = c.getString(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_COURSE_WHOLE_NAME));
         this.course = course;
         meetingTimes = null;
     }
@@ -53,6 +55,14 @@ public class CRN {
      */
     public int getCRN() {
         return crn;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getCourseWholeName() {
+        return courseWholeName;
     }
 
     public String getInstructor() {
@@ -95,5 +105,11 @@ public class CRN {
 
     public Course getCourse() {
         return course;
+    }
+
+    public boolean isCRNOf(Course c) {
+        return c != null && c.getSemester() != null && c.getSemester().equals(semester) &&
+                c.getWholeName() != null && c.getWholeName().equals(courseWholeName) &&
+                c.getType() != null && c.getType().equals(type);
     }
 }

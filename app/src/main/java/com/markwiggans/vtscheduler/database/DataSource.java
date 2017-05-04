@@ -43,6 +43,22 @@ public class DataSource {
 
     private List<Course> courses;
 
+    public void getCourse(Context context, final CoursesReceiver receiver, final CRN crn) {
+        getCourses(context, new CoursesReceiver() {
+            @Override
+            public void receiveCourses(List<Course> courses) {
+                for(Course c : courses) {
+                    if(crn.isCRNOf(c)) {
+                        ArrayList<Course> course = new ArrayList<>();
+                        course.add(c);
+                        receiver.receiveCourses(course);
+                    }
+                }
+                receiver.receiveCourses(null);
+            }
+        }, new Semester(crn.getSemester()));
+    }
+
     /**
      * Queries the database for all of the courses. This is a cached operation
      */

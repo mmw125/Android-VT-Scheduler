@@ -13,6 +13,10 @@ public class Semester {
         name = cursor.getString(0);
     }
 
+    public Semester(String semester) {
+        name = semester;
+    }
+
     public String getName() {
         return name;
     }
