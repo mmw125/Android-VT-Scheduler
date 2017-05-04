@@ -37,5 +37,7 @@ public interface MainActivityInteraction {
      */
     void setSelected(String title);
 
+    void loadSchedule(String id);
+
     PanelState getSlidingUpPanelStatus();
 }

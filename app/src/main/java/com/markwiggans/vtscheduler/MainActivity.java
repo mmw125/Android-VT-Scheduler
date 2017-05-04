@@ -27,8 +27,7 @@ import com.markwiggans.vtscheduler.fragments.CourseQuery;
 import com.markwiggans.vtscheduler.fragments.HomeScreen;
 import com.markwiggans.vtscheduler.fragments.ScheduleCreator;
 import com.markwiggans.vtscheduler.fragments.ScheduleFragment;
-import com.markwiggans.vtscheduler.fragments.ScheduleViewer;
-import com.markwiggans.vtscheduler.fragments.ScheduleWeekViewFragment;
+import com.markwiggans.vtscheduler.fragments.ViewSavedSchedule;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;
@@ -188,9 +187,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 scheduleCreator = new ScheduleCreator();
             }
             fragment = scheduleCreator;
-        } else if(ScheduleViewer.SAVED_SCHEDULES_FRAGMENT.equals(fragmentName)){
+        } else if(ViewSavedSchedule.SAVED_SCHEDULES_FRAGMENT.equals(fragmentName)){
             if(scheduleViewer == null){
-                scheduleViewer = new ScheduleWeekViewFragment();
+                scheduleViewer = new ViewSavedSchedule();
             }
             fragment = scheduleViewer;
         }
@@ -200,6 +199,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             // update the main content by replacing fragments
             getFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).addToBackStack(null).commit();
         }
+    }
+
+    @Override
+    public void loadSchedule(String id) {
+        panelUpFragment.startLoading();
     }
 
     @Override
@@ -227,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         } else if(title.equals(getString(R.string.create_schedule))) {
             return ScheduleCreator.SCHEDULE_CREATOR_FRAGMENT;
         }else if(title.equals(getString(R.string.view_saved_schedules))){
-            return ScheduleViewer.SAVED_SCHEDULES_FRAGMENT;
+            return ViewSavedSchedule.SAVED_SCHEDULES_FRAGMENT;
         }
         return null;
     }

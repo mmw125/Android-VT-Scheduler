@@ -39,4 +39,5 @@
     <string name="close">Close</string>
     <string name="saving">Saving&#8230;</string>
     <string name="saving_reminder">Long Press to Save</string>
+    <string name="unique_identifier">Unique Identifier</string>
 </resources>

@@ -24,6 +24,7 @@ import com.markwiggans.vtscheduler.database.Query;
 import com.markwiggans.vtscheduler.database.QueryResult;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -31,18 +32,14 @@ import java.util.List;
 /**
  * Fragment for Quering courses
  */
-public class CourseQuery extends Fragment implements View.OnClickListener, DatabaseTask.DatabaseTaskReceiver, DataSource.DepartmentReceiver {
-    public static final String COURSE_QUERY_FRAGMENT = "QUERY_FRAGMENT";
+public class ViewSavedSchedule extends Fragment implements View.OnClickListener {
+    public static final String SAVED_SCHEDULES_FRAGMENT = "VIEW_SAVED";
     private MainActivityInteraction mListener;
     private Button submit;
     private EditText crn;
-    private LinearLayout layout;
-    private AutoCompleteTextView department;
-    private Context context;
-    private LinearLayout linlaHeaderProgress;
     private View view;
 
-    public CourseQuery() {
+    public ViewSavedSchedule() {
         // Required empty public constructor
     }
 
@@ -51,8 +48,8 @@ public class CourseQuery extends Fragment implements View.OnClickListener, Datab
      * this fragment using the provided parameters.
      * @return A new instance of fragment ScheduleCreator.
      */
-    public static CourseQuery newInstance() {
-        return new CourseQuery();
+    public static ViewSavedSchedule newInstance() {
+        return new ViewSavedSchedule();
     }
 
     @Override
@@ -63,21 +60,16 @@ public class CourseQuery extends Fragment implements View.OnClickListener, Datab
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_course_query, container, false);
+        view = inflater.inflate(R.layout.fragment_view_saved_schedule, container, false);
         crn = (EditText) view.findViewById(R.id.id_input);
-        department = (AutoCompleteTextView) view.findViewById(R.id.department);
-        DataSource.getInstance(context).getDepartments(context, this);
         submit = (Button) view.findViewById(R.id.submit);
         submit.setOnClickListener(this);
-        layout = (LinearLayout) view.findViewById(R.id.linear_layout);
-        linlaHeaderProgress = (LinearLayout) view.findViewById(R.id.linlaHeaderProgress);
         return view;
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        this.context = context;
         if (context instanceof MainActivityInteraction) {
             mListener = (MainActivityInteraction) context;
         } else {
@@ -101,36 +93,7 @@ public class CourseQuery extends Fragment implements View.OnClickListener, Datab
     @Override
     public void onClick(View v) {
         if(v.equals(submit)) {
-            InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-            submit.setEnabled(false);
-            linlaHeaderProgress.setVisibility(View.VISIBLE);
-            String selectString = CourseReaderContract.CourseEntry.COLUMN_NAME_COURSE_NUMBER + " LIKE '%" + crn.getText().toString() + "%'" +
-                    " AND " + CourseReaderContract.CourseEntry.COLUMN_NAME_DEPARTMENT_ID + " LIKE '%" + department.getText().toString() + "%'";
-            Query q = new Query(CourseReaderContract.CourseEntry.TABLE_NAME, selectString, null);
-            new DatabaseTask(this, context).execute(q);
+            mListener.loadSchedule(crn.getText().toString());
         }
-    }
-
-    @Override
-    public void onDatabaseTask(List<QueryResult> cursor) {
-        submit.setEnabled(true);
-        linlaHeaderProgress.setVisibility(View.GONE);
-        CourseAdapter adapter = new CourseAdapter(context, R.id.panel_up_list,
-                Course.createCourses(cursor.get(0).getCursor()));
-        ListView memberList = (ListView) view.findViewById(R.id.panel_up_list);
-        memberList.setAdapter(adapter);
-    }
-
-    @Override
-    public void receiveDepartments(List<String> departments) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_dropdown_item_1line, departments);
-        adapter.sort(new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return o1.toLowerCase().compareTo(o2.toLowerCase());
-            }
-        });
-        department.setAdapter(adapter);
     }
 }
