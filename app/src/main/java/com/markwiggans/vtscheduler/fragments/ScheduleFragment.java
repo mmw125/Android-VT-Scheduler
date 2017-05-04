@@ -3,6 +3,7 @@ package com.markwiggans.vtscheduler.fragments;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -104,7 +105,7 @@ public class ScheduleFragment extends Fragment implements ScheduleGenerationTask
                 if(schedules.size() > MAX_SCHEDULE_LIMIT) {
                     schedules = schedules.subList(0, MAX_SCHEDULE_LIMIT);
                 }
-                ScheduleAdapter adapter = new ScheduleAdapter(context, R.id.list, schedules);
+                ScheduleAdapter adapter = new ScheduleAdapter(context, R.id.list, schedules, getFragmentManager());
                 scheduleList.setAdapter(adapter);
                 scheduleList.setOnItemLongClickListener(adapter);
                 mListener.setPanelUpToolbar(getString(R.string.generated_schedules_label), false);

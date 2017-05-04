@@ -1,6 +1,7 @@
 package com.markwiggans.vtscheduler.fragments;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,17 +16,21 @@ import com.alamkanak.weekview.MonthLoader;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
 import com.markwiggans.vtscheduler.R;
+import com.markwiggans.vtscheduler.data.CRN;
+import com.markwiggans.vtscheduler.data.MeetingTime;
 import com.markwiggans.vtscheduler.data.Schedule;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Random;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -41,6 +46,7 @@ public class ScheduleWeekViewFragment extends Fragment implements
         WeekView.EmptyViewLongPressListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM = "schedule_param";
 
     private Context context;
 
@@ -48,13 +54,26 @@ public class ScheduleWeekViewFragment extends Fragment implements
 
     private WeekView mWeekView;
 
+    private Schedule mSchedule;
+
     public ScheduleWeekViewFragment() {
         // Required empty public constructor
+    }
+
+    public static ScheduleWeekViewFragment newInstance(Schedule schedule) {
+        ScheduleWeekViewFragment fragment = new ScheduleWeekViewFragment();
+        Bundle args = new Bundle();
+        args.putSerializable(ARG_PARAM, (Serializable)schedule);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        mSchedule = (Schedule)getArguments().getSerializable(ARG_PARAM);
+
+
         View view = inflater.inflate(R.layout.fragment_schedule_week_view, container, false);
         // Get a reference for the week view in the layout.
         mWeekView = (WeekView) view.findViewById(R.id.weekView);
@@ -129,6 +148,24 @@ public class ScheduleWeekViewFragment extends Fragment implements
         // sets visible days to 5
         mWeekView.setNumberOfVisibleDays(5);
 
+        for(CRN crn : mSchedule.getCrns()){
+            Random rnd = new Random();
+            int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+            for(MeetingTime t: crn.getMeetingTimes()){
+                Calendar startTime = Calendar.getInstance();
+                //startTime.set(Calendar.DAY_OF_WEEK, );
+                startTime.set(Calendar.HOUR, t.getStartTime());
+                startTime.set(Calendar.MINUTE, 0);
+                startTime.set(Calendar.MONTH, newMonth-1);
+                startTime.set(Calendar.YEAR, newYear);
+                Calendar endTime = (Calendar) startTime.clone();
+                endTime.set(Calendar.HOUR, t.getEndTime());
+                endTime.set(Calendar.MONTH, newMonth-1);
+                WeekViewEvent event = new WeekViewEvent(1, crn.getCourseWholeName(), startTime, endTime);
+                event.setColor(color);
+                events.add(event);
+            }
+        }
 
         /*
         Calendar startTime = Calendar.getInstance();
