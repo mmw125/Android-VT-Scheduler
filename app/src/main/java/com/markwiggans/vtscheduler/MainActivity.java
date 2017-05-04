@@ -28,6 +28,7 @@ import com.markwiggans.vtscheduler.fragments.HomeScreen;
 import com.markwiggans.vtscheduler.fragments.ScheduleCreator;
 import com.markwiggans.vtscheduler.fragments.ScheduleFragment;
 import com.markwiggans.vtscheduler.fragments.ScheduleViewer;
+import com.markwiggans.vtscheduler.fragments.ScheduleWeekViewFragment;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;
@@ -189,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             fragment = scheduleCreator;
         } else if(ScheduleViewer.SAVED_SCHEDULES_FRAGMENT.equals(fragmentName)){
             if(scheduleViewer == null){
-                scheduleViewer = new ScheduleViewer();
+                scheduleViewer = new ScheduleWeekViewFragment();
             }
             fragment = scheduleViewer;
         }
