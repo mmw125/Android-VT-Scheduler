@@ -66,7 +66,6 @@ public class ScheduleAdapter extends ArrayAdapter<Schedule> implements AdapterVi
         }
 
         new NetworkTask(context, true, sem, schedule.getCrns().toArray(new CRN[schedule.getCrns().size()]) , ""){
-
             // Doing this so that I can access the data from onPostExecute
             @Override
             protected void onPostExecute( JSONObject result ) {
@@ -80,14 +79,9 @@ public class ScheduleAdapter extends ArrayAdapter<Schedule> implements AdapterVi
                 ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
                 ClipData clip = ClipData.newPlainText("Schedule_UUID", str);
                 clipboard.setPrimaryClip(clip);
-                Toast.makeText(context,"Copied UUID to clipboard",Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Copied UUID to clipboard", Toast.LENGTH_SHORT).show();
             }
         }.execute();
-        //new NetworkTask(context, false, "",null ,"5095e598-3096-11e7-bf9b-0a3764d8e951").execute();
-
-        //Toast.makeText(context, context.getString(R.string.saving), Toast.LENGTH_LONG).show();
-        getItem(position).toString();
-
         return true;
     }
 

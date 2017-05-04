@@ -105,7 +105,7 @@ public class ViewSavedSchedule extends Fragment implements View.OnClickListener,
     @Override
     public void onResume() {
         super.onResume();
-        mListener.setSelected(getString(R.string.search_courses));
+        mListener.setSelected(getString(R.string.view_saved_schedules));
     }
 
     @Override
@@ -118,20 +118,22 @@ public class ViewSavedSchedule extends Fragment implements View.OnClickListener,
     public void onClick(View v) {
         if(v.equals(submit)) {
             //mListener.loadSchedule(crn.getText().toString());
-            new NetworkTask(getContext(), false, "",null ,crn.getText().toString()){
+            new NetworkTask(getContext(), false, "", null ,crn.getText().toString()){
 
                 // Doing this so that I can access the data from onPostExecute
                 @Override
                 protected void onPostExecute( JSONObject result ) {
-
                     super.onPostExecute(result);
                     // Do something with result here
                     Toast.makeText(getActivity(), "Schedule Data retrieved", Toast.LENGTH_SHORT).show();
-                    try{
-                        getResults.setText(result.toString(4));
-                    }catch(Exception e){
-                        getResults.setText(result.toString());
-                        Log.d("Scheduler", e.toString());
+                    if(result == null) {
+                        getResults.setText("No response from server");
+                    } else {
+                        try {
+                            getResults.setText(result.toString(4));
+                        } catch(Exception e){
+                            getResults.setText(result.toString());
+                        }
                     }
                 }
             }.execute();
@@ -147,7 +149,5 @@ public class ViewSavedSchedule extends Fragment implements View.OnClickListener,
             getResults.setText(result.toString());
             Log.d("Scheduler", e.toString());
         }
-
-
     }
 }
