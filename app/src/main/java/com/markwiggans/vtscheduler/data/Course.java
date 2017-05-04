@@ -35,6 +35,15 @@ public class Course {
         semester = c.getString(5);      // Spring 2017
     }
 
+    public Course(String[] data) {
+        this.wholeName = data[0];
+        this.name = data[1];
+        this.courseNumber = data[2];
+        this.type = data[3];
+        this.departmentId = data[4];
+        this.semester = data[5];
+    }
+
     List<CRN> getCRNs(Context context) {
         return DataSource.getInstance(context).getCRNs(this);
     }
@@ -66,5 +75,9 @@ public class Course {
     @Override
     public String toString() {
         return getDisplayName();
+    }
+
+    public String getAll() {
+        return wholeName + "~" + name + "~" + courseNumber + "~" + type + "~" + departmentId + "~" + semester;
     }
 }

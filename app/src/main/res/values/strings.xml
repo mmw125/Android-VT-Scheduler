@@ -36,4 +36,5 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="score_display">Score %d</string>
+    <string name="close">Close</string>
 </resources>

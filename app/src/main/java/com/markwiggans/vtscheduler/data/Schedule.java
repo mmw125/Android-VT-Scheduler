@@ -4,12 +4,15 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
+import com.alamkanak.weekview.WeekViewEvent;
+import com.markwiggans.vtscheduler.R;
 import com.markwiggans.vtscheduler.database.DataSource;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
@@ -126,5 +129,26 @@ public class Schedule implements Comparable<Schedule>{
         }
         score += end.getEndTime() - start.getStartTime();
         return score;
+    }
+
+    public ArrayList<WeekViewEvent> toCalendars(Context context, int month, int year) {
+        ArrayList<WeekViewEvent> events = new ArrayList<>();
+        for(CRN crn : getCrns()) {
+            for(MeetingTime m : crn.getMeetingTimes()) {
+                Calendar startTime = Calendar.getInstance();
+                startTime.set(Calendar.HOUR_OF_DAY, 3);
+                startTime.set(Calendar.MINUTE, 0);
+                startTime.set(Calendar.MONTH, month-1);
+                startTime.set(Calendar.YEAR, year);
+                Calendar endTime = (Calendar) startTime.clone();
+                endTime.add(Calendar.HOUR, 1);
+                endTime.set(Calendar.MONTH, month - 1);
+                WeekViewEvent event = new WeekViewEvent(1, crn.getCourse().getWholeName(), startTime, endTime);
+                event.setColor(context.getColor(R.color.event_color_01));
+                events.add(event);
+            }
+        }
+
+        return events;
     }
 }

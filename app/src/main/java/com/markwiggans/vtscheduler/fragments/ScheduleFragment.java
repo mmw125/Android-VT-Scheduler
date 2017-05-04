@@ -100,7 +100,9 @@ public class ScheduleFragment extends Fragment implements ScheduleGenerationTask
             if(schedules.size() > MAX_SCHEDULE_LIMIT) {
                 schedules = schedules.subList(0, MAX_SCHEDULE_LIMIT);
             }
-            scheduleList.setAdapter(new ScheduleAdapter(context, R.id.list, schedules));
+            ScheduleAdapter adapter = new ScheduleAdapter(context, R.id.list, schedules);
+            scheduleList.setAdapter(adapter);
+            scheduleList.setOnItemClickListener(adapter);
             mListener.setPanelUpToolbar(getString(R.string.generated_schedules_label), false);
         } else {
             mListener.setPanelUpToolbar(getString(R.string.loading), true);
