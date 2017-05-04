@@ -63,8 +63,10 @@ public class Schedule implements Comparable<Schedule>{
 
     public static ArrayList<Integer> getSchedulesIds(List<Schedule> schedules) {
         ArrayList<Integer> integers = new ArrayList<>();
-        for(Schedule schedule : schedules) {
-            integers.add(schedule.index);
+        if(schedules != null) {
+            for(Schedule schedule : schedules) {
+                integers.add(schedule.index);
+            }
         }
         return integers;
     }

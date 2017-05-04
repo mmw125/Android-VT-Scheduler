@@ -34,6 +34,7 @@ public class ScheduleFragment extends Fragment implements ScheduleGenerationTask
     private ArrayList<Integer> schedulesIndices;
     private TextView loadingText;
     private boolean loading;
+    private String errorMessage;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -57,6 +58,7 @@ public class ScheduleFragment extends Fragment implements ScheduleGenerationTask
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        errorMessage = getString(R.string.default_error_message);
         if (context instanceof MainActivityInteraction) {
             mListener = (MainActivityInteraction) context;
             this.context = context;
@@ -86,7 +88,6 @@ public class ScheduleFragment extends Fragment implements ScheduleGenerationTask
         if(loading || schedulesIndices != null) {
             refreshView();
         }
-
         return view;
     }
 
@@ -94,21 +95,28 @@ public class ScheduleFragment extends Fragment implements ScheduleGenerationTask
      * Shows/hides/updates portions of the display based on if the values have loaded or not
      */
     private void refreshView() {
+        loadingText.setVisibility(schedulesIndices != null ? View.GONE : View.VISIBLE);
+        scheduleList.setVisibility(schedulesIndices != null ? View.VISIBLE : View.GONE);
         if(schedulesIndices != null) {
             List<Schedule> schedules = Schedule.getSchedulesByIndex(schedulesIndices);
             Collections.sort(schedules);
-            if(schedules.size() > MAX_SCHEDULE_LIMIT) {
-                schedules = schedules.subList(0, MAX_SCHEDULE_LIMIT);
+            if(schedules.size() > 0) {
+                if(schedules.size() > MAX_SCHEDULE_LIMIT) {
+                    schedules = schedules.subList(0, MAX_SCHEDULE_LIMIT);
+                }
+                ScheduleAdapter adapter = new ScheduleAdapter(context, R.id.list, schedules);
+                scheduleList.setAdapter(adapter);
+                scheduleList.setOnItemLongClickListener(adapter);
+                mListener.setPanelUpToolbar(getString(R.string.generated_schedules_label), false);
+            } else {
+                loadingText.setVisibility(View.VISIBLE);
+                loadingText.setText(errorMessage);
+                scheduleList.setVisibility(View.GONE);
+                mListener.setPanelUpToolbar(getString(R.string.error_label), false);
             }
-            ScheduleAdapter adapter = new ScheduleAdapter(context, R.id.list, schedules);
-            scheduleList.setAdapter(adapter);
-            scheduleList.setOnItemLongClickListener(adapter);
-            mListener.setPanelUpToolbar(getString(R.string.generated_schedules_label), false);
         } else {
             mListener.setPanelUpToolbar(getString(R.string.loading), true);
         }
-        loadingText.setVisibility(schedulesIndices != null ? View.GONE : View.VISIBLE);
-        scheduleList.setVisibility(schedulesIndices != null ? View.VISIBLE : View.GONE);
     }
 
     /**
@@ -131,6 +139,12 @@ public class ScheduleFragment extends Fragment implements ScheduleGenerationTask
     public void onSchedulesGenerated(List<Schedule> results) {
         loading = false;
         schedulesIndices = Schedule.getSchedulesIds(results);
+        refreshView();
+    }
+
+    @Override
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
         refreshView();
     }
 }

@@ -1,58 +1,25 @@
 package com.markwiggans.vtscheduler.fragments;
 
 import android.app.Fragment;
-import android.content.ClipboardManager;
 import android.content.Context;
-import android.database.CursorJoiner;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.markwiggans.vtscheduler.NetworkTask;
 import com.markwiggans.vtscheduler.R;
-import com.markwiggans.vtscheduler.adapters.CourseAdapter;
-import com.markwiggans.vtscheduler.data.CRN;
-import com.markwiggans.vtscheduler.data.Course;
-import com.markwiggans.vtscheduler.data.Schedule;
-import com.markwiggans.vtscheduler.database.CourseReaderContract;
-import com.markwiggans.vtscheduler.database.DataSource;
-import com.markwiggans.vtscheduler.database.DatabaseTask;
-import com.markwiggans.vtscheduler.database.Query;
-import com.markwiggans.vtscheduler.database.QueryResult;
-import com.markwiggans.vtscheduler.interfaces.GetCompleted;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
-import static android.content.ClipDescription.MIMETYPE_TEXT_PLAIN;
-import static android.content.Context.CLIPBOARD_SERVICE;
-
 
 /**
  * Fragment for Quering courses
  */
-public class ViewSavedSchedule extends Fragment implements View.OnClickListener, GetCompleted, Schedule.ScheduleReceiver {
+public class ViewSavedSchedule extends Fragment implements View.OnClickListener {
     public static final String SAVED_SCHEDULES_FRAGMENT = "VIEW_SAVED";
     private MainActivityInteraction mListener;
     private Button submit;
     private EditText crn;
-    private TextView getResults;
     private View view;
 
     public ViewSavedSchedule() {
@@ -79,16 +46,6 @@ public class ViewSavedSchedule extends Fragment implements View.OnClickListener,
         view = inflater.inflate(R.layout.fragment_view_saved_schedule, container, false);
         crn = (EditText) view.findViewById(R.id.id_input);
 
-        crn.isLongClickable();
-        // automatically add uuid to editext
-        /*ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(CLIPBOARD_SERVICE);
-        String label = clipboard.getPrimaryClip().getDescription().getLabel().toString();
-        if(label.equals("Schedule_UUID")){
-            crn.setText(clipboard.getPrimaryClip().toString());
-        }*/
-
-
-        getResults = (TextView)view.findViewById(R.id.getResults);
         submit = (Button) view.findViewById(R.id.submit);
         submit.setOnClickListener(this);
         return view;
@@ -122,21 +79,5 @@ public class ViewSavedSchedule extends Fragment implements View.OnClickListener,
         if(v.equals(submit)) {
             mListener.loadSchedule(crn.getText().toString());
         }
-    }
-
-    @Override
-    public void onGetComplete(JSONObject result){
-        Toast.makeText(getActivity(), "Schedule Data retrieved", Toast.LENGTH_SHORT).show();
-        try{
-            getResults.setText(result.toString(4));
-        }catch(Exception e){
-            getResults.setText(result.toString());
-            Log.d("Scheduler", e.toString());
-        }
-    }
-
-    @Override
-    public void receiveSchedule(Schedule schedule) {
-        //ToDo: Display schedule in the getResults TextView
     }
 }

@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.markwiggans.vtscheduler.R;
 import com.markwiggans.vtscheduler.data.CRN;
 import com.markwiggans.vtscheduler.data.Course;
 import com.markwiggans.vtscheduler.data.Schedule;
@@ -34,8 +35,6 @@ public class ScheduleGenerationTask extends AsyncTask<Course, Void, List<Schedul
         this.receiver = receiver;
     }
 
-
-    //TODO: Fix issue where params is empty and not actually containing courses entered by user
     @Override
     protected List<Schedule> doInBackground(Course... params) {
         List<Schedule> schedules = new ArrayList<>();
@@ -47,10 +46,12 @@ public class ScheduleGenerationTask extends AsyncTask<Course, Void, List<Schedul
     @Override
     protected void onPostExecute(List<Schedule> result) {
         receiver.onSchedulesGenerated(result);
+        receiver.setErrorMessage(context.getString(R.string.unable_to_generate_schedules));
         Toast.makeText(context, "Finished generation of schedules!", Toast.LENGTH_SHORT).show();
     }
 
     public interface ScheduleGeneratorTaskReceiver {
         void onSchedulesGenerated(List<Schedule> results);
+        void setErrorMessage(String message);
     }
 }

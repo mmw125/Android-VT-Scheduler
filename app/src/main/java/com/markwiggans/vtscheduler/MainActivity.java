@@ -221,6 +221,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 Toast.makeText(MainActivity.this, "Schedule Data retrieved", Toast.LENGTH_SHORT).show();
                 if(result == null) {
                     panelUpFragment.onSchedulesGenerated(null);
+                    panelUpFragment.setErrorMessage(getString(R.string.offline_error));
                 } else {
                     try{
                         JSONArray JSONCrnsArray = result.getJSONArray("crns");
@@ -237,7 +238,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                             }
                         }, result.getString("semester"), crnsArray);
                     } catch(JSONException e) {
-                        e.printStackTrace();
+                        panelUpFragment.onSchedulesGenerated(null);
+                        panelUpFragment.setErrorMessage(getString(R.string.no_such_schedule_errror));
                     }
                 }
             }
