@@ -85,4 +85,12 @@ public class MeetingTime implements Comparable<MeetingTime>{
             return 0;
         }
     }
+
+    public String getStartTimeString() {
+        return this.startTimeString;
+    }
+
+    public String getEndTimeString() {
+        return this.endTimeString;
+    }
 }

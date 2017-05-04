@@ -37,4 +37,6 @@
 
     <string name="score_display">Score %d</string>
     <string name="close">Close</string>
+    <string name="saving">Saving&#8230;</string>
+    <string name="saving_reminder">Long Press to Save</string>
 </resources>

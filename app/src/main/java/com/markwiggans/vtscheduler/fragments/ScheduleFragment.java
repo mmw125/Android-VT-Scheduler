@@ -102,7 +102,7 @@ public class ScheduleFragment extends Fragment implements ScheduleGenerationTask
             }
             ScheduleAdapter adapter = new ScheduleAdapter(context, R.id.list, schedules);
             scheduleList.setAdapter(adapter);
-            scheduleList.setOnItemClickListener(adapter);
+            scheduleList.setOnItemLongClickListener(adapter);
             mListener.setPanelUpToolbar(getString(R.string.generated_schedules_label), false);
         } else {
             mListener.setPanelUpToolbar(getString(R.string.loading), true);

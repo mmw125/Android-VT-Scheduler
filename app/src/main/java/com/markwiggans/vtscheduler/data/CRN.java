@@ -71,7 +71,21 @@ public class CRN {
         return this.semester;
     }
 
-    ArrayList<MeetingTime> getMeetingTimes(){
+    public String getMeetingTimesString() {
+        StringBuilder builder = new StringBuilder();
+        for(MeetingTime mt : getMeetingTimes()) {
+            builder.append("\t");
+            builder.append(mt.getDay());
+            builder.append(" ");
+            builder.append(mt.getStartTimeString());
+            builder.append(" ");
+            builder.append(mt.getEndTimeString());
+            builder.append("\n");
+        }
+        return builder.toString();
+    }
+
+    public ArrayList<MeetingTime> getMeetingTimes(){
         return meetingTimes;
     }
 

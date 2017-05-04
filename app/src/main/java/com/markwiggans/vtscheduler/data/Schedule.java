@@ -122,12 +122,13 @@ public class Schedule implements Comparable<Schedule>{
             if(meetingTimes.get(i).getDay().equals(start.getDay())) {
                 end = meetingTimes.get(i);
             } else {
-                score += end.getEndTime() - start.getStartTime();
+                score += end.getEndTime() - start.getStartTime() + 100;
                 start = meetingTimes.get(i);
                 end = meetingTimes.get(i);
             }
         }
         score += end.getEndTime() - start.getStartTime();
+        score /= 10;
         return score;
     }
 
@@ -136,13 +137,15 @@ public class Schedule implements Comparable<Schedule>{
         for(CRN crn : getCrns()) {
             for(MeetingTime m : crn.getMeetingTimes()) {
                 Calendar startTime = Calendar.getInstance();
-                startTime.set(Calendar.HOUR_OF_DAY, 3);
-                startTime.set(Calendar.MINUTE, 0);
+                int startTimeInt = MeetingTime.timeToInt(m.getStartTimeString());
+                startTime.set(Calendar.HOUR_OF_DAY, startTimeInt / 60);
+                startTime.set(Calendar.MINUTE, startTimeInt % 60);
                 startTime.set(Calendar.MONTH, month-1);
                 startTime.set(Calendar.YEAR, year);
                 Calendar endTime = (Calendar) startTime.clone();
-                endTime.add(Calendar.HOUR, 1);
-                endTime.set(Calendar.MONTH, month - 1);
+                int endTimeInt = MeetingTime.timeToInt(m.getEndTimeString());
+                endTime.add(Calendar.HOUR, endTimeInt / 60);
+                endTime.set(Calendar.MINUTE, endTimeInt % 60);
                 WeekViewEvent event = new WeekViewEvent(1, crn.getCourse().getWholeName(), startTime, endTime);
                 event.setColor(context.getColor(R.color.event_color_01));
                 events.add(event);
