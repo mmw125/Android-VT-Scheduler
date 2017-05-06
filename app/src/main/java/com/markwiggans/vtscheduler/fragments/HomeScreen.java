@@ -1,20 +1,9 @@
 package com.markwiggans.vtscheduler.fragments;
 
-import android.app.Fragment;
 import android.content.Context;
-import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.CardView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
-import com.markwiggans.vtscheduler.R;
+import com.markwiggans.vtscheduler.data.DataSource;
 import com.markwiggans.vtscheduler.data.Schedule;
-import com.markwiggans.vtscheduler.database.DataSource;
-import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
-import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;
 
 import java.util.List;
 
@@ -40,7 +29,7 @@ public class HomeScreen extends ScheduleFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        DataSource.getInstance(context).getSavedSchedules(getContext(), new DataSource.ScheduleReceiver() {
+        DataSource.getSavedSchedules(getContext(), new DataSource.ScheduleReceiver() {
             @Override
             public void receiveSchedules(List<Schedule> schdules) {
                 HomeScreen.this.onSchedulesGenerated(schdules);

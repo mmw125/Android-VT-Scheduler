@@ -7,7 +7,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.markwiggans.vtscheduler.data.CRN;
 import com.markwiggans.vtscheduler.data.Schedule;
@@ -22,21 +21,20 @@ import java.io.OutputStream;
  * Wrapper for the SQLiteDatabase object
  * http://www.vogella.com/tutorials/AndroidSQLite/article.html#sqlite-and-android
  */
-public class DatabaseReader extends SQLiteOpenHelper {
+class DatabaseReader extends SQLiteOpenHelper {
     private String DB_PATH = null;
     private static String DB_NAME = "externalDB.sqlite3";
     private SQLiteDatabase myDataBase;
     private final Context myContext;
 
-    public DatabaseReader(Context context){
+    DatabaseReader(Context context){
         super(context, DB_NAME, null, 10);
         this.myContext = context;
         this.DB_PATH = "/data/data/" + context.getPackageName() + "/databases/";
     }
 
-    public void createDataBase() throws IOException {
-        boolean dbExist = checkDataBase();
-        if (!dbExist) {
+    void createDataBase() {
+        if (!checkDataBase()) {
             this.getReadableDatabase();
             try {
                 copyDataBase();
@@ -52,7 +50,7 @@ public class DatabaseReader extends SQLiteOpenHelper {
             String myPath = DB_PATH + DB_NAME;
             checkDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READWRITE);
         }catch (SQLiteException e) {
-
+            // Don't need to do anything here. We are expecting checkDB to fail the first time
         }
         if (checkDB != null) {
             checkDB.close();
@@ -74,9 +72,11 @@ public class DatabaseReader extends SQLiteOpenHelper {
         myInput.close();
     }
 
-    public void openDataBase() throws SQLException {
+    void openDataBase() throws SQLException {
         String myPath = DB_PATH + DB_NAME;
-        myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READWRITE);
+        if(myDataBase == null || !myDataBase.isOpen()) {
+            myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+        }
     }
 
     public synchronized void close() {
@@ -103,7 +103,7 @@ public class DatabaseReader extends SQLiteOpenHelper {
         }
     }
 
-    public Cursor query(Query query) {
+    Cursor query(Query query) {
         return myDataBase.query(query.getTable(), query.getColumns(), query.getSelection(),
                 query.getSelectionArgs(), query.getGroupBy(), query.getHaving(),
                 query.getOrderBy(), query.getLimit());
@@ -131,16 +131,14 @@ public class DatabaseReader extends SQLiteOpenHelper {
     public void insert(Schedule schedule, String uuid) {
         ContentValues values = new ContentValues();
         values.put(CourseReaderContract.ScheduleEntry.COLUMN_NAME_SCHEDULE_UUID, uuid);
-        int id = (int) (Math.random() * 10000);
-        values.put(CourseReaderContract.ScheduleEntry.COLUMN_NAME_ID, id);
-        values.put(CourseReaderContract.ScheduleEntry.COLUMN_NAME_NAME, " ");
+        values.put(CourseReaderContract.ScheduleEntry.COLUMN_NAME_NAME, "");
         myDataBase.insert(CourseReaderContract.ScheduleEntry.TABLE_NAME,
-                CourseReaderContract.ScheduleEntry.COLUMN_NAME_NAME + ", " + CourseReaderContract.ScheduleEntry.COLUMN_NAME_SCHEDULE_UUID + ", " + CourseReaderContract.ScheduleEntry.COLUMN_NAME_ID, values);
+                CourseReaderContract.ScheduleEntry.COLUMN_NAME_NAME + ", " + CourseReaderContract.ScheduleEntry.COLUMN_NAME_SCHEDULE_UUID, values);
         for(CRN crn : schedule.getCrns()) {
             values = new ContentValues();
             values.put(CourseReaderContract.ScheduleItemEntry.COLUMN_NAME_CRN_CRN, crn.getCRN());
             values.put(CourseReaderContract.ScheduleItemEntry.COLUMN_NAME_CRN_SEMESTER, crn.getSemester());
-            values.put(CourseReaderContract.ScheduleItemEntry.COLUMN_NAME_SCHEDULE_ID, id);
+            values.put(CourseReaderContract.ScheduleItemEntry.COLUMN_NAME_SCHEDULE_ID, uuid);
             myDataBase.insert(CourseReaderContract.ScheduleItemEntry.TABLE_NAME,
                     CourseReaderContract.ScheduleItemEntry.COLUMN_NAME_CRN_CRN + ", " + CourseReaderContract.ScheduleItemEntry.COLUMN_NAME_CRN_SEMESTER + ", " + CourseReaderContract.ScheduleItemEntry.COLUMN_NAME_SCHEDULE_ID, values);
         }

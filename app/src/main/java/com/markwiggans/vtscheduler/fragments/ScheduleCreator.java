@@ -18,7 +18,7 @@ import com.markwiggans.vtscheduler.R;
 import com.markwiggans.vtscheduler.adapters.CourseAdapter;
 import com.markwiggans.vtscheduler.data.Course;
 import com.markwiggans.vtscheduler.data.Semester;
-import com.markwiggans.vtscheduler.database.DataSource;
+import com.markwiggans.vtscheduler.data.DataSource;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
 import com.markwiggans.vtscheduler.views.CourseCompletionView;
 
@@ -66,10 +66,10 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener, A
         semesterSelector.setAdapter(new ArrayAdapter<>(context,
                 android.R.layout.simple_spinner_dropdown_item, new ArrayList<Semester>()));
         courseInput = (CourseCompletionView) view.findViewById(R.id.id_input);
-        DataSource.getInstance(context).getSemesters(context, new DataSource.SemesterReceiver() {
+        DataSource.getSemesters(context, new DataSource.SemesterReceiver() {
             @Override
             public void receiveSemesters(List<Semester> semesters) {
-                ArrayAdapter<Semester> semesterAdapter = (ArrayAdapter) semesterSelector.getAdapter();
+                ArrayAdapter<Semester> semesterAdapter = (ArrayAdapter<Semester>) semesterSelector.getAdapter();
                 semesterAdapter.addAll(semesters);
                 semesterAdapter.notifyDataSetChanged();
                 updateCourseAutocomplete((Semester) semesterSelector.getSelectedItem());
@@ -108,8 +108,10 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener, A
     public void onClick(View v) {
         if(v.equals(submit)) {
             InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
-            mListener.generateSchedules(new ArrayList<>(courseInput.getObjects()));
+            if(getView() != null) {
+                imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+                mListener.generateSchedules(new ArrayList<>(courseInput.getObjects()));
+            }
         }
     }
 
@@ -140,7 +142,7 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener, A
     public void updateCourseAutocomplete(Semester selectedSemester) {
         removeAllCourses();
         courseInput.setEnabled(false);
-        DataSource.getInstance(context).getCourses(context, new DataSource.CoursesReceiver() {
+        DataSource.getCourses(context, new DataSource.CoursesReceiver() {
             @Override
             public void receiveCourses(List<Course> courses) {
                 CourseAdapter adapter = (CourseAdapter) courseInput.getAdapter();

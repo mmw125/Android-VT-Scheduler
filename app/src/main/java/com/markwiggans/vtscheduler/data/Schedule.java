@@ -9,7 +9,6 @@ import android.util.Log;
 import com.alamkanak.weekview.WeekViewEvent;
 import com.markwiggans.vtscheduler.MainActivity;
 import com.markwiggans.vtscheduler.R;
-import com.markwiggans.vtscheduler.database.DataSource;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,14 +47,12 @@ public class Schedule implements Comparable<Schedule>{
             } while (scheduleItems.moveToNext());
         }
 
-        DataSource source = DataSource.getInstance(context);
-
         if (schedules.moveToFirst()) {
             do {
                 Schedule schedule = new Schedule(schedules);
                 outList.add(schedule);
                 for(ScheduleItem item : map.get(schedule.id)) {
-                    schedule.crns.add(source.getCRN(item.crn, item.crnSemester));
+                    schedule.crns.add(DataSource.getCRN(context, item.crn, item.crnSemester));
                 }
             } while (scheduleItems.moveToNext());
         }
@@ -66,7 +63,7 @@ public class Schedule implements Comparable<Schedule>{
         new AsyncTask<Object, Object, List<CRN>>(){
             @Override
             protected List<CRN> doInBackground(Object... params) {
-                return DataSource.getInstance(context).getCRNs(semester, crns);
+                return DataSource.getCRNs(context, semester, crns);
             }
 
             @Override
@@ -163,6 +160,9 @@ public class Schedule implements Comparable<Schedule>{
         ArrayList<MeetingTime> meetingTimes = new ArrayList<>();
         for(CRN crn : getCrns()) {
             meetingTimes.addAll(crn.getMeetingTimes(context));
+        }
+        if(meetingTimes.size() == 0) {
+            return 0;
         }
         Collections.sort(meetingTimes);
         MeetingTime start = meetingTimes.get(0);

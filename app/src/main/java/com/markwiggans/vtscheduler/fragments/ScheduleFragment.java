@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.markwiggans.vtscheduler.R;
 import com.markwiggans.vtscheduler.adapters.ScheduleAdapter;
 import com.markwiggans.vtscheduler.data.Schedule;
-import com.markwiggans.vtscheduler.database.ScheduleGenerationTask;
+import com.markwiggans.vtscheduler.data.ScheduleGenerationTask;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
 
 import java.util.ArrayList;
@@ -145,6 +145,5 @@ public class ScheduleFragment extends Fragment implements ScheduleGenerationTask
     @Override
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
-        refreshView();
     }
 }

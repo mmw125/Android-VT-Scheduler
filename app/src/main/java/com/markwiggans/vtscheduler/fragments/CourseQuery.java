@@ -18,8 +18,8 @@ import com.markwiggans.vtscheduler.R;
 import com.markwiggans.vtscheduler.adapters.CourseAdapter;
 import com.markwiggans.vtscheduler.data.Course;
 import com.markwiggans.vtscheduler.database.CourseReaderContract;
-import com.markwiggans.vtscheduler.database.DataSource;
-import com.markwiggans.vtscheduler.database.DatabaseTask;
+import com.markwiggans.vtscheduler.data.DataSource;
+import com.markwiggans.vtscheduler.database.DatabaseWrapper;
 import com.markwiggans.vtscheduler.database.Query;
 import com.markwiggans.vtscheduler.database.QueryResult;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * Fragment for Quering courses
  */
-public class CourseQuery extends Fragment implements View.OnClickListener, DatabaseTask.DatabaseTaskReceiver, DataSource.DepartmentReceiver {
+public class CourseQuery extends Fragment implements View.OnClickListener, DatabaseWrapper.DatabaseTaskReceiver, DataSource.DepartmentReceiver {
     public static final String COURSE_QUERY_FRAGMENT = "QUERY_FRAGMENT";
     private MainActivityInteraction mListener;
     private Button submit;
@@ -66,7 +66,7 @@ public class CourseQuery extends Fragment implements View.OnClickListener, Datab
         view = inflater.inflate(R.layout.fragment_course_query, container, false);
         crn = (EditText) view.findViewById(R.id.id_input);
         department = (AutoCompleteTextView) view.findViewById(R.id.department);
-        DataSource.getInstance(context).getDepartments(context, this);
+        DataSource.getDepartments(context, this);
         submit = (Button) view.findViewById(R.id.submit);
         submit.setOnClickListener(this);
         layout = (LinearLayout) view.findViewById(R.id.linear_layout);
@@ -108,7 +108,7 @@ public class CourseQuery extends Fragment implements View.OnClickListener, Datab
             String selectString = CourseReaderContract.CourseEntry.COLUMN_NAME_COURSE_NUMBER + " LIKE '%" + crn.getText().toString() + "%'" +
                     " AND " + CourseReaderContract.CourseEntry.COLUMN_NAME_DEPARTMENT_ID + " LIKE '%" + department.getText().toString() + "%'";
             Query q = new Query(CourseReaderContract.CourseEntry.TABLE_NAME, selectString, null);
-            new DatabaseTask(this, context).execute(q);
+            DatabaseWrapper.getInstance(getContext()).query(this, q);
         }
     }
 

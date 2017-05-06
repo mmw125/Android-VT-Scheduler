@@ -3,9 +3,6 @@ package com.markwiggans.vtscheduler.data;
 import android.content.Context;
 import android.database.Cursor;
 
-import com.markwiggans.vtscheduler.database.DataSource;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +42,7 @@ public class Course {
     }
 
     List<CRN> getCRNs(Context context) {
-        return DataSource.getInstance(context).getCRNs(this);
+        return DataSource.getCRNs(context, this);
     }
 
     public String getName() {

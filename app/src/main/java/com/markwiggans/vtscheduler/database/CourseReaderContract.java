@@ -53,7 +53,6 @@ public class CourseReaderContract {
 
     public static class ScheduleEntry implements BaseColumns {
         public static final String TABLE_NAME = "schedule";
-        public static final String COLUMN_NAME_ID = "id";
         public static final String COLUMN_NAME_NAME = "name";
         public static final String COLUMN_NAME_SCHEDULE_UUID = "schedule_uuid";
     }
@@ -63,6 +62,6 @@ public class CourseReaderContract {
         public static final String COLUMN_NAME_ID = "id";
         public static final String COLUMN_NAME_CRN_CRN = "crn_crn";
         public static final String COLUMN_NAME_CRN_SEMESTER = "crn_semester";
-        public static final String COLUMN_NAME_SCHEDULE_ID = "schedule_id";
+        public static final String COLUMN_NAME_SCHEDULE_ID = "schedule_uuid";
     }
 }
