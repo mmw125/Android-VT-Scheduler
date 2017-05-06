@@ -123,6 +123,9 @@ public class Schedule implements Comparable<Schedule>{
         for(CRN crn : getCrns()) {
             meetingTimes.addAll(crn.getMeetingTimes(context));
         }
+        if(meetingTimes.size() == 0) {
+            return 0;
+        }
         Collections.sort(meetingTimes);
         MeetingTime start = meetingTimes.get(0);
         MeetingTime end = meetingTimes.get(0);
