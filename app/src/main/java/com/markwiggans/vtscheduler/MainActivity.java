@@ -23,7 +23,7 @@ import android.widget.Toolbar;
 
 import com.markwiggans.vtscheduler.data.Course;
 import com.markwiggans.vtscheduler.data.Schedule;
-import com.markwiggans.vtscheduler.database.ScheduleGenerationTask;
+import com.markwiggans.vtscheduler.data.ScheduleGenerationTask;
 import com.markwiggans.vtscheduler.fragments.CourseQuery;
 import com.markwiggans.vtscheduler.fragments.HomeScreen;
 import com.markwiggans.vtscheduler.fragments.ScheduleCreator;
@@ -104,8 +104,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         toolbar.setNavigationIcon(R.drawable.ic_drawer);
         setActionBar(toolbar);
         // enable ActionBar app icon to behave as action to toggle nav drawer
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
+        if(getActionBar() != null) {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setHomeButtonEnabled(true);
+        }
+
 
         // ActionBarDrawerToggle ties together the the proper interactions
         // between the sliding drawer and the action bar app icon
@@ -148,24 +151,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        switch (item.getItemId()) {
-            case R.id.action_websearch:
-                // create intent to perform web search for this planet
-                Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
-                intent.putExtra(SearchManager.QUERY, getActionBar().getTitle());
-                // catch event that there's no activity to handle intent
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(this, R.string.app_not_available, Toast.LENGTH_LONG).show();
-                }
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+        return mDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
 
     private Fragment courseQuery, scheduleCreator, homeScreen, scheduleViewer;

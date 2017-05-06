@@ -1,17 +1,11 @@
-package com.markwiggans.vtscheduler.database;
+package com.markwiggans.vtscheduler.data;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.markwiggans.vtscheduler.R;
-import com.markwiggans.vtscheduler.data.CRN;
-import com.markwiggans.vtscheduler.data.Course;
-import com.markwiggans.vtscheduler.data.Schedule;
-import com.markwiggans.vtscheduler.data.ScheduleGenerator;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

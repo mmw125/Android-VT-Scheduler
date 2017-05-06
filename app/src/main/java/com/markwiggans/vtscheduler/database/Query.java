@@ -1,26 +1,32 @@
 package com.markwiggans.vtscheduler.database;
 
-/**
- * Created by Mark Wiggans on 3/27/2017.
- */
+import android.database.Cursor;
 
+/**
+ * Created by Mark Wiggans on 3/27/2017
+ * Represents a query
+ */
 public class Query {
     private String table, selection, groupBy, having, orderBy, limit;
     private String[] columns, selectionArgs;
 
     public Query(String table) {
-        this(table, null);
+        this(table, null, null);
     }
 
     public Query(String table, String selection, String[] selectionArgs) {
         this(table, null, selection, selectionArgs, null, null, null, null);
     }
 
+    public Query(String table, String selection) {
+        this(table, null, selection, null, null, null, null, null);
+    }
+
     public Query(String table, String[] columns) {
         this(table, columns, null, null, null, null, null, null);
     }
 
-    public Query(String table, String[] columns, String selection, String[] selectionArgs,
+    private Query(String table, String[] columns, String selection, String[] selectionArgs,
                  String groupBy, String having, String orderBy, String limit) {
         this.table = table;
         this.columns = columns;
@@ -32,35 +38,35 @@ public class Query {
         this.limit = limit;
     }
 
-    public String getTable() {
+    String getTable() {
         return table;
     }
 
-    public String getSelection() {
+    String getSelection() {
         return selection;
     }
 
-    public String getGroupBy() {
+    String getGroupBy() {
         return groupBy;
     }
 
-    public String getHaving() {
+    String getHaving() {
         return having;
     }
 
-    public String getOrderBy() {
+    String getOrderBy() {
         return orderBy;
     }
 
-    public String getLimit() {
+    String getLimit() {
         return limit;
     }
 
-    public String[] getColumns() {
+    String[] getColumns() {
         return columns;
     }
 
-    public String[] getSelectionArgs() {
+    String[] getSelectionArgs() {
         return selectionArgs;
     }
 }

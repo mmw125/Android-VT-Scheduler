@@ -6,7 +6,6 @@ import android.util.Log;
 
 import com.markwiggans.vtscheduler.MainActivity;
 import com.markwiggans.vtscheduler.database.CourseReaderContract;
-import com.markwiggans.vtscheduler.database.DataSource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,13 +15,12 @@ import java.util.List;
  * Represents a CRN of a class
  */
 public class CRN {
-    public static List<CRN> createCRNs(Cursor c) {
+    static List<CRN> createCRNs(Cursor c) {
         ArrayList<CRN> courses = new ArrayList<>();
         if (c.moveToFirst()) {
             do {
                 CRN crn = new CRN(c);
                 courses.add(crn);
-                Log.d(MainActivity.LOG_STRING, crn.toString());
             } while (c.moveToNext());
         }
         return courses;
@@ -38,7 +36,7 @@ public class CRN {
         this(null, c);
     }
 
-    public CRN(Course course, Cursor c) {
+    CRN(Course course, Cursor c) {
         crn = c.getInt(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_NAME_CRN));
         instructor = c.getString(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_NAME_INSTRUCTOR));
         location = c.getString(c.getColumnIndex(CourseReaderContract.CRNEntry.COLUMN_NAME_LOCATION));
@@ -57,11 +55,11 @@ public class CRN {
         return crn;
     }
 
-    public String getType() {
+    String getType() {
         return type;
     }
 
-    public String getCourseWholeName() {
+    String getCourseWholeName() {
         return courseWholeName;
     }
 
@@ -69,6 +67,7 @@ public class CRN {
         return instructor;
     }
 
+    @Override
     public String toString() {
         return "" + crn;
     }
@@ -95,24 +94,24 @@ public class CRN {
         return builder.toString();
     }
 
-    public ArrayList<MeetingTime> getMeetingTimes(Context context) {
+    ArrayList<MeetingTime> getMeetingTimes(Context context) {
         if(context != null && getMeetingTimes() == null) {
             updateMeetingTimes(context);
         }
         return getMeetingTimes();
     }
 
-    public ArrayList<MeetingTime> getMeetingTimes(){
+    ArrayList<MeetingTime> getMeetingTimes(){
         return meetingTimes;
     }
 
     void updateMeetingTimes(Context c){
-        meetingTimes = DataSource.getInstance(c).getMeetingTimes(this);
+        meetingTimes = DataSource.getMeetingTimes(c, this);
     }
 
     public Course getCourse(Context context) {
         if(getCourse() == null && context != null) {
-            course = DataSource.getInstance(context).getCorrespondingCourse(this);
+            course = DataSource.getCorrespondingCourse(context, this);
         }
         return getCourse();
     }
@@ -121,7 +120,7 @@ public class CRN {
         return course;
     }
 
-    public boolean isCRNOf(Course c) {
+    boolean isCRNOf(Course c) {
         return c != null && c.getSemester() != null && c.getSemester().equals(semester) &&
                 c.getWholeName() != null && c.getWholeName().equals(courseWholeName) &&
                 c.getType() != null && c.getType().equals(type);

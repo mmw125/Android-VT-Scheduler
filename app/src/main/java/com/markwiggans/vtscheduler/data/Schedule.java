@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 
 import com.alamkanak.weekview.WeekViewEvent;
 import com.markwiggans.vtscheduler.R;
-import com.markwiggans.vtscheduler.database.DataSource;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,7 +33,7 @@ public class Schedule implements Comparable<Schedule>{
         new AsyncTask<Object, Object, List<CRN>>(){
             @Override
             protected List<CRN> doInBackground(Object... params) {
-                return DataSource.getInstance(context).getCRNs(semester, crns);
+                return DataSource.getCRNs(context, semester, crns);
             }
 
             @Override

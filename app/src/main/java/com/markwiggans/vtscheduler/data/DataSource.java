@@ -1,14 +1,13 @@
-package com.markwiggans.vtscheduler.database;
+package com.markwiggans.vtscheduler.data;
 
 import android.content.Context;
 import android.database.Cursor;
 
-import com.markwiggans.vtscheduler.data.CRN;
-import com.markwiggans.vtscheduler.data.Course;
-import com.markwiggans.vtscheduler.data.MeetingTime;
-import com.markwiggans.vtscheduler.data.Semester;
+import com.markwiggans.vtscheduler.database.CourseReaderContract;
+import com.markwiggans.vtscheduler.database.DatabaseWrapper;
+import com.markwiggans.vtscheduler.database.Query;
+import com.markwiggans.vtscheduler.database.QueryResult;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,47 +16,27 @@ import java.util.List;
  * Wrapper for the DatabaseReader class
  */
 public class DataSource {
-    private static DataSource instance;
-
-    /**
-     * Gets the data source instance
-     *
-     * @return the data source instance
-     */
-    public static DataSource getInstance(Context context) {
-        if (instance == null) {
-            instance = new DataSource(context);
-        }
-        return instance;
-    }
-
-    private DatabaseReader reader;
-
-    private DataSource(Context context) {
-        reader = new DatabaseReader(context);
-    }
-
     public interface CoursesReceiver {
         void receiveCourses(List<Course> courses);
     }
 
-    private List<Course> courses;
-
-    public Course getCorrespondingCourse(final CRN crn) {
+    public static Course getCorrespondingCourse(Context context, CRN crn) {
         String whereStr = CourseReaderContract.CourseEntry.COLUMN_NAME_WHOLE_NAME + " = '" + crn.getCourseWholeName()
                 + "' and " + CourseReaderContract.CourseEntry.COLUMN_NAME_TYPE + " = '" + crn.getType()
                 + "' and " + CourseReaderContract.CourseEntry.COLUMN_NAME_SEMESTER_ID + " = '" + crn.getSemester();
         Query q = new Query(CourseReaderContract.CourseEntry.TABLE_NAME, whereStr, null);
-        List<Course> courses = Course.createCourses(query(q).getCursor());
+        Cursor c = DatabaseWrapper.getInstance(context).query(q).getCursor();
+        List<Course> courses = Course.createCourses(c);
+        c.close();
         return courses.size() > 0 ? courses.get(0) : null;
     }
 
-    public void getCourse(Context context, final CoursesReceiver receiver, final CRN crn) {
+    public static void getCourse(Context context, final CoursesReceiver receiver, final CRN crn) {
         getCourses(context, new CoursesReceiver() {
             @Override
             public void receiveCourses(List<Course> courses) {
-                for(Course c : courses) {
-                    if(crn.isCRNOf(c)) {
+                for (Course c : courses) {
+                    if (crn.isCRNOf(c)) {
                         ArrayList<Course> course = new ArrayList<>();
                         course.add(c);
                         receiver.receiveCourses(course);
@@ -68,20 +47,22 @@ public class DataSource {
         }, new Semester(crn.getSemester()));
     }
 
+    private static List<Course> courses;
     /**
      * Queries the database for all of the courses. This is a cached operation
      */
-    private void getCourses(Context context, final CoursesReceiver receiver) {
+    private static void getCourses(Context context, final CoursesReceiver receiver) {
         getCourses(context, receiver, null);
     }
 
     /**
-     * Gets
-     * @param context the main screen
+     * Gets the courses
+     *
+     * @param context  the main screen
      * @param receiver what to call when the task is done
      * @param semester filters
      */
-    public void getCourses(final Context context, final CoursesReceiver receiver, final Semester semester) {
+    public static void getCourses(final Context context, final CoursesReceiver receiver, final Semester semester) {
         if (courses != null) {
             if (semester == null) {
                 receiver.receiveCourses(courses);
@@ -97,7 +78,7 @@ public class DataSource {
                 return;
             }
         }
-        new DatabaseTask(new DatabaseTask.DatabaseTaskReceiver() {
+        DatabaseWrapper.getInstance(context).query(new DatabaseWrapper.DatabaseTaskReceiver() {
             @Override
             public void onDatabaseTask(List<QueryResult> results) {
                 courses = new ArrayList<>();
@@ -113,7 +94,7 @@ public class DataSource {
                     receiver.receiveCourses(courses);
                 }
             }
-        }, context).execute(new Query(CourseReaderContract.CourseEntry.TABLE_NAME));
+        }, new Query(CourseReaderContract.CourseEntry.TABLE_NAME));
 
     }
 
@@ -121,7 +102,7 @@ public class DataSource {
         void receiveDepartments(List<String> departments);
     }
 
-    private List<String> departments;
+    private static List<String> departments;
 
     /**
      * Gets the names of all of the departments on a separate thread
@@ -130,7 +111,7 @@ public class DataSource {
      * @param context  the context
      * @param receiver the receiver for the data
      */
-    public void getDepartments(Context context, final DepartmentReceiver receiver) {
+    public static void getDepartments(Context context, final DepartmentReceiver receiver) {
         if (departments != null) {
             receiver.receiveDepartments(departments);
             return;
@@ -138,7 +119,7 @@ public class DataSource {
         departments = new ArrayList<>();
         Query query = new Query(CourseReaderContract.CourseEntry.TABLE_NAME, new String[]{"DISTINCT " + CourseReaderContract.CourseEntry.COLUMN_NAME_DEPARTMENT_ID});
 
-        new DatabaseTask(new DatabaseTask.DatabaseTaskReceiver() {
+        DatabaseWrapper.getInstance(context).query(new DatabaseWrapper.DatabaseTaskReceiver() {
             @Override
             public void onDatabaseTask(List<QueryResult> results) {
                 Cursor c = results.get(0).getCursor();
@@ -149,7 +130,7 @@ public class DataSource {
                 }
                 receiver.receiveDepartments(departments);
             }
-        }, context).execute(query);
+        }, query);
     }
 
     /**
@@ -158,52 +139,55 @@ public class DataSource {
      * @param course the course to get the meeting times for
      * @return the meeting times for the given course
      */
-    public List<CRN> getCRNs(Course course) {
-        reader.openDataBase();
+    public static List<CRN> getCRNs(Context context, Course course) {
         String whereStatement = CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = '" + course.getSemester() + "' AND " +
                 CourseReaderContract.CRNEntry.COLUMN_COURSE_WHOLE_NAME + " = '" + course.getWholeName() + "' AND " +
                 CourseReaderContract.CRNEntry.COLUMN_COURSE_TYPE + " = '" + course.getType() + "'";
-        Cursor c = reader.query(CourseReaderContract.CRNEntry.TABLE_NAME, whereStatement);
+        Cursor c = DatabaseWrapper.getInstance(context).query(new Query(
+                CourseReaderContract.CRNEntry.TABLE_NAME, whereStatement, null)).getCursor();
         List<CRN> crns = new ArrayList<>();
         if (c.moveToFirst()) {
             do {
                 crns.add(new CRN(course, c));
             } while (c.moveToNext());
         }
+        c.close();
         return crns;
     }
 
-    public List<CRN> getCRNs(String semester, int[] crns) {
+    public static List<CRN> getCRNs(Context context, String semester, int[] crns) {
         String whereString = CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = '" + semester + "'";
         for (int i : crns) {
             whereString += crns[0] == i ? " and " : " or ";
             whereString += CourseReaderContract.CRNEntry.COLUMN_NAME_CRN + " = " + i;
         }
         Query q = new Query(CourseReaderContract.CRNEntry.TABLE_NAME, whereString, null);
-        return CRN.createCRNs(query(q).getCursor());
+        Cursor c = DatabaseWrapper.getInstance(context).query(q).getCursor();
+        List<CRN> outList = CRN.createCRNs(c);
+        c.close();
+        return outList;
     }
 
-    public ArrayList<MeetingTime> getMeetingTimes(CRN crn) {
-        reader.openDataBase();
+    public static ArrayList<MeetingTime> getMeetingTimes(Context context, CRN crn) {
         String whereStatement = CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_CRN_SEMESTER + " = '" + crn.getSemester()
                 + "' AND " + CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_CRN_CRN + " = " + crn.getCRN();
-        Cursor c = reader.query(CourseReaderContract.MeetingTimeEntry.TABLE_NAME, whereStatement);
+        Cursor c = DatabaseWrapper.getInstance(context).query(new Query(CourseReaderContract.MeetingTimeEntry.TABLE_NAME, whereStatement)).getCursor();
         ArrayList<MeetingTime> mtl = new ArrayList<>();
         if (c.moveToFirst()) {
             do {
                 mtl.add(new MeetingTime(c));
             } while (c.moveToNext());
         }
+        c.close();
         return mtl;
     }
-
-    private List<String> courseNames;
 
     interface CourseNameReceiver {
         void receiveCourseNames(List<String> courseNames);
     }
 
-    public void getCourseNames(Context context, final CourseNameReceiver receiver) {
+    private static List<String> courseNames;
+    public static void getCourseNames(Context context, final CourseNameReceiver receiver) {
         if (courseNames == null) {
             courseNames = new ArrayList<>();
             getCourses(context, new CoursesReceiver() {
@@ -215,32 +199,21 @@ public class DataSource {
                     receiver.receiveCourseNames(courseNames);
                 }
             });
-
         } else {
             receiver.receiveCourseNames(courseNames);
         }
-    }
-
-    QueryResult query(Query query) {
-        try {
-            reader.createDataBase();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        reader.openDataBase();
-        return new QueryResult(query, reader.query(query));
     }
 
     public interface SemesterReceiver {
         void receiveSemesters(List<Semester> semesters);
     }
 
-    private List<Semester> semesters = null;
-    public void getSemesters(Context context, final SemesterReceiver receiver) {
+    private static List<Semester> semesters = null;
+    public static void getSemesters(Context context, final SemesterReceiver receiver) {
         if (semesters == null) {
             semesters = new ArrayList<>();
             Query query = new Query(CourseReaderContract.CourseEntry.TABLE_NAME, new String[]{"distinct " + CourseReaderContract.CourseEntry.COLUMN_NAME_SEMESTER_ID});
-            new DatabaseTask(new DatabaseTask.DatabaseTaskReceiver() {
+            DatabaseWrapper.getInstance(context).query(new DatabaseWrapper.DatabaseTaskReceiver() {
                 @Override
                 public void onDatabaseTask(List<QueryResult> results) {
                     Cursor c = results.get(0).getCursor();
@@ -251,7 +224,7 @@ public class DataSource {
                     }
                     receiver.receiveSemesters(semesters);
                 }
-            }, context).execute(query);
+            }, query);
         } else {
             receiver.receiveSemesters(semesters);
         }
