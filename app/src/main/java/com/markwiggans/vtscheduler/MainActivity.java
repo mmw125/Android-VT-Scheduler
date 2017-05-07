@@ -3,6 +3,7 @@ package com.markwiggans.vtscheduler;
 import android.app.Fragment;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -99,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         mDrawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, menuOptions));
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        toolbar.setTitleTextColor(getColor(R.color.white));
         toolbar.setNavigationIcon(R.drawable.ic_drawer);
         setActionBar(toolbar);
         // enable ActionBar app icon to behave as action to toggle nav drawer
