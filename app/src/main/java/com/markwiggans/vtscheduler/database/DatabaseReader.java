@@ -131,11 +131,6 @@ class DatabaseReader extends SQLiteOpenHelper {
     }
 
     public void insert(Schedule schedule, String uuid) {
-        Cursor c = query(CourseReaderContract.ScheduleEntry.TABLE_NAME);
-        c.moveToFirst();
-        Log.d(MainActivity.LOG_STRING, "Before add, " + c.getCount() + " schedules");
-        c.close();
-        Log.d(MainActivity.LOG_STRING, "Starting Database insert");
         ContentValues values = new ContentValues();
         values.put(CourseReaderContract.ScheduleEntry.COLUMN_NAME_SCHEDULE_UUID, uuid);
         values.put(CourseReaderContract.ScheduleEntry.COLUMN_NAME_NAME, "");
@@ -158,9 +153,5 @@ class DatabaseReader extends SQLiteOpenHelper {
         }
         myDataBase.setTransactionSuccessful();
         myDataBase.endTransaction();
-        c = query(CourseReaderContract.ScheduleEntry.TABLE_NAME);
-        c.moveToFirst();
-        Log.d(MainActivity.LOG_STRING, "After add, " + c.getCount() + " schedules");
-        c.close();
     }
 }
