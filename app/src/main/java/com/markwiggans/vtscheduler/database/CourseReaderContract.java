@@ -36,6 +36,7 @@ public class CourseReaderContract {
     public static class MeetingTimeEntry implements BaseColumns {
         public static final String TABLE_NAME = "meetingtime";
         public static final String COLUMN_NAME_ID = "id";
+        public static final String COLUMN_NAME_DAY = "day";
         public static final String COLUMN_NAME_START_TIME = "start_time";
         public static final String COLUMN_NAME_START_TIME_STR = "start_time_str";
         public static final String COLUMN_NAME_END_TIME = "end_time";

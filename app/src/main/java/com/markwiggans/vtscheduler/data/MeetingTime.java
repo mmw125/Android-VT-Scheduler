@@ -3,6 +3,8 @@ package com.markwiggans.vtscheduler.data;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import com.markwiggans.vtscheduler.database.CourseReaderContract;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -18,14 +20,14 @@ public class MeetingTime implements Comparable<MeetingTime>{
     private String startTimeString, endTimeString, semester;
 
     public MeetingTime(Cursor c) {
-        id = c.getInt(0);
-        day = Day.stringToDay(c.getString(1));
-        startTimeString = c.getString(3);
-        startTime = timeToInt(startTimeString) + day.toInt();
-        endTimeString = c.getString(5);
-        endTime = timeToInt(endTimeString) + day.toInt();
-        crn = c.getInt(6);
-        semester = c.getString(7);
+//        id = c.getInt(c.getColumnIndex(CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_ID));
+        day = Day.stringToDay(c.getString(c.getColumnIndex(CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_DAY)));
+        startTimeString = c.getString(c.getColumnIndex(CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_START_TIME_STR));
+        startTime = c.getInt(c.getColumnIndex(CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_START_TIME));
+        endTimeString = c.getString(c.getColumnIndex(CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_END_TIME_STR));
+        endTime = c.getInt(c.getColumnIndex(CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_END_TIME));
+//        crn = c.getInt(c.getColumnIndex(CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_CRN_CRN));
+//        semester = c.getString(c.getColumnIndex(CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_CRN_SEMESTER));
     }
 
     public Day getDay() {
@@ -58,13 +60,13 @@ public class MeetingTime implements Comparable<MeetingTime>{
 
         private int toInt() {
             switch(this) {
-                case MONDAY: return 10000;
-                case TUESDAY: return 20000;
-                case WEDNESDAY: return 30000;
-                case THURSDAY: return 40000;
-                case FRIDAY: return 50000;
-                case SATURDAY: return 60000;
-                case SUNDAY: return 70000;
+                case MONDAY: return 0;
+                case TUESDAY: return 1440;
+                case WEDNESDAY: return 2880;
+                case THURSDAY: return 4320;
+                case FRIDAY: return 5760;
+                case SATURDAY: return 7200;
+                case SUNDAY: return 8640;
                 default: return 0;
             }
         }
@@ -73,16 +75,6 @@ public class MeetingTime implements Comparable<MeetingTime>{
     @Override
     public int compareTo(@NonNull MeetingTime o) {
         return this.getStartTime() - o.getStartTime();
-    }
-
-    public static final SimpleDateFormat SHORT_HOUR_TIME = new SimpleDateFormat("hh:mma");
-    public static int timeToInt(String time) {
-        try{
-            Date d = SHORT_HOUR_TIME.parse(time);
-            return (d.getHours() * 60) + d.getMinutes();
-        } catch (ParseException e) {
-            return 0;
-        }
     }
 
     public String getStartTimeString() {
