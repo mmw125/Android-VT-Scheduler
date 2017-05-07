@@ -99,24 +99,41 @@ public class ScheduleFragment extends Fragment implements ScheduleGenerationTask
         scheduleList.setVisibility(schedulesIndices != null ? View.VISIBLE : View.GONE);
         if(schedulesIndices != null) {
             List<Schedule> schedules = Schedule.getSchedulesByIndex(schedulesIndices);
-            Collections.sort(schedules);
             if(schedules.size() > 0) {
+                sortSchedules(schedules);
                 if(schedules.size() > MAX_SCHEDULE_LIMIT) {
                     schedules = schedules.subList(0, MAX_SCHEDULE_LIMIT);
                 }
                 ScheduleAdapter adapter = new ScheduleAdapter(context, R.id.list, schedules);
                 scheduleList.setAdapter(adapter);
                 scheduleList.setOnItemLongClickListener(adapter);
-                mListener.setPanelUpToolbar(getString(R.string.generated_schedules_label), false);
+                updatePanelUpToolbar(getString(R.string.generated_schedules_label), false);
             } else {
                 loadingText.setVisibility(View.VISIBLE);
                 loadingText.setText(errorMessage);
                 scheduleList.setVisibility(View.GONE);
-                mListener.setPanelUpToolbar(getString(R.string.error_label), false);
+                updatePanelUpToolbar(getString(R.string.error_label), false);
             }
         } else {
             mListener.setPanelUpToolbar(getString(R.string.loading), true);
         }
+    }
+
+    /**
+     * Sorts the schedules in the default way
+     * @param schedules a list of the schedules to sort
+     */
+    protected void sortSchedules(List<Schedule> schedules) {
+        Collections.sort(schedules);
+    }
+
+    /**
+     * Called when the panel up toolbar should be updated
+     * @param title the new title for the panel up toolbar
+     * @param loading if the loading icon should be displayed
+     */
+    protected void updatePanelUpToolbar(String title, boolean loading) {
+        mListener.setPanelUpToolbar(title, loading);
     }
 
     /**

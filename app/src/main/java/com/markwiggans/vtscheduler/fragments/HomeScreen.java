@@ -1,10 +1,8 @@
 package com.markwiggans.vtscheduler.fragments;
 
 import android.content.Context;
-import android.view.View;
 
 import com.markwiggans.vtscheduler.R;
-import com.markwiggans.vtscheduler.adapters.ScheduleAdapter;
 import com.markwiggans.vtscheduler.data.DataSource;
 import com.markwiggans.vtscheduler.data.Schedule;
 
@@ -13,6 +11,8 @@ import java.util.List;
 
 /**
  * Home Screen
+ *
+ * Displays a list of recently saved schedules
  */
 public class HomeScreen extends ScheduleFragment {
     public static final String HOME_SCREEN_FRAGMENT = "HOME_SCREEN_FRAGMENT";
@@ -47,27 +47,13 @@ public class HomeScreen extends ScheduleFragment {
         });
     }
 
-    /**
-     * Shows/hides/updates portions of the display based on if the values have loaded or not
-     */
     @Override
-    protected void refreshView() {
-        loadingText.setVisibility(schedulesIndices != null ? View.GONE : View.VISIBLE);
-        scheduleList.setVisibility(schedulesIndices != null ? View.VISIBLE : View.GONE);
-        if(schedulesIndices != null) {
-            List<Schedule> schedules = Schedule.getSchedulesByIndex(schedulesIndices);
-            Collections.sort(schedules);
-            if(schedules.size() > 0) {
-                ScheduleAdapter adapter = new ScheduleAdapter(context, R.id.list, schedules);
-                scheduleList.setAdapter(adapter);
-                scheduleList.setOnItemLongClickListener(adapter);
-            } else {
-                loadingText.setVisibility(View.VISIBLE);
-                loadingText.setText(errorMessage);
-                scheduleList.setVisibility(View.GONE);
-            }
-        } else {
-            mListener.setPanelUpToolbar(getString(R.string.loading), true);
-        }
+    protected void sortSchedules(List<Schedule> schedules) {
+        Collections.reverse(schedules);
+    }
+
+    @Override
+    protected void updatePanelUpToolbar(String title, boolean loading) {
+        // We don't want to update the panel toolbar
     }
 }
