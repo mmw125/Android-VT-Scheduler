@@ -2,7 +2,10 @@ package com.markwiggans.vtscheduler.data;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.os.AsyncTask;
+import android.util.Log;
 
+import com.markwiggans.vtscheduler.MainActivity;
 import com.markwiggans.vtscheduler.database.CourseReaderContract;
 import com.markwiggans.vtscheduler.database.DatabaseWrapper;
 import com.markwiggans.vtscheduler.database.Query;
@@ -59,9 +62,24 @@ public class DataSource {
             public void onDatabaseTask(List<QueryResult> results) {
                 Cursor itemCursor = results.get(0).getCursor();
                 Cursor scheduleCursor = results.get(1).getCursor();
-                receiver.receiveSchedules(Schedule.createSchedulesFromDatabase(context, scheduleCursor, itemCursor));
+                new AsyncTask<Cursor, Void, ArrayList<Schedule>>() {
+                    @Override
+                    protected ArrayList<Schedule> doInBackground(Cursor... cursors) {
+                        ArrayList<Schedule> schedules = Schedule.createSchedulesFromDatabase(context, cursors[0], cursors[1]);
+                        cursors[0].close();
+                        cursors[1].close();
+                        return schedules;
+                    }
+
+                    @Override
+                    protected void onPostExecute(ArrayList<Schedule> schedules) {
+                        super.onPostExecute(schedules);
+                        Log.d(MainActivity.LOG_STRING, schedules.size() + " schedules");
+                        receiver.receiveSchedules(schedules);
+                    }
+                }.execute(scheduleCursor, itemCursor);
             }
-        }, items, schedules);
+        }, false, items, schedules);
     }
 
     private static List<Course> courses;

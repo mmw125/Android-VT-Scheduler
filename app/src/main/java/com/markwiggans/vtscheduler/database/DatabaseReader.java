@@ -7,7 +7,9 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
+import com.markwiggans.vtscheduler.MainActivity;
 import com.markwiggans.vtscheduler.data.CRN;
 import com.markwiggans.vtscheduler.data.Schedule;
 
@@ -75,7 +77,7 @@ class DatabaseReader extends SQLiteOpenHelper {
     void openDataBase() throws SQLException {
         String myPath = DB_PATH + DB_NAME;
         if(myDataBase == null || !myDataBase.isOpen()) {
-            myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+            myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READWRITE);
         }
     }
 
@@ -129,18 +131,36 @@ class DatabaseReader extends SQLiteOpenHelper {
     }
 
     public void insert(Schedule schedule, String uuid) {
+        Cursor c = query(CourseReaderContract.ScheduleEntry.TABLE_NAME);
+        c.moveToFirst();
+        Log.d(MainActivity.LOG_STRING, "Before add, " + c.getCount() + " schedules");
+        c.close();
+        Log.d(MainActivity.LOG_STRING, "Starting Database insert");
         ContentValues values = new ContentValues();
         values.put(CourseReaderContract.ScheduleEntry.COLUMN_NAME_SCHEDULE_UUID, uuid);
         values.put(CourseReaderContract.ScheduleEntry.COLUMN_NAME_NAME, "");
-        myDataBase.insert(CourseReaderContract.ScheduleEntry.TABLE_NAME,
+        myDataBase.beginTransaction();
+        long returnVal = myDataBase.insert(CourseReaderContract.ScheduleEntry.TABLE_NAME,
                 CourseReaderContract.ScheduleEntry.COLUMN_NAME_NAME + ", " + CourseReaderContract.ScheduleEntry.COLUMN_NAME_SCHEDULE_UUID, values);
+        if(returnVal == -1) {
+            Log.d(MainActivity.LOG_STRING, "An error occurred");
+        }
         for(CRN crn : schedule.getCrns()) {
             values = new ContentValues();
             values.put(CourseReaderContract.ScheduleItemEntry.COLUMN_NAME_CRN_CRN, crn.getCRN());
             values.put(CourseReaderContract.ScheduleItemEntry.COLUMN_NAME_CRN_SEMESTER, crn.getSemester());
             values.put(CourseReaderContract.ScheduleItemEntry.COLUMN_NAME_SCHEDULE_ID, uuid);
-            myDataBase.insert(CourseReaderContract.ScheduleItemEntry.TABLE_NAME,
+            returnVal = myDataBase.insert(CourseReaderContract.ScheduleItemEntry.TABLE_NAME,
                     CourseReaderContract.ScheduleItemEntry.COLUMN_NAME_CRN_CRN + ", " + CourseReaderContract.ScheduleItemEntry.COLUMN_NAME_CRN_SEMESTER + ", " + CourseReaderContract.ScheduleItemEntry.COLUMN_NAME_SCHEDULE_ID, values);
+            if(returnVal == -1) {
+                Log.d(MainActivity.LOG_STRING, "An error occurred");
+            }
         }
+        myDataBase.setTransactionSuccessful();
+        myDataBase.endTransaction();
+        c = query(CourseReaderContract.ScheduleEntry.TABLE_NAME);
+        c.moveToFirst();
+        Log.d(MainActivity.LOG_STRING, "After add, " + c.getCount() + " schedules");
+        c.close();
     }
 }

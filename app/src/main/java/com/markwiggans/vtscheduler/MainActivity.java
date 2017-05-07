@@ -5,10 +5,12 @@ import android.app.SearchManager;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -37,6 +39,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 
 /**
@@ -92,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             homeScreen = new HomeScreen();
             getFragmentManager().beginTransaction().replace(R.id.content_frame, homeScreen).commit();
         }
+        writeOutDatabase();
     }
 
     public void createDrawer() {
@@ -335,5 +342,33 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     @Override
     public PanelState getSlidingUpPanelStatus() {
         return slidingPanelLayout.getVisibility() == View.GONE ? PanelState.HIDDEN : slidingPanelLayout.getPanelState();
+    }
+
+    public void writeOutDatabase() {
+        try {
+
+            File sd = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+            File data = Environment.getDataDirectory();
+
+            if (sd.canWrite()) {
+                String currentDBPath = "/data/data/" + this.getPackageName() + "/databases/externalDB.sqlite3";
+                String backupDBPath = "backupname.db";
+                File currentDB = new File(currentDBPath);
+                File backupDB = new File(sd, backupDBPath);
+                Log.d(LOG_STRING, backupDBPath);
+
+                if (currentDB.exists()) {
+                    FileChannel src = new FileInputStream(currentDB).getChannel();
+                    FileChannel dst = new FileOutputStream(backupDB).getChannel();
+                    dst.transferFrom(src, 0, src.size());
+                    src.close();
+                    dst.close();
+
+                    Log.d(LOG_STRING, backupDBPath);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -28,13 +28,13 @@ import java.util.List;
 public class ScheduleFragment extends Fragment implements ScheduleGenerationTask.ScheduleGeneratorTaskReceiver{
     public static final String TAG_SCHEDULE_FRAGMENT = "SCHEDULE_FRAGMENT", SCHEDULES_INDEXES = "schedules_indexes", IS_LOADING = "IS_LOADING";
     public static final int MAX_SCHEDULE_LIMIT = 20;
-    private MainActivityInteraction mListener;
-    private ListView scheduleList;
-    private Context context;
-    private ArrayList<Integer> schedulesIndices;
-    private TextView loadingText;
-    private boolean loading;
-    private String errorMessage;
+    protected MainActivityInteraction mListener;
+    protected ListView scheduleList;
+    protected Context context;
+    protected ArrayList<Integer> schedulesIndices;
+    protected TextView loadingText;
+    protected boolean loading;
+    protected String errorMessage;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -94,7 +94,7 @@ public class ScheduleFragment extends Fragment implements ScheduleGenerationTask
     /**
      * Shows/hides/updates portions of the display based on if the values have loaded or not
      */
-    private void refreshView() {
+    protected void refreshView() {
         loadingText.setVisibility(schedulesIndices != null ? View.GONE : View.VISIBLE);
         scheduleList.setVisibility(schedulesIndices != null ? View.VISIBLE : View.GONE);
         if(schedulesIndices != null) {

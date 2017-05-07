@@ -4,11 +4,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.alamkanak.weekview.WeekViewEvent;
-import com.markwiggans.vtscheduler.MainActivity;
 import com.markwiggans.vtscheduler.R;
+import com.markwiggans.vtscheduler.database.CourseReaderContract;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,7 +33,7 @@ public class Schedule implements Comparable<Schedule>{
     }
 
     public static ArrayList<Schedule> createSchedulesFromDatabase(Context context, Cursor schedules, Cursor scheduleItems) {
-        HashMap<Integer, ArrayList<ScheduleItem>> map = new HashMap<>();
+        HashMap<String, ArrayList<ScheduleItem>> map = new HashMap<>();
         ArrayList<Schedule> outList = new ArrayList<>();
 
         if (scheduleItems.moveToFirst()) {
@@ -51,10 +50,11 @@ public class Schedule implements Comparable<Schedule>{
             do {
                 Schedule schedule = new Schedule(schedules);
                 outList.add(schedule);
-                for(ScheduleItem item : map.get(schedule.id)) {
+                for(ScheduleItem item : map.get(schedule.uuid)) {
                     schedule.crns.add(DataSource.getCRN(context, item.crn, item.crnSemester));
                 }
-            } while (scheduleItems.moveToNext());
+                schedule.getScore(context);
+            } while (schedules.moveToNext());
         }
         return outList;
     }
@@ -112,8 +112,10 @@ public class Schedule implements Comparable<Schedule>{
     private String uuid;
     public Schedule(Cursor c) {
         this.id = c.getInt(0);
-        this.uuid = c.getString(2);
+        this.uuid = c.getString(1);
         crns = new ArrayList<>();
+        this.index = schedules.size();
+        schedules.add(this);
     }
 
     public List<CRN> getCrns() {
@@ -205,15 +207,15 @@ public class Schedule implements Comparable<Schedule>{
     }
 
     public static class ScheduleItem {
-        private int crn, scheduleID;
-        private String crnSemester;
+        private int crn;
+        private String crnSemester, scheduleID;
         public ScheduleItem(Cursor c) {
-            crn = c.getInt(1);
-            crnSemester = c.getString(2);
-            scheduleID = c.getInt(3);
+            crn = c.getInt(c.getColumnIndex(CourseReaderContract.ScheduleItemEntry.COLUMN_NAME_CRN_CRN));
+            crnSemester = c.getString(c.getColumnIndex(CourseReaderContract.ScheduleItemEntry.COLUMN_NAME_CRN_SEMESTER));
+            scheduleID = c.getString(c.getColumnIndex(CourseReaderContract.ScheduleItemEntry.COLUMN_NAME_SCHEDULE_ID));
         }
 
-        public int getScheduleID() {
+        public String getScheduleID() {
             return scheduleID;
         }
     }
