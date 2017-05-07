@@ -1,8 +1,6 @@
 package com.markwiggans.vtscheduler;
 
 import android.app.Fragment;
-import android.app.SearchManager;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;

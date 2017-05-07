@@ -1,8 +1,11 @@
 package com.markwiggans.vtscheduler.database;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Looper;
+
+import com.markwiggans.vtscheduler.data.Schedule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +69,26 @@ public class DatabaseWrapper {
      * @param query searches to run
      */
     public void queryAll(DatabaseTaskReceiver receiver, Query... query) {
-        new DatabaseTask(receiver).execute(query);
+        queryAll(receiver, true, query);
+    }
+
+    /**
+     * Do query asynchronously
+     *
+     * @param receiver interface instance to receive object
+     * @param query searches to run
+     */
+    public void queryAll(DatabaseTaskReceiver receiver, boolean closeFPS, Query... query) {
+        new DatabaseTask(receiver, closeFPS).execute(query);
+    }
+
+    public void verifyNotOnUIThread() {
+        if(Looper.getMainLooper().getThread() == Thread.currentThread())
+            throw new IllegalStateException("Cannot do synchronous query on ui thread");
+    }
+
+    public void insert(Schedule schedule, String uuid) {
+        new DatabaseInsertionTask(schedule, uuid).execute();
     }
 
     /**
@@ -78,9 +100,8 @@ public class DatabaseWrapper {
      * @return list of results of query
      */
     public QueryResult query(Query query) {
-        if(Looper.getMainLooper().getThread() == Thread.currentThread())
-            throw new IllegalStateException("Cannot do synchronous query on ui thread");
-        return new DatabaseTask(null).doInBackground(query).get(0);
+        verifyNotOnUIThread();
+        return new DatabaseTask().doInBackground(query).get(0);
     }
 
     /**
@@ -92,9 +113,8 @@ public class DatabaseWrapper {
      * @return list of results of query
      */
     public List<QueryResult> queryAll(Query... query) {
-        if(Looper.getMainLooper().getThread() == Thread.currentThread())
-            throw new IllegalStateException("Cannot do synchronous query on ui thread");
-        return new DatabaseTask(null).doInBackground(query);
+        verifyNotOnUIThread();
+        return new DatabaseTask().doInBackground(query);
     }
 
     /**
@@ -103,9 +123,19 @@ public class DatabaseWrapper {
      */
     private class DatabaseTask extends AsyncTask<Query, Void, List<QueryResult>> {
         private DatabaseTaskReceiver receiver;
+        private boolean closeFPs = true;
+
+        private DatabaseTask() {
+            this(null);
+        }
 
         private DatabaseTask(DatabaseTaskReceiver receiver) {
             this.receiver = receiver;
+        }
+
+        private DatabaseTask(DatabaseTaskReceiver receiver, boolean closeFPs) {
+            this.receiver = receiver;
+            this.closeFPs = closeFPs;
         }
 
         @Override
@@ -113,7 +143,9 @@ public class DatabaseWrapper {
             openDatabase();
             List<QueryResult> outList = new ArrayList<>();
             for(Query query : params) {
-                outList.add(new QueryResult(query, reader.query(query)));
+                Cursor c = reader.query(query);
+                QueryResult qr = new QueryResult(query, c);
+                outList.add(qr);
             }
             return outList;
         }
@@ -121,13 +153,35 @@ public class DatabaseWrapper {
         @Override
         protected void onPostExecute(List<QueryResult> result) {
             receiver.onDatabaseTask(result);
-            for(QueryResult qr : result) {
-                qr.getCursor().close();
+            if(closeFPs) {
+                for(QueryResult qr : result) {
+                    qr.getCursor().close();
+                }
             }
         }
     }
 
     public interface DatabaseTaskReceiver {
         void onDatabaseTask(List<QueryResult> results);
+    }
+
+    /**
+     * Created by Mark Wiggans on 3/27/2017.
+     * AsyncTask that does database queries
+     */
+    private class DatabaseInsertionTask extends AsyncTask<Void, Void, Void> {
+        private Schedule schedule;
+        private String uuid;
+        private DatabaseInsertionTask(Schedule schedule, String uuid) {
+            this.schedule = schedule;
+            this.uuid = uuid;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            openDatabase();
+            reader.insert(schedule, uuid);
+            return null;
+        }
     }
 }

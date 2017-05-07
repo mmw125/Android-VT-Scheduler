@@ -2,7 +2,10 @@ package com.markwiggans.vtscheduler.data;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.os.AsyncTask;
+import android.util.Log;
 
+import com.markwiggans.vtscheduler.MainActivity;
 import com.markwiggans.vtscheduler.database.CourseReaderContract;
 import com.markwiggans.vtscheduler.database.DatabaseWrapper;
 import com.markwiggans.vtscheduler.database.Query;
@@ -45,6 +48,38 @@ public class DataSource {
                 receiver.receiveCourses(null);
             }
         }, new Semester(crn.getSemester()));
+    }
+
+    public interface ScheduleReceiver {
+        void receiveSchedules(List<Schedule> schedules);
+    }
+
+    public static void getSavedSchedules(final Context context, final ScheduleReceiver receiver) {
+        Query items = new Query(CourseReaderContract.ScheduleItemEntry.TABLE_NAME);
+        Query schedules = new Query(CourseReaderContract.ScheduleEntry.TABLE_NAME);
+        DatabaseWrapper.getInstance(context).queryAll(new DatabaseWrapper.DatabaseTaskReceiver() {
+            @Override
+            public void onDatabaseTask(List<QueryResult> results) {
+                Cursor itemCursor = results.get(0).getCursor();
+                Cursor scheduleCursor = results.get(1).getCursor();
+                new AsyncTask<Cursor, Void, ArrayList<Schedule>>() {
+                    @Override
+                    protected ArrayList<Schedule> doInBackground(Cursor... cursors) {
+                        ArrayList<Schedule> schedules = Schedule.createSchedulesFromDatabase(context, cursors[0], cursors[1]);
+                        cursors[0].close();
+                        cursors[1].close();
+                        return schedules;
+                    }
+
+                    @Override
+                    protected void onPostExecute(ArrayList<Schedule> schedules) {
+                        super.onPostExecute(schedules);
+                        Log.d(MainActivity.LOG_STRING, schedules.size() + " schedules");
+                        receiver.receiveSchedules(schedules);
+                    }
+                }.execute(scheduleCursor, itemCursor);
+            }
+        }, false, items, schedules);
     }
 
     private static List<Course> courses;
@@ -131,6 +166,27 @@ public class DataSource {
                 receiver.receiveDepartments(departments);
             }
         }, query);
+    }
+
+    /**
+     * Gets the meeting times for one course
+     *
+     * @param course the course to get the meeting times for
+     * @return the meeting times for the given course
+     */
+    public static CRN getCRN(Context context, int crn, String semester) {
+        String whereStatement = CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = '" + semester + "' AND " +
+                CourseReaderContract.CRNEntry.COLUMN_NAME_CRN + " = " + crn;
+        Cursor c = DatabaseWrapper.getInstance(context).query(new Query(CourseReaderContract.CRNEntry.TABLE_NAME, whereStatement)).getCursor();
+        if (c.moveToFirst()) {
+            do {
+                CRN crnOut = new CRN(c);
+                c.close();
+                return crnOut;
+            } while (c.moveToNext());
+        }
+        c.close();
+        return null;
     }
 
     /**
@@ -228,5 +284,9 @@ public class DataSource {
         } else {
             receiver.receiveSemesters(semesters);
         }
+    }
+
+    public static void saveSchedule(Context context, Schedule schedule, String uuid) {
+        DatabaseWrapper.getInstance(context).insert(schedule, uuid);
     }
 }

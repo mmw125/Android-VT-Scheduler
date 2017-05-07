@@ -28,13 +28,13 @@ import java.util.List;
 public class ScheduleFragment extends Fragment implements ScheduleGenerationTask.ScheduleGeneratorTaskReceiver{
     public static final String TAG_SCHEDULE_FRAGMENT = "SCHEDULE_FRAGMENT", SCHEDULES_INDEXES = "schedules_indexes", IS_LOADING = "IS_LOADING";
     public static final int MAX_SCHEDULE_LIMIT = 20;
-    private MainActivityInteraction mListener;
-    private ListView scheduleList;
-    private Context context;
-    private ArrayList<Integer> schedulesIndices;
-    private TextView loadingText;
-    private boolean loading;
-    private String errorMessage;
+    protected MainActivityInteraction mListener;
+    protected ListView scheduleList;
+    protected Context context;
+    protected ArrayList<Integer> schedulesIndices;
+    protected TextView loadingText;
+    protected boolean loading;
+    protected String errorMessage;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -94,29 +94,46 @@ public class ScheduleFragment extends Fragment implements ScheduleGenerationTask
     /**
      * Shows/hides/updates portions of the display based on if the values have loaded or not
      */
-    private void refreshView() {
+    protected void refreshView() {
         loadingText.setVisibility(schedulesIndices != null ? View.GONE : View.VISIBLE);
         scheduleList.setVisibility(schedulesIndices != null ? View.VISIBLE : View.GONE);
         if(schedulesIndices != null) {
             List<Schedule> schedules = Schedule.getSchedulesByIndex(schedulesIndices);
-            Collections.sort(schedules);
             if(schedules.size() > 0) {
+                sortSchedules(schedules);
                 if(schedules.size() > MAX_SCHEDULE_LIMIT) {
                     schedules = schedules.subList(0, MAX_SCHEDULE_LIMIT);
                 }
                 ScheduleAdapter adapter = new ScheduleAdapter(context, R.id.list, schedules);
                 scheduleList.setAdapter(adapter);
                 scheduleList.setOnItemLongClickListener(adapter);
-                mListener.setPanelUpToolbar(getString(R.string.generated_schedules_label), false);
+                updatePanelUpToolbar(getString(R.string.generated_schedules_label), false);
             } else {
                 loadingText.setVisibility(View.VISIBLE);
                 loadingText.setText(errorMessage);
                 scheduleList.setVisibility(View.GONE);
-                mListener.setPanelUpToolbar(getString(R.string.error_label), false);
+                updatePanelUpToolbar(getString(R.string.error_label), false);
             }
         } else {
             mListener.setPanelUpToolbar(getString(R.string.loading), true);
         }
+    }
+
+    /**
+     * Sorts the schedules in the default way
+     * @param schedules a list of the schedules to sort
+     */
+    protected void sortSchedules(List<Schedule> schedules) {
+        Collections.sort(schedules);
+    }
+
+    /**
+     * Called when the panel up toolbar should be updated
+     * @param title the new title for the panel up toolbar
+     * @param loading if the loading icon should be displayed
+     */
+    protected void updatePanelUpToolbar(String title, boolean loading) {
+        mListener.setPanelUpToolbar(title, loading);
     }
 
     /**

@@ -16,11 +16,13 @@ import android.widget.Toast;
 import com.markwiggans.vtscheduler.NetworkTask;
 import com.markwiggans.vtscheduler.R;
 import com.markwiggans.vtscheduler.data.CRN;
+import com.markwiggans.vtscheduler.data.DataSource;
 import com.markwiggans.vtscheduler.data.Schedule;
 
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Mark Wiggans on 3/27/2017.
@@ -58,27 +60,30 @@ public class ScheduleAdapter extends ArrayAdapter<Schedule> implements AdapterVi
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        Schedule schedule = getItem(position);
+        final Schedule schedule = getItem(position);
+        final Context context = getContext();
 
         String sem = "";
-        if(schedule.getCrns().size() >= 1){
+        if (schedule.getCrns().size() >= 1) {
             sem = schedule.getCrns().get(0).getSemester();
         }
 
-        new NetworkTask(context, true, sem, schedule.getCrns().toArray(new CRN[schedule.getCrns().size()]) , ""){
+        new NetworkTask(context, true, sem, schedule.getCrns().toArray(new CRN[schedule.getCrns().size()]), "") {
             // Doing this so that I can access the data from onPostExecute
             @Override
-            protected void onPostExecute( JSONObject result ) {
-                String str = "";
-                try{
+            protected void onPostExecute(JSONObject result) {
+                String str;
+                try {
                     str = result.getString("unique_id:");
-                }catch (Exception e){
+                } catch (Exception e) {
                     Log.d("Scheduler", e.toString());
+                    str = UUID.randomUUID().toString();
                 }
                 super.onPostExecute(result);
                 ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
                 ClipData clip = ClipData.newPlainText("Schedule_UUID", str);
                 clipboard.setPrimaryClip(clip);
+                DataSource.saveSchedule(context, schedule, str);
                 Toast.makeText(context, "Copied UUID to clipboard", Toast.LENGTH_SHORT).show();
             }
         }.execute();

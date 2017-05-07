@@ -1,11 +1,13 @@
 package com.markwiggans.vtscheduler.data;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
 import com.alamkanak.weekview.WeekViewEvent;
 import com.markwiggans.vtscheduler.R;
+import com.markwiggans.vtscheduler.database.CourseReaderContract;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,6 +15,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -27,6 +30,33 @@ public class Schedule implements Comparable<Schedule>{
 
     public interface ScheduleReceiver {
         void receiveSchedule(Schedule schedule);
+    }
+
+    public static ArrayList<Schedule> createSchedulesFromDatabase(Context context, Cursor schedules, Cursor scheduleItems) {
+        HashMap<String, ArrayList<ScheduleItem>> map = new HashMap<>();
+        ArrayList<Schedule> outList = new ArrayList<>();
+
+        if (scheduleItems.moveToFirst()) {
+            do {
+                ScheduleItem crn = new ScheduleItem(scheduleItems);
+                if(!map.containsKey(crn.getScheduleID())) {
+                    map.put(crn.getScheduleID(), new ArrayList<ScheduleItem>());
+                }
+                map.get(crn.getScheduleID()).add(crn);
+            } while (scheduleItems.moveToNext());
+        }
+
+        if (schedules.moveToFirst()) {
+            do {
+                Schedule schedule = new Schedule(schedules);
+                outList.add(schedule);
+                for(ScheduleItem item : map.get(schedule.uuid)) {
+                    schedule.crns.add(DataSource.getCRN(context, item.crn, item.crnSemester));
+                }
+                schedule.getScore(context);
+            } while (schedules.moveToNext());
+        }
+        return outList;
     }
 
     public static void createScheduleFromServerResponse(final Context context, final ScheduleReceiver receiver, final String semester, final int[] crns) {
@@ -74,6 +104,16 @@ public class Schedule implements Comparable<Schedule>{
     private List<CRN> crns;
     public Schedule(List<CRN> crns) {
         this.crns = crns;
+        this.index = schedules.size();
+        schedules.add(this);
+    }
+
+    private int id;
+    private String uuid;
+    public Schedule(Cursor c) {
+        this.id = c.getInt(0);
+        this.uuid = c.getString(1);
+        crns = new ArrayList<>();
         this.index = schedules.size();
         schedules.add(this);
     }
@@ -164,5 +204,19 @@ public class Schedule implements Comparable<Schedule>{
         }
 
         return events;
+    }
+
+    public static class ScheduleItem {
+        private int crn;
+        private String crnSemester, scheduleID;
+        public ScheduleItem(Cursor c) {
+            crn = c.getInt(c.getColumnIndex(CourseReaderContract.ScheduleItemEntry.COLUMN_NAME_CRN_CRN));
+            crnSemester = c.getString(c.getColumnIndex(CourseReaderContract.ScheduleItemEntry.COLUMN_NAME_CRN_SEMESTER));
+            scheduleID = c.getString(c.getColumnIndex(CourseReaderContract.ScheduleItemEntry.COLUMN_NAME_SCHEDULE_ID));
+        }
+
+        public String getScheduleID() {
+            return scheduleID;
+        }
     }
 }
