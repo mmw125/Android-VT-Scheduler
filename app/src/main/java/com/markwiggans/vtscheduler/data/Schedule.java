@@ -188,15 +188,13 @@ public class Schedule implements Comparable<Schedule>{
         for(CRN crn : getCrns()) {
             for(MeetingTime m : crn.getMeetingTimes(context)) {
                 Calendar startTime = Calendar.getInstance();
-                int startTimeInt = MeetingTime.timeToInt(m.getStartTimeString());
-                startTime.set(Calendar.HOUR_OF_DAY, startTimeInt / 60);
-                startTime.set(Calendar.MINUTE, startTimeInt % 60);
+                startTime.set(Calendar.HOUR_OF_DAY, m.getStartTime() / 60);
+                startTime.set(Calendar.MINUTE, m.getStartTime() % 60);
                 startTime.set(Calendar.MONTH, month-1);
                 startTime.set(Calendar.YEAR, year);
                 Calendar endTime = (Calendar) startTime.clone();
-                int endTimeInt = MeetingTime.timeToInt(m.getEndTimeString());
-                endTime.add(Calendar.HOUR, endTimeInt / 60);
-                endTime.set(Calendar.MINUTE, endTimeInt % 60);
+                endTime.add(Calendar.HOUR, m.getEndTime() / 60);
+                endTime.set(Calendar.MINUTE, m.getEndTime() % 60);
                 WeekViewEvent event = new WeekViewEvent(1, crn.getCourse().getWholeName(), startTime, endTime);
                 event.setColor(context.getColor(R.color.event_color_01));
                 events.add(event);

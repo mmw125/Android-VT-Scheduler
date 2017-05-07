@@ -5,27 +5,23 @@ import android.support.annotation.NonNull;
 
 import com.markwiggans.vtscheduler.database.CourseReaderContract;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 /**
  * Created by Mark Wiggans on 3/19/2017.
  * Used to hold a time that a crn meets
  */
 public class MeetingTime implements Comparable<MeetingTime>{
-    private int id;
+//    private int id;
     private Day day;
-    private int startTime, endTime, crn;
-    private String startTimeString, endTimeString, semester;
+    private int startTime, endTime /*, crn */;
+    private String startTimeString, endTimeString /*, semester */;
 
     public MeetingTime(Cursor c) {
 //        id = c.getInt(c.getColumnIndex(CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_ID));
         day = Day.stringToDay(c.getString(c.getColumnIndex(CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_DAY)));
         startTimeString = c.getString(c.getColumnIndex(CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_START_TIME_STR));
-        startTime = c.getInt(c.getColumnIndex(CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_START_TIME));
+        startTime = c.getInt(c.getColumnIndex(CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_START_TIME)) + day.toInt();
         endTimeString = c.getString(c.getColumnIndex(CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_END_TIME_STR));
-        endTime = c.getInt(c.getColumnIndex(CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_END_TIME));
+        endTime = c.getInt(c.getColumnIndex(CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_END_TIME)) + day.toInt();
 //        crn = c.getInt(c.getColumnIndex(CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_CRN_CRN));
 //        semester = c.getString(c.getColumnIndex(CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_CRN_SEMESTER));
     }
