@@ -30,7 +30,7 @@ import java.util.List;
  * https://github.com/Plumillon/ChipView
  * MIGHT BE BETTER >>> https://github.com/splitwise/TokenAutoComplete <<<
  */
-public class ScheduleCreator extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener{
+public class ScheduleCreator extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener {
     public static final String SCHEDULE_CREATOR_FRAGMENT = "SCHEDULE_CREATOR_FRAGMENT";
     private MainActivityInteraction mListener;
     private Context context;
@@ -45,6 +45,7 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener, A
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
+     *
      * @return A new instance of fragment ScheduleCreator.
      */
     public static ScheduleCreator newInstance() {
@@ -106,19 +107,19 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener, A
 
     @Override
     public void onClick(View v) {
-        if(v.equals(submit)) {
-            InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
-            if(getView() != null) {
+        if (v.equals(submit)) {
+            InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (getView() != null) {
                 imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
-                mListener.generateSchedules(new ArrayList<>(courseInput.getObjects()));
             }
+            mListener.generateSchedules(new ArrayList<>(courseInput.getObjects()));
         }
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         if (parent != null && parent.equals(semesterSelector)) {
-            if(courseInput.isEnabled()) {
+            if (courseInput.isEnabled()) {
                 updateCourseAutocomplete((Semester) semesterSelector.getSelectedItem());
             }
         }
@@ -128,8 +129,7 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener, A
      * Removes all of the course chips from the input
      */
     public void removeAllCourses() {
-        courseInput.setText("");
-        for(Course c : courseInput.getObjects()) {
+        for (Course c : courseInput.getObjects()) {
             Log.d(MainActivity.LOG_STRING, "Removing " + c.toString());
             courseInput.removeObject(c);
         }
@@ -137,6 +137,7 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener, A
 
     /**
      * Updates the course autocomplete to be just for the courses during the selected semester
+     *
      * @param selectedSemester the semester to use for the autocomplete
      */
     public void updateCourseAutocomplete(Semester selectedSemester) {
@@ -145,14 +146,8 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener, A
         DataSource.getCourses(context, new DataSource.CoursesReceiver() {
             @Override
             public void receiveCourses(List<Course> courses) {
-                CourseAdapter adapter = (CourseAdapter) courseInput.getAdapter();
-                if(adapter == null) {
-                    adapter = new CourseAdapter(context, 0, courses, false);
-                    courseInput.setAdapter(adapter);
-                } else {
-                    adapter.clear();
-                    adapter.addAll(courses);
-                }
+                CourseAdapter adapter = new CourseAdapter(context, 0, courses, false);
+                courseInput.setAdapter(adapter);
                 courseInput.setEnabled(true);
             }
         }, selectedSemester);
