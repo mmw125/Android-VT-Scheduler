@@ -196,40 +196,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     @Override
     public void loadSchedule(String id) {
         panelUpFragment.startLoading();
-        new NetworkTask(this, false, "", null, id){
-
-            // Doing this so that I can access the data from onPostExecute
-            @Override
-            protected void onPostExecute( JSONObject result ) {
-
-                super.onPostExecute(result);
-                // Do something with result here
-                Toast.makeText(MainActivity.this, "Schedule Data retrieved", Toast.LENGTH_SHORT).show();
-                if(result == null) {
-                    panelUpFragment.onSchedulesGenerated(null);
-                    panelUpFragment.setErrorMessage(getString(R.string.offline_error));
-                } else {
-                    try{
-                        JSONArray JSONCrnsArray = result.getJSONArray("crns");
-                        int[] crnsArray = new int[JSONCrnsArray.length()];
-                        for (int i = 0; i < JSONCrnsArray.length(); i++) {
-                            crnsArray[i] = JSONCrnsArray.getInt(i);
-                        }
-                        Schedule.createScheduleFromServerResponse(MainActivity.this, new Schedule.ScheduleReceiver() {
-                            @Override
-                            public void receiveSchedule(Schedule schedule) {
-                                ArrayList<Schedule> schedules = new ArrayList<>();
-                                schedules.add(schedule);
-                                panelUpFragment.onSchedulesGenerated(schedules);
-                            }
-                        }, result.getString("semester"), crnsArray);
-                    } catch(JSONException e) {
-                        panelUpFragment.onSchedulesGenerated(null);
-                        panelUpFragment.setErrorMessage(getString(R.string.no_such_schedule_errror));
-                    }
-                }
-            }
-        }.execute();
+        panelUpFragment.onSchedulesGenerated(null);
+        panelUpFragment.setErrorMessage(getString(R.string.no_such_schedule_errror));
     }
 
     @Override
