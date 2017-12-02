@@ -41,6 +41,6 @@
     <string name="default_error_message">An error has occurred</string>
     <string name="no_such_schedule_errror">A schedule does not exist with that id</string>
     <string name="offline_error">Either you or the server is offline</string>
-    <string name="error_label">Error</string>
+    <string name="error_label">No Possible Schedules</string>
     <string name="unable_to_generate_schedules">No schedules are possible</string>
 </resources>
