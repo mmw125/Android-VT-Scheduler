@@ -11,7 +11,7 @@ public class Query {
     private String[] columns, selectionArgs;
 
     public Query(String table) {
-        this(table, null, null);
+        this(table, "");
     }
 
     public Query(String table, String selection, String[] selectionArgs) {
@@ -20,6 +20,10 @@ public class Query {
 
     public Query(String table, String selection) {
         this(table, null, selection, null, null, null, null, null);
+    }
+
+    public Query(String table, String selection, String groupBy) {
+        this(table, null, selection, null, groupBy, null, null, null);
     }
 
     public Query(String table, String[] columns) {

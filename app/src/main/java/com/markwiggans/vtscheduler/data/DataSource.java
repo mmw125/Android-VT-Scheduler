@@ -27,7 +27,7 @@ public class DataSource {
         String whereStr = CourseReaderContract.CourseEntry.COLUMN_NAME_WHOLE_NAME + " = '" + crn.getCourseWholeName()
                 + "' and " + CourseReaderContract.CourseEntry.COLUMN_NAME_TYPE + " = '" + crn.getType()
                 + "' and " + CourseReaderContract.CourseEntry.COLUMN_NAME_SEMESTER_ID + " = '" + crn.getSemester();
-        Query q = new Query(CourseReaderContract.CourseEntry.TABLE_NAME, whereStr, null);
+        Query q = new Query(CourseReaderContract.CourseEntry.TABLE_NAME, whereStr);
         Cursor c = DatabaseWrapper.getInstance(context).query(q).getCursor();
         List<Course> courses = Course.createCourses(c);
         c.close();
@@ -200,7 +200,7 @@ public class DataSource {
                 CourseReaderContract.CRNEntry.COLUMN_COURSE_WHOLE_NAME + " = '" + course.getWholeName() + "' AND " +
                 CourseReaderContract.CRNEntry.COLUMN_COURSE_TYPE + " = '" + course.getType() + "'";
         Cursor c = DatabaseWrapper.getInstance(context).query(new Query(
-                CourseReaderContract.CRNEntry.TABLE_NAME, whereStatement, null)).getCursor();
+                CourseReaderContract.CRNEntry.TABLE_NAME, whereStatement)).getCursor();
         List<CRN> crns = new ArrayList<>();
         if (c.moveToFirst()) {
             do {
@@ -217,7 +217,7 @@ public class DataSource {
             whereString += crns[0] == i ? " and " : " or ";
             whereString += CourseReaderContract.CRNEntry.COLUMN_NAME_CRN + " = " + i;
         }
-        Query q = new Query(CourseReaderContract.CRNEntry.TABLE_NAME, whereString, null);
+        Query q = new Query(CourseReaderContract.CRNEntry.TABLE_NAME, whereString);
         Cursor c = DatabaseWrapper.getInstance(context).query(q).getCursor();
         List<CRN> outList = CRN.createCRNs(c);
         c.close();
