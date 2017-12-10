@@ -189,6 +189,10 @@ public class DataSource {
         return null;
     }
 
+    public interface CRNReciever {
+        void receiveCRNs(List<CRN> crns);
+    }
+
     /**
      * Gets the meeting times for one course
      *
@@ -222,6 +226,23 @@ public class DataSource {
         List<CRN> outList = CRN.createCRNs(c);
         c.close();
         return outList;
+    }
+
+    public static void getCRNs(Context context, String semester, int[] crns, final CRNReciever reciever) {
+        String whereString = CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = '" + semester + "'";
+        for (int i : crns) {
+            whereString += crns[0] == i ? " and " : " or ";
+            whereString += CourseReaderContract.CRNEntry.COLUMN_NAME_CRN + " = " + i;
+        }
+        DatabaseWrapper.getInstance(context).query(new DatabaseWrapper.DatabaseTaskReceiver() {
+            @Override
+            public void onDatabaseTask(List<QueryResult> results) {
+                Cursor c = results.get(0).getCursor();
+                List<CRN> outList = CRN.createCRNs(c);
+                c.close();
+                reciever.receiveCRNs(outList);
+            }
+        }, new Query(CourseReaderContract.CRNEntry.TABLE_NAME, whereString));
     }
 
     public static ArrayList<MeetingTime> getMeetingTimes(Context context, CRN crn) {

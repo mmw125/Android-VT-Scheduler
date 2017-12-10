@@ -4,8 +4,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.alamkanak.weekview.WeekViewEvent;
+import com.markwiggans.vtscheduler.MainActivity;
 import com.markwiggans.vtscheduler.R;
 import com.markwiggans.vtscheduler.database.CourseReaderContract;
 
@@ -17,6 +19,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Mark Wiggans on 4/10/2017.
@@ -102,9 +105,12 @@ public class Schedule implements Comparable<Schedule>{
 
     private int index;
     private List<CRN> crns;
+    private boolean inDatabase = false;
+
     public Schedule(List<CRN> crns) {
         this.crns = crns;
         this.index = schedules.size();
+        this.inDatabase = inDatabase;
         schedules.add(this);
     }
 
@@ -116,6 +122,7 @@ public class Schedule implements Comparable<Schedule>{
         crns = new ArrayList<>();
         this.index = schedules.size();
         schedules.add(this);
+        inDatabase = true;
     }
 
     public List<CRN> getCrns() {
@@ -202,6 +209,33 @@ public class Schedule implements Comparable<Schedule>{
         }
 
         return events;
+    }
+
+    public boolean isInDatabase() {
+        return inDatabase;
+    }
+
+    public String getUUID() {
+        StringBuilder builder = new StringBuilder();
+        for (CRN crn : getCrns()) {
+            if (builder.length() == 0) {
+                builder.append(crn.getSemester());
+            }
+            builder.append("|");
+            builder.append(crn.getCRN());
+        }
+        return builder.toString();
+    }
+
+    public static Schedule createFromUUID(Context context, String uuid) {
+        String[] split = uuid.split("\\|");
+        int[] crns = new int[split.length - 1];
+        for (int i = 1; i < split.length; i++) {
+            Log.d(MainActivity.LOG_STRING, split[i]);
+            crns[i - 1] = Integer.parseInt(split[i]);
+        }
+        List<CRN> crnList = DataSource.getCRNs(context, split[0], crns);
+        return new Schedule(crnList);
     }
 
     public static class ScheduleItem {

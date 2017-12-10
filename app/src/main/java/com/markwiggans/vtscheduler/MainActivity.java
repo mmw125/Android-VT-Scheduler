@@ -37,6 +37,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The Main Activity for the application
@@ -196,8 +197,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     @Override
     public void loadSchedule(String id) {
         panelUpFragment.startLoading();
-        panelUpFragment.onSchedulesGenerated(null);
-        panelUpFragment.setErrorMessage(getString(R.string.no_such_schedule_errror));
+        List<Schedule> schedules = new ArrayList<>();
+        schedules.add(Schedule.createFromUUID(getApplicationContext(), id));
+        panelUpFragment.onSchedulesGenerated(schedules);
     }
 
     @Override

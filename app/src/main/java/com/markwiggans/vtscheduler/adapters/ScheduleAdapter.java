@@ -59,24 +59,20 @@ public class ScheduleAdapter extends ArrayAdapter<Schedule> implements AdapterVi
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        final Schedule schedule = getItem(position);
-        final Context context = getContext();
-
-        String sem = "";
-        if (schedule.getCrns().size() >= 1) {
-            sem = schedule.getCrns().get(0).getSemester();
-        }
-
-        String str = UUID.randomUUID().toString();
+        Schedule schedule = getItem(position);
+        Context context = getContext();
         ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText("Schedule_UUID", str);
+        ClipData clip = ClipData.newPlainText("Schedule_UUID", schedule.getUUID());
         try {
             clipboard.setPrimaryClip(clip);
-            Toast.makeText(context, "Copied UUID to clipboard", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(context, "Copied UUID to clipboard", Toast.LENGTH_SHORT).show();
         } catch (java.lang.NullPointerException e) {
-            Toast.makeText(context, "Could not copy UUID to clipboard", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(context, "Could not copy UUID to clipboard", Toast.LENGTH_SHORT).show();
         }
-        DataSource.saveSchedule(context, schedule, str);
+        Toast.makeText(context, schedule.getUUID(), Toast.LENGTH_SHORT).show();
+        if (!schedule.isInDatabase()) {
+            DataSource.saveSchedule(context, schedule, schedule.getUUID());
+        }
         return true;
     }
 

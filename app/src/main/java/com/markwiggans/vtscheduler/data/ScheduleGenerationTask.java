@@ -20,10 +20,6 @@ public class ScheduleGenerationTask extends AsyncTask<Course, Void, List<Schedul
     private Context context;
     private ScheduleGeneratorTaskReceiver receiver;
 
-    public ScheduleGenerationTask(Context context) {
-        this(context, (ScheduleGeneratorTaskReceiver) context);
-    }
-
     public ScheduleGenerationTask(Context context, ScheduleGeneratorTaskReceiver receiver) {
         this.context = context;
         this.receiver = receiver;

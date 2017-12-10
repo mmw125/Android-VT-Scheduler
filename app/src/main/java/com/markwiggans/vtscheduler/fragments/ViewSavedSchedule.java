@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.markwiggans.vtscheduler.R;
+import com.markwiggans.vtscheduler.data.Schedule;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
 
 /**
