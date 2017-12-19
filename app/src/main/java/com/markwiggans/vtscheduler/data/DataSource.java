@@ -54,9 +54,9 @@ public class DataSource {
     public static void getSavedSchedules(final Context context, final OnEventListener<List<Schedule>> receiver) {
         Query items = new Query(CourseReaderContract.ScheduleItemEntry.TABLE_NAME);
         Query schedules = new Query(CourseReaderContract.ScheduleEntry.TABLE_NAME);
-        DatabaseWrapper.getInstance(context).queryAll(new DatabaseWrapper.DatabaseTaskReceiver() {
+        DatabaseWrapper.getInstance(context).queryAll(new OnEventListener<List<QueryResult>>() {
             @Override
-            public void onDatabaseTask(List<QueryResult> results) {
+            public void onSuccess(List<QueryResult> results) {
                 Cursor itemCursor = results.get(0).getCursor();
                 Cursor scheduleCursor = results.get(1).getCursor();
                 new AsyncTask<Cursor, Void, ArrayList<Schedule>>() {
@@ -91,7 +91,7 @@ public class DataSource {
      * Gets the courses
      *
      * @param context  the main screen
-     * @param receiver what to call when the task is done
+     * @param listener what to call when the task is done
      * @param semester filters
      */
     public static void getCourses(final Context context, final OnEventListener<List<Course>> listener, final Semester semester) {
@@ -110,9 +110,9 @@ public class DataSource {
                 return;
             }
         }
-        DatabaseWrapper.getInstance(context).query(new DatabaseWrapper.DatabaseTaskReceiver() {
+        DatabaseWrapper.getInstance(context).query(new OnEventListener<List<QueryResult>>() {
             @Override
-            public void onDatabaseTask(List<QueryResult> results) {
+            public void onSuccess(List<QueryResult> results) {
                 courses = new ArrayList<>();
                 Cursor c = results.get(0).getCursor();
                 if (c.moveToFirst()) {
@@ -147,9 +147,9 @@ public class DataSource {
         departments = new ArrayList<>();
         Query query = new Query(CourseReaderContract.CourseEntry.TABLE_NAME, new String[]{"DISTINCT " + CourseReaderContract.CourseEntry.COLUMN_NAME_DEPARTMENT_ID});
 
-        DatabaseWrapper.getInstance(context).query(new DatabaseWrapper.DatabaseTaskReceiver() {
+        DatabaseWrapper.getInstance(context).query(new OnEventListener<List<QueryResult>>() {
             @Override
-            public void onDatabaseTask(List<QueryResult> results) {
+            public void onSuccess(List<QueryResult> results) {
                 Cursor c = results.get(0).getCursor();
                 if (c.moveToFirst()) {
                     do {
@@ -162,10 +162,11 @@ public class DataSource {
     }
 
     /**
-     * Gets the meeting times for one course
-     *
-     * @param course the course to get the meeting times for
-     * @return the meeting times for the given course
+     * Gets the CRN object from the database
+     * @param context the context
+     * @param crn the crn number
+     * @param semester the semester that the crn is in
+     * @return the crn object
      */
     public static CRN getCRN(Context context, int crn, String semester) {
         String whereStatement = CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = '" + semester + "' AND " +
@@ -205,19 +206,21 @@ public class DataSource {
     }
 
     public static List<CRN> getCRNs(Context context, String semester, int[] crns) {
-        String whereString = CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = '" + semester + "'";
+        StringBuilder builder = new StringBuilder(CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = '" + semester + "'");
         for (int i : crns) {
-            whereString += crns[0] == i ? " and " : " or ";
-            whereString += CourseReaderContract.CRNEntry.COLUMN_NAME_CRN + " = " + i;
+            builder.append(crns[0] == i ? " and " : " or ");
+            builder.append(CourseReaderContract.CRNEntry.COLUMN_NAME_CRN);
+            builder.append(" = ");
+            builder.append(i);
         }
-        Query q = new Query(CourseReaderContract.CRNEntry.TABLE_NAME, whereString);
+        Query q = new Query(CourseReaderContract.CRNEntry.TABLE_NAME, builder.toString());
         Cursor c = DatabaseWrapper.getInstance(context).query(q).getCursor();
         List<CRN> outList = CRN.createCRNs(c);
         c.close();
         return outList;
     }
 
-    public static void getCRNs(Context context, String semester, int[] crns, final OnEventListener<List<CRN>> reciever) {
+    public static void getCRNs(Context context, String semester, int[] crns, final OnEventListener<List<CRN>> receiver) {
         StringBuilder whereString = new StringBuilder(CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = '" + semester + "'");
         for (int i : crns) {
             whereString.append(crns[0] == i ? " and " : " or ");
@@ -225,13 +228,13 @@ public class DataSource {
             whereString.append(" = ");
             whereString.append(i);
         }
-        DatabaseWrapper.getInstance(context).query(new DatabaseWrapper.DatabaseTaskReceiver() {
+        DatabaseWrapper.getInstance(context).query(new OnEventListener<List<QueryResult>>() {
             @Override
-            public void onDatabaseTask(List<QueryResult> results) {
+            public void onSuccess(List<QueryResult> results) {
                 Cursor c = results.get(0).getCursor();
                 List<CRN> outList = CRN.createCRNs(c);
                 c.close();
-                reciever.onSuccess(outList);
+                receiver.onSuccess(outList);
             }
         }, new Query(CourseReaderContract.CRNEntry.TABLE_NAME, whereString.toString()));
     }
@@ -273,9 +276,9 @@ public class DataSource {
         if (semesters == null) {
             semesters = new ArrayList<>();
             Query query = new Query(CourseReaderContract.CourseEntry.TABLE_NAME, new String[]{"distinct " + CourseReaderContract.CourseEntry.COLUMN_NAME_SEMESTER_ID});
-            DatabaseWrapper.getInstance(context).query(new DatabaseWrapper.DatabaseTaskReceiver() {
+            DatabaseWrapper.getInstance(context).query(new OnEventListener<List<QueryResult>>() {
                 @Override
-                public void onDatabaseTask(List<QueryResult> results) {
+                public void onSuccess(List<QueryResult> results) {
                     Cursor c = results.get(0).getCursor();
                     if (c.moveToFirst()) {
                         do {

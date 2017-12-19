@@ -3,9 +3,12 @@ package com.markwiggans.vtscheduler.database;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.os.Debug;
 import android.os.Looper;
+import android.widget.Toast;
 
 import com.markwiggans.vtscheduler.data.Schedule;
+import com.markwiggans.vtscheduler.interfaces.OnEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +61,7 @@ public class DatabaseWrapper {
      * @param receiver interface instance to receive object
      * @param query searches to run
      */
-    public void query(DatabaseTaskReceiver receiver, Query query) {
+    public void query(OnEventListener<List<QueryResult>> receiver, Query query) {
         new DatabaseTask(receiver).execute(query);
     }
 
@@ -68,7 +71,7 @@ public class DatabaseWrapper {
      * @param receiver interface instance to receive object
      * @param query searches to run
      */
-    public void queryAll(DatabaseTaskReceiver receiver, Query... query) {
+    public void queryAll(OnEventListener<List<QueryResult>> receiver, Query... query) {
         queryAll(receiver, true, query);
     }
 
@@ -78,13 +81,14 @@ public class DatabaseWrapper {
      * @param receiver interface instance to receive object
      * @param query searches to run
      */
-    public void queryAll(DatabaseTaskReceiver receiver, boolean closeFPS, Query... query) {
+    public void queryAll(OnEventListener<List<QueryResult>> receiver, boolean closeFPS, Query... query) {
         new DatabaseTask(receiver, closeFPS).execute(query);
     }
 
-    public void verifyNotOnUIThread() {
-        if(Looper.getMainLooper().getThread() == Thread.currentThread())
+    private void verifyNotOnUIThread() {
+        if(Looper.getMainLooper().getThread() == Thread.currentThread()) {
             throw new IllegalStateException("Cannot do synchronous query on ui thread");
+        }
     }
 
     public void insert(Schedule schedule, String uuid) {
@@ -122,18 +126,18 @@ public class DatabaseWrapper {
      * AsyncTask that does database queries
      */
     private class DatabaseTask extends AsyncTask<Query, Void, List<QueryResult>> {
-        private DatabaseTaskReceiver receiver;
+        private OnEventListener<List<QueryResult>> receiver;
         private boolean closeFPs = true;
 
         private DatabaseTask() {
             this(null);
         }
 
-        private DatabaseTask(DatabaseTaskReceiver receiver) {
+        private DatabaseTask(OnEventListener<List<QueryResult>> receiver) {
             this.receiver = receiver;
         }
 
-        private DatabaseTask(DatabaseTaskReceiver receiver, boolean closeFPs) {
+        private DatabaseTask(OnEventListener<List<QueryResult>> receiver, boolean closeFPs) {
             this.receiver = receiver;
             this.closeFPs = closeFPs;
         }
@@ -152,17 +156,13 @@ public class DatabaseWrapper {
 
         @Override
         protected void onPostExecute(List<QueryResult> result) {
-            receiver.onDatabaseTask(result);
+            receiver.onSuccess(result);
             if(closeFPs) {
                 for(QueryResult qr : result) {
                     qr.getCursor().close();
                 }
             }
         }
-    }
-
-    public interface DatabaseTaskReceiver {
-        void onDatabaseTask(List<QueryResult> results);
     }
 
     /**

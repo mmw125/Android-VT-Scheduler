@@ -20,6 +20,7 @@ import com.markwiggans.vtscheduler.database.DatabaseWrapper;
 import com.markwiggans.vtscheduler.database.Query;
 import com.markwiggans.vtscheduler.database.QueryResult;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
+import com.markwiggans.vtscheduler.interfaces.OnEventListener;
 
 import java.util.List;
 
@@ -27,7 +28,7 @@ import java.util.List;
 /**
  * Fragment for Quering courses
  */
-public class CourseQuery extends Fragment implements DatabaseWrapper.DatabaseTaskReceiver, TextWatcher {
+public class CourseQuery extends Fragment implements TextWatcher {
     public static final String COURSE_QUERY_FRAGMENT = "QUERY_FRAGMENT";
     private MainActivityInteraction mListener;
     private EditText crn, department;
@@ -92,15 +93,6 @@ public class CourseQuery extends Fragment implements DatabaseWrapper.DatabaseTas
     }
 
     @Override
-    public void onDatabaseTask(List<QueryResult> cursor) {
-        linlaHeaderProgress.setVisibility(View.GONE);
-        CourseAdapter adapter = new CourseAdapter(context, R.id.panel_up_list,
-                Course.createCourses(cursor.get(0).getCursor()));
-        ListView memberList = (ListView) view.findViewById(R.id.panel_up_list);
-        memberList.setAdapter(adapter);
-    }
-
-    @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
     @Override
@@ -117,6 +109,15 @@ public class CourseQuery extends Fragment implements DatabaseWrapper.DatabaseTas
                 " AND " + CourseReaderContract.CourseEntry.COLUMN_NAME_DEPARTMENT_ID + " LIKE '%" + department.getText().toString() + "%'";
         String groupBy = CourseReaderContract.CourseEntry.COLUMN_NAME_WHOLE_NAME + ", " + CourseReaderContract.CourseEntry.COLUMN_NAME_TYPE;
         Query q = new Query(CourseReaderContract.CourseEntry.TABLE_NAME, selectString, groupBy);
-        DatabaseWrapper.getInstance(getContext()).query(this, q);
+        DatabaseWrapper.getInstance(getContext()).query(new OnEventListener<List<QueryResult>>() {
+            @Override
+            public void onSuccess(List<QueryResult> results) {
+                linlaHeaderProgress.setVisibility(View.GONE);
+                CourseAdapter adapter = new CourseAdapter(context, R.id.panel_up_list,
+                        Course.createCourses(results.get(0).getCursor()));
+                ListView memberList = (ListView) view.findViewById(R.id.panel_up_list);
+                memberList.setAdapter(adapter);
+            }
+        }, q);
     }
 }

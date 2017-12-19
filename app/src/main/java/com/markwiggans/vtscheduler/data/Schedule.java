@@ -10,6 +10,7 @@ import com.alamkanak.weekview.WeekViewEvent;
 import com.markwiggans.vtscheduler.MainActivity;
 import com.markwiggans.vtscheduler.R;
 import com.markwiggans.vtscheduler.database.CourseReaderContract;
+import com.markwiggans.vtscheduler.interfaces.OnEventListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,10 +30,6 @@ public class Schedule implements Comparable<Schedule>{
     @Override
     public int compareTo(@NonNull Schedule o) {
         return this.getScore() - o.getScore();
-    }
-
-    public interface ScheduleReceiver {
-        void receiveSchedule(Schedule schedule);
     }
 
     public static ArrayList<Schedule> createSchedulesFromDatabase(Context context, Cursor schedules, Cursor scheduleItems) {
@@ -62,7 +59,7 @@ public class Schedule implements Comparable<Schedule>{
         return outList;
     }
 
-    public static void createScheduleFromServerResponse(final Context context, final ScheduleReceiver receiver, final String semester, final int[] crns) {
+    public static void createScheduleFromServerResponse(final Context context, final OnEventListener<Schedule> receiver, final String semester, final int[] crns) {
         new AsyncTask<Object, Object, List<CRN>>(){
             @Override
             protected List<CRN> doInBackground(Object... params) {
@@ -72,7 +69,7 @@ public class Schedule implements Comparable<Schedule>{
             @Override
             protected void onPostExecute(List<CRN> crns) {
                 super.onPostExecute(crns);
-                receiver.receiveSchedule(new Schedule(crns));
+                receiver.onSuccess(new Schedule(crns));
             }
         }.execute();
     }
@@ -110,7 +107,6 @@ public class Schedule implements Comparable<Schedule>{
     public Schedule(List<CRN> crns) {
         this.crns = crns;
         this.index = schedules.size();
-        this.inDatabase = inDatabase;
         schedules.add(this);
     }
 
@@ -227,15 +223,19 @@ public class Schedule implements Comparable<Schedule>{
         return builder.toString();
     }
 
-    public static Schedule createFromUUID(Context context, String uuid) {
+    public static void createFromUUID(Context context, final OnEventListener<Schedule> listener, String uuid) {
         String[] split = uuid.split("\\|");
         int[] crns = new int[split.length - 1];
         for (int i = 1; i < split.length; i++) {
             Log.d(MainActivity.LOG_STRING, split[i]);
             crns[i - 1] = Integer.parseInt(split[i]);
         }
-        List<CRN> crnList = DataSource.getCRNs(context, split[0], crns);
-        return new Schedule(crnList);
+        DataSource.getCRNs(context, split[0], crns, new OnEventListener<List<CRN>>() {
+            @Override
+            public void onSuccess(List<CRN> crnList) {
+                listener.onSuccess(new Schedule(crnList));
+            }
+        });
     }
 
     public static class ScheduleItem {

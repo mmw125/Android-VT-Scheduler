@@ -2,8 +2,8 @@ package com.markwiggans.vtscheduler;
 
 import android.app.Fragment;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.ColorInt;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -29,12 +29,9 @@ import com.markwiggans.vtscheduler.fragments.ScheduleCreator;
 import com.markwiggans.vtscheduler.fragments.ScheduleFragment;
 import com.markwiggans.vtscheduler.fragments.ViewSavedSchedule;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
+import com.markwiggans.vtscheduler.interfaces.OnEventListener;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -197,9 +194,25 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     @Override
     public void loadSchedule(String id) {
         panelUpFragment.startLoading();
-        List<Schedule> schedules = new ArrayList<>();
-        schedules.add(Schedule.createFromUUID(getApplicationContext(), id));
-        panelUpFragment.onSchedulesGenerated(schedules);
+        Schedule.createFromUUID(getApplicationContext(), new OnEventListener<Schedule>() {
+            @Override
+            public void onSuccess(Schedule schedule) {
+                new AsyncTask<Schedule, Void, Schedule>() {
+                    @Override
+                    protected Schedule doInBackground(Schedule... schedules) {
+                        schedules[0].getScore(getApplicationContext());
+                        return schedules[0];
+                    }
+
+                    @Override
+                    protected void onPostExecute(Schedule schedule) {
+                        List<Schedule> schedules = new ArrayList<>();
+                        schedules.add(schedule);
+                        panelUpFragment.onSchedulesGenerated(schedules);
+                    }
+                }.execute(schedule);
+            }
+        }, id);
     }
 
     @Override

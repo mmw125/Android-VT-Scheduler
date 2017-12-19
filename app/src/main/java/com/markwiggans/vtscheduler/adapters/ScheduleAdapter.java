@@ -28,11 +28,9 @@ import java.util.UUID;
  * Adapter for viewing schedules
  */
 public class ScheduleAdapter extends ArrayAdapter<Schedule> implements AdapterView.OnItemLongClickListener, AdapterView.OnItemClickListener {
-    private Context context;
 
     public ScheduleAdapter(@NonNull Context context, int id, List<Schedule> schedules) {
         super(context, id, schedules);
-        this.context = context;
     }
 
     public
@@ -43,17 +41,22 @@ public class ScheduleAdapter extends ArrayAdapter<Schedule> implements AdapterVi
         }
         Schedule schedule = getItem(position);
         TextView textView = (TextView) convertView.findViewById(R.id.parent);
-        textView.setText(context.getString(R.string.score_display, schedule.getScore(context)));
+        textView.setText(getContext().getString(R.string.score_display, schedule.getScore(getContext())));
         textView = (TextView) convertView.findViewById(R.id.text_view);
-        String s = "";
+        StringBuilder builder = new StringBuilder();
         for (CRN c : schedule.getCrns()) {
-            if (s.length() > 0) {
-                s += "\n";
+            if (builder.length() > 0) {
+                builder.append("\n");
             }
-            String courseStr = c.getCourse() == null ? "" : c.getCourse().getWholeName();
-            s += courseStr + " " + c.getCRN() + " " + c.getInstructor() + "\n" + c.getMeetingTimesString();
+            builder.append(c.getCourse() == null ? "" : c.getCourse().getWholeName());
+            builder.append(" ");
+            builder.append(c.getCRN());
+            builder.append(" ");
+            builder.append(c.getInstructor());
+            builder.append("\n");
+            builder.append(c.getMeetingTimesString());
         }
-        textView.setText(s);
+        textView.setText(builder.toString());
         return convertView;
     }
 
@@ -78,6 +81,6 @@ public class ScheduleAdapter extends ArrayAdapter<Schedule> implements AdapterVi
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Toast.makeText(context, context.getString(R.string.saving_reminder), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), getContext().getString(R.string.saving_reminder), Toast.LENGTH_SHORT).show();
     }
 }
