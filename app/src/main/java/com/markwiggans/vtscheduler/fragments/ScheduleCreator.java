@@ -20,6 +20,7 @@ import com.markwiggans.vtscheduler.data.Course;
 import com.markwiggans.vtscheduler.data.Semester;
 import com.markwiggans.vtscheduler.data.DataSource;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
+import com.markwiggans.vtscheduler.interfaces.OnEventListener;
 import com.markwiggans.vtscheduler.views.CourseCompletionView;
 
 import java.util.ArrayList;
@@ -67,9 +68,9 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener, A
         semesterSelector.setAdapter(new ArrayAdapter<>(context,
                 android.R.layout.simple_spinner_dropdown_item, new ArrayList<Semester>()));
         courseInput = (CourseCompletionView) view.findViewById(R.id.id_input);
-        DataSource.getSemesters(context, new DataSource.SemesterReceiver() {
+        DataSource.getSemesters(context, new OnEventListener<List<Semester>>() {
             @Override
-            public void receiveSemesters(List<Semester> semesters) {
+            public void onSuccess(List<Semester> semesters) {
                 ArrayAdapter<Semester> semesterAdapter = (ArrayAdapter<Semester>) semesterSelector.getAdapter();
                 semesterAdapter.addAll(semesters);
                 semesterAdapter.notifyDataSetChanged();
@@ -143,9 +144,9 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener, A
     public void updateCourseAutocomplete(Semester selectedSemester) {
         removeAllCourses();
         courseInput.setEnabled(false);
-        DataSource.getCourses(context, new DataSource.CoursesReceiver() {
+        DataSource.getCourses(context, new OnEventListener<List<Course>>() {
             @Override
-            public void receiveCourses(List<Course> courses) {
+            public void onSuccess(List<Course> courses) {
                 CourseAdapter adapter = new CourseAdapter(context, 0, courses, false);
                 courseInput.setAdapter(adapter);
                 courseInput.setEnabled(true);

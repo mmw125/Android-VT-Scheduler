@@ -5,6 +5,7 @@ import android.content.Context;
 import com.markwiggans.vtscheduler.R;
 import com.markwiggans.vtscheduler.data.DataSource;
 import com.markwiggans.vtscheduler.data.Schedule;
+import com.markwiggans.vtscheduler.interfaces.OnEventListener;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,10 +40,10 @@ public class HomeScreen extends ScheduleFragment {
     @Override
     public void onResume() {
         super.onResume();
-        DataSource.getSavedSchedules(getContext(), new DataSource.ScheduleReceiver() {
+        DataSource.getSavedSchedules(getContext(), new OnEventListener<List<Schedule>>() {
             @Override
-            public void receiveSchedules(List<Schedule> schdules) {
-                HomeScreen.this.onSchedulesGenerated(schdules);
+            public void onSuccess(List<Schedule> schedules) {
+                HomeScreen.this.onSchedulesGenerated(schedules);
             }
         });
     }

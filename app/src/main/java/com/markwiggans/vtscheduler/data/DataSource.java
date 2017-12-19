@@ -10,6 +10,7 @@ import com.markwiggans.vtscheduler.database.CourseReaderContract;
 import com.markwiggans.vtscheduler.database.DatabaseWrapper;
 import com.markwiggans.vtscheduler.database.Query;
 import com.markwiggans.vtscheduler.database.QueryResult;
+import com.markwiggans.vtscheduler.interfaces.OnEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +20,6 @@ import java.util.List;
  * Wrapper for the DatabaseReader class
  */
 public class DataSource {
-    public interface CoursesReceiver {
-        void receiveCourses(List<Course> courses);
-    }
-
     public static Course getCorrespondingCourse(Context context, CRN crn) {
         String whereStr = CourseReaderContract.CourseEntry.COLUMN_NAME_WHOLE_NAME + " = '" + crn.getCourseWholeName()
                 + "' and " + CourseReaderContract.CourseEntry.COLUMN_NAME_TYPE + " = '" + crn.getType()
@@ -34,27 +31,27 @@ public class DataSource {
         return courses.size() > 0 ? courses.get(0) : null;
     }
 
-    public static void getCourse(Context context, final CoursesReceiver receiver, final CRN crn) {
-        getCourses(context, new CoursesReceiver() {
+    public static void getCourse(Context context, final OnEventListener<Course> receiver, final CRN crn) {
+        getCourses(context, new OnEventListener<List<Course>>() {
             @Override
-            public void receiveCourses(List<Course> courses) {
+            public void onSuccess(List<Course> courses) {
                 for (Course c : courses) {
                     if (crn.isCRNOf(c)) {
-                        ArrayList<Course> course = new ArrayList<>();
-                        course.add(c);
-                        receiver.receiveCourses(course);
+                        receiver.onSuccess(c);
+                        return;
                     }
                 }
-                receiver.receiveCourses(null);
+                receiver.onFailure(null);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                receiver.onFailure(e);
             }
         }, new Semester(crn.getSemester()));
     }
 
-    public interface ScheduleReceiver {
-        void receiveSchedules(List<Schedule> schedules);
-    }
-
-    public static void getSavedSchedules(final Context context, final ScheduleReceiver receiver) {
+    public static void getSavedSchedules(final Context context, final OnEventListener<List<Schedule>> receiver) {
         Query items = new Query(CourseReaderContract.ScheduleItemEntry.TABLE_NAME);
         Query schedules = new Query(CourseReaderContract.ScheduleEntry.TABLE_NAME);
         DatabaseWrapper.getInstance(context).queryAll(new DatabaseWrapper.DatabaseTaskReceiver() {
@@ -75,7 +72,7 @@ public class DataSource {
                     protected void onPostExecute(ArrayList<Schedule> schedules) {
                         super.onPostExecute(schedules);
                         Log.d(MainActivity.LOG_STRING, schedules.size() + " schedules");
-                        receiver.receiveSchedules(schedules);
+                        receiver.onSuccess(schedules);
                     }
                 }.execute(scheduleCursor, itemCursor);
             }
@@ -86,7 +83,7 @@ public class DataSource {
     /**
      * Queries the database for all of the courses. This is a cached operation
      */
-    private static void getCourses(Context context, final CoursesReceiver receiver) {
+    private static void getCourses(Context context, final OnEventListener<List<Course>> receiver) {
         getCourses(context, receiver, null);
     }
 
@@ -97,10 +94,10 @@ public class DataSource {
      * @param receiver what to call when the task is done
      * @param semester filters
      */
-    public static void getCourses(final Context context, final CoursesReceiver receiver, final Semester semester) {
+    public static void getCourses(final Context context, final OnEventListener<List<Course>> listener, final Semester semester) {
         if (courses != null) {
             if (semester == null) {
-                receiver.receiveCourses(courses);
+                listener.onSuccess(courses);
                 return;
             } else {
                 List<Course> outCourses = new ArrayList<>();
@@ -109,7 +106,7 @@ public class DataSource {
                         outCourses.add(c);
                     }
                 }
-                receiver.receiveCourses(outCourses);
+                listener.onSuccess(outCourses);
                 return;
             }
         }
@@ -124,17 +121,13 @@ public class DataSource {
                     } while (c.moveToNext());
                 }
                 if (semester != null) {
-                    getCourses(context, receiver, semester);
+                    getCourses(context, listener, semester);
                 } else {
-                    receiver.receiveCourses(courses);
+                    listener.onSuccess(courses);
                 }
             }
         }, new Query(CourseReaderContract.CourseEntry.TABLE_NAME));
 
-    }
-
-    public interface DepartmentReceiver {
-        void receiveDepartments(List<String> departments);
     }
 
     private static List<String> departments;
@@ -146,9 +139,9 @@ public class DataSource {
      * @param context  the context
      * @param receiver the receiver for the data
      */
-    public static void getDepartments(Context context, final DepartmentReceiver receiver) {
+    public static void getDepartments(Context context, final OnEventListener<List<String>> receiver) {
         if (departments != null) {
-            receiver.receiveDepartments(departments);
+            receiver.onSuccess(departments);
             return;
         }
         departments = new ArrayList<>();
@@ -163,7 +156,7 @@ public class DataSource {
                         departments.add(c.getString(0));
                     } while (c.moveToNext());
                 }
-                receiver.receiveDepartments(departments);
+                receiver.onSuccess(departments);
             }
         }, query);
     }
@@ -187,10 +180,6 @@ public class DataSource {
         }
         c.close();
         return null;
-    }
-
-    public interface CRNReciever {
-        void receiveCRNs(List<CRN> crns);
     }
 
     /**
@@ -228,11 +217,13 @@ public class DataSource {
         return outList;
     }
 
-    public static void getCRNs(Context context, String semester, int[] crns, final CRNReciever reciever) {
-        String whereString = CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = '" + semester + "'";
+    public static void getCRNs(Context context, String semester, int[] crns, final OnEventListener<List<CRN>> reciever) {
+        StringBuilder whereString = new StringBuilder(CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = '" + semester + "'");
         for (int i : crns) {
-            whereString += crns[0] == i ? " and " : " or ";
-            whereString += CourseReaderContract.CRNEntry.COLUMN_NAME_CRN + " = " + i;
+            whereString.append(crns[0] == i ? " and " : " or ");
+            whereString.append(CourseReaderContract.CRNEntry.COLUMN_NAME_CRN);
+            whereString.append(" = ");
+            whereString.append(i);
         }
         DatabaseWrapper.getInstance(context).query(new DatabaseWrapper.DatabaseTaskReceiver() {
             @Override
@@ -240,9 +231,9 @@ public class DataSource {
                 Cursor c = results.get(0).getCursor();
                 List<CRN> outList = CRN.createCRNs(c);
                 c.close();
-                reciever.receiveCRNs(outList);
+                reciever.onSuccess(outList);
             }
-        }, new Query(CourseReaderContract.CRNEntry.TABLE_NAME, whereString));
+        }, new Query(CourseReaderContract.CRNEntry.TABLE_NAME, whereString.toString()));
     }
 
     public static ArrayList<MeetingTime> getMeetingTimes(Context context, CRN crn) {
@@ -259,34 +250,26 @@ public class DataSource {
         return mtl;
     }
 
-    interface CourseNameReceiver {
-        void receiveCourseNames(List<String> courseNames);
-    }
-
     private static List<String> courseNames;
-    public static void getCourseNames(Context context, final CourseNameReceiver receiver) {
+    public static void getCourseNames(Context context, final OnEventListener<List<String>> receiver) {
         if (courseNames == null) {
             courseNames = new ArrayList<>();
-            getCourses(context, new CoursesReceiver() {
+            getCourses(context, new OnEventListener<List<Course>>() {
                 @Override
-                public void receiveCourses(List<Course> courses) {
+                public void onSuccess(List<Course> courses) {
                     for (Course c : courses) {
                         courseNames.add(c.getCourseName());
                     }
-                    receiver.receiveCourseNames(courseNames);
+                    receiver.onSuccess(courseNames);
                 }
             });
         } else {
-            receiver.receiveCourseNames(courseNames);
+            receiver.onSuccess(courseNames);
         }
     }
 
-    public interface SemesterReceiver {
-        void receiveSemesters(List<Semester> semesters);
-    }
-
     private static List<Semester> semesters = null;
-    public static void getSemesters(Context context, final SemesterReceiver receiver) {
+    public static void getSemesters(Context context, final OnEventListener<List<Semester>> receiver) {
         if (semesters == null) {
             semesters = new ArrayList<>();
             Query query = new Query(CourseReaderContract.CourseEntry.TABLE_NAME, new String[]{"distinct " + CourseReaderContract.CourseEntry.COLUMN_NAME_SEMESTER_ID});
@@ -299,11 +282,11 @@ public class DataSource {
                             semesters.add(new Semester(c));
                         } while (c.moveToNext());
                     }
-                    receiver.receiveSemesters(semesters);
+                    receiver.onSuccess(semesters);
                 }
             }, query);
         } else {
-            receiver.receiveSemesters(semesters);
+            receiver.onSuccess(semesters);
         }
     }
 
