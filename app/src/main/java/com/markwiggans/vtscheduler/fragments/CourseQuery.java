@@ -59,7 +59,7 @@ public class CourseQuery extends Fragment implements TextWatcher {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_course_query, container, false);
-        crn = (EditText) view.findViewById(R.id.id_input);
+        crn = (EditText) view.findViewById(R.id.courseNumber);
         crn.addTextChangedListener(this);
         department = (EditText) view.findViewById(R.id.department);
         department.addTextChangedListener(this);

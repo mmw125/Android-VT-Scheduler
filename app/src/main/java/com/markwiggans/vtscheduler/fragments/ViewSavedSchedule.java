@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.markwiggans.vtscheduler.R;
-import com.markwiggans.vtscheduler.data.Schedule;
 import com.markwiggans.vtscheduler.interfaces.MainActivityInteraction;
 
 /**
@@ -46,7 +45,7 @@ public class ViewSavedSchedule extends Fragment implements View.OnClickListener 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_view_saved_schedule, container, false);
-        crn = (EditText) view.findViewById(R.id.id_input);
+        crn = (EditText) view.findViewById(R.id.courseNumber);
 
         submit = (Button) view.findViewById(R.id.submit);
         submit.setOnClickListener(this);
@@ -67,7 +66,7 @@ public class ViewSavedSchedule extends Fragment implements View.OnClickListener 
     @Override
     public void onResume() {
         super.onResume();
-        mListener.setSelected(getString(R.string.view_saved_schedules));
+        mListener.setSelected(getString(R.string.load_schedule));
     }
 
     @Override

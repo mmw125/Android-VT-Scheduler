@@ -40,7 +40,7 @@ import java.util.List;
  * The Main Activity for the application
  */
 public class MainActivity extends AppCompatActivity implements MainActivityInteraction {
-    public static final String LOG_STRING = "VT_Scheduler", TAG_UP_PANEL_FRAGMENT = "UP_PANEL_FRAGMENT";
+    public static final String LOG_STRING = "VT_Scheduler";
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private SlidingUpPanelLayout slidingPanelLayout;
@@ -117,16 +117,20 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 R.string.drawer_close  /* "close drawer" description for accessibility */
         ) {
             public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
                 getActionBar().setTitle(mTitle);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
             public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
                 getActionBar().setTitle(mDrawerTitle);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
         mDrawerLayout.addDrawerListener(mDrawerToggle);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
     }
 
     @Override
@@ -239,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             return CourseQuery.COURSE_QUERY_FRAGMENT;
         } else if(title.equals(getString(R.string.create_schedule))) {
             return ScheduleCreator.SCHEDULE_CREATOR_FRAGMENT;
-        }else if(title.equals(getString(R.string.view_saved_schedules))){
+        }else if(title.equals(getString(R.string.load_schedule))){
             return ViewSavedSchedule.SAVED_SCHEDULES_FRAGMENT;
         }
         return null;

@@ -67,7 +67,7 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener, A
         semesterSelector.setOnItemSelectedListener(this);
         semesterSelector.setAdapter(new ArrayAdapter<>(context,
                 android.R.layout.simple_spinner_dropdown_item, new ArrayList<Semester>()));
-        courseInput = (CourseCompletionView) view.findViewById(R.id.id_input);
+        courseInput = (CourseCompletionView) view.findViewById(R.id.courseNumber);
         DataSource.getSemesters(context, new OnEventListener<List<Semester>>() {
             @Override
             public void onSuccess(List<Semester> semesters) {
