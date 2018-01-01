@@ -1,13 +1,13 @@
 package com.markwiggans.vtscheduler;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -39,7 +39,7 @@ import java.util.List;
 /**
  * The Main Activity for the application
  */
-public class MainActivity extends AppCompatActivity implements MainActivityInteraction {
+public class MainActivity extends Activity implements MainActivityInteraction {
     public static final String LOG_STRING = "VT_Scheduler";
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
@@ -101,11 +101,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         toolbar.setTitleTextColor(getColor(R.color.white));
         toolbar.setNavigationIcon(R.drawable.ic_drawer);
         setActionBar(toolbar);
-        // enable ActionBar app icon to behave as action to toggle nav drawer
-        if(getActionBar() != null) {
-            getActionBar().setDisplayHomeAsUpEnabled(true);
-            getActionBar().setHomeButtonEnabled(true);
-        }
 
 
         // ActionBarDrawerToggle ties together the the proper interactions
@@ -113,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         mDrawerToggle = new ActionBarDrawerToggle(
                 this,                  /* host Activity */
                 mDrawerLayout,         /* DrawerLayout object */
+                R.drawable.ic_drawer,
                 R.string.drawer_open,  /* "open drawer" description for accessibility */
                 R.string.drawer_close  /* "close drawer" description for accessibility */
         ) {
@@ -129,8 +125,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             }
         };
         mDrawerLayout.addDrawerListener(mDrawerToggle);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
+
+        // enable ActionBar app icon to behave as action to toggle nav drawer
+        if(getActionBar() != null) {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setHomeButtonEnabled(true);
+        }
     }
 
     @Override
@@ -146,8 +146,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        menu.findItem(R.id.action_websearch).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -280,7 +278,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
+//        mDrawerToggle.syncState();
     }
 
     @Override
