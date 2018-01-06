@@ -37,10 +37,9 @@
     <string name="saving">Saving&#8230;</string>
     <string name="saving_reminder">Long Press to Save</string>
     <string name="unique_identifier">Schedule Identifier</string>
-    <string name="login_url">http://ec2-54-191-60-136.us-west-2.compute.amazonaws.com:8080/share</string>
     <string name="default_error_message">An error has occurred</string>
-    <string name="no_such_schedule_errror">Could not load that schedule</string>
-    <string name="offline_error">Either you or the server is offline</string>
+    <string name="no_such_schedule_error">Could not load that schedule</string>
     <string name="error_label">No Possible Schedules</string>
     <string name="unable_to_generate_schedules">No schedules are possible</string>
+    <string name="enter_at_least_one_course_error">Enter at least one course</string>
 </resources>

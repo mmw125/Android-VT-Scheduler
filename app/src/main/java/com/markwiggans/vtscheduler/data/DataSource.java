@@ -3,9 +3,7 @@ package com.markwiggans.vtscheduler.data;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
-import android.util.Log;
 
-import com.markwiggans.vtscheduler.MainActivity;
 import com.markwiggans.vtscheduler.database.CourseReaderContract;
 import com.markwiggans.vtscheduler.database.DatabaseWrapper;
 import com.markwiggans.vtscheduler.database.Query;

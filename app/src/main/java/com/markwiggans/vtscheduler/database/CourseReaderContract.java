@@ -47,7 +47,6 @@ public class CourseReaderContract {
 
     public static class DepartmentEntry implements BaseColumns {
         public static final String TABLE_NAME = "department";
-        public static final String COLUMN_NAME_ID = "id";
         public static final String COLUMN_NAME_DEPARTMENT_NAME = "department_name";
         public static final String COLUMN_NAME_DEPARTMENT_ABB = "department_abbreviation";
     }
