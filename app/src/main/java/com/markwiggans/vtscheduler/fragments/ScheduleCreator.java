@@ -131,7 +131,6 @@ public class ScheduleCreator extends Fragment implements View.OnClickListener, A
      */
     public void removeAllCourses() {
         for (Course c : courseInput.getObjects()) {
-            Log.d(MainActivity.LOG_STRING, "Removing " + c.toString());
             courseInput.removeObject(c);
         }
     }

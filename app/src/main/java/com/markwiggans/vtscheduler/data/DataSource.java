@@ -21,10 +21,11 @@ import java.util.List;
  */
 public class DataSource {
     public static Course getCorrespondingCourse(Context context, CRN crn) {
-        String whereStr = CourseReaderContract.CourseEntry.COLUMN_NAME_WHOLE_NAME + " = '" + crn.getCourseWholeName()
-                + "' and " + CourseReaderContract.CourseEntry.COLUMN_NAME_TYPE + " = '" + crn.getType()
-                + "' and " + CourseReaderContract.CourseEntry.COLUMN_NAME_SEMESTER_ID + " = '" + crn.getSemester();
-        Query q = new Query(CourseReaderContract.CourseEntry.TABLE_NAME, whereStr);
+        String whereStr = CourseReaderContract.CourseEntry.COLUMN_NAME_WHOLE_NAME + " = ? and "
+                + CourseReaderContract.CourseEntry.COLUMN_NAME_TYPE + " = ? and "
+                + CourseReaderContract.CourseEntry.COLUMN_NAME_SEMESTER_ID + " = ?";
+        Query q = new Query(CourseReaderContract.CourseEntry.TABLE_NAME, whereStr,
+                new String[]{crn.getCourseWholeName(), crn.getType(), crn.getSemester()});
         Cursor c = DatabaseWrapper.getInstance(context).query(q).getCursor();
         List<Course> courses = Course.createCourses(c);
         c.close();
@@ -71,7 +72,6 @@ public class DataSource {
                     @Override
                     protected void onPostExecute(ArrayList<Schedule> schedules) {
                         super.onPostExecute(schedules);
-                        Log.d(MainActivity.LOG_STRING, schedules.size() + " schedules");
                         receiver.onSuccess(schedules);
                     }
                 }.execute(scheduleCursor, itemCursor);
@@ -169,9 +169,9 @@ public class DataSource {
      * @return the crn object
      */
     public static CRN getCRN(Context context, int crn, String semester) {
-        String whereStatement = CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = '" + semester + "' AND " +
-                CourseReaderContract.CRNEntry.COLUMN_NAME_CRN + " = " + crn;
-        Cursor c = DatabaseWrapper.getInstance(context).query(new Query(CourseReaderContract.CRNEntry.TABLE_NAME, whereStatement)).getCursor();
+        String whereStatement = CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = ? AND " +
+                CourseReaderContract.CRNEntry.COLUMN_NAME_CRN + " = ?";
+        Cursor c = DatabaseWrapper.getInstance(context).query(new Query(CourseReaderContract.CRNEntry.TABLE_NAME, whereStatement, new String[]{semester, crn + ""})).getCursor();
         if (c.moveToFirst()) {
             do {
                 CRN crnOut = new CRN(c);
@@ -190,11 +190,12 @@ public class DataSource {
      * @return the meeting times for the given course
      */
     public static List<CRN> getCRNs(Context context, Course course) {
-        String whereStatement = CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = '" + course.getSemester() + "' AND " +
-                CourseReaderContract.CRNEntry.COLUMN_COURSE_WHOLE_NAME + " = '" + course.getWholeName() + "' AND " +
-                CourseReaderContract.CRNEntry.COLUMN_COURSE_TYPE + " = '" + course.getType() + "'";
+        String[] args = new String[]{course.getSemester(), course.getWholeName(), course.getType()};
+        String whereStatement = CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = ? AND " +
+                CourseReaderContract.CRNEntry.COLUMN_COURSE_WHOLE_NAME + " = ? AND " +
+                CourseReaderContract.CRNEntry.COLUMN_COURSE_TYPE + " = ?";
         Cursor c = DatabaseWrapper.getInstance(context).query(new Query(
-                CourseReaderContract.CRNEntry.TABLE_NAME, whereStatement)).getCursor();
+                CourseReaderContract.CRNEntry.TABLE_NAME, whereStatement, args)).getCursor();
         List<CRN> crns = new ArrayList<>();
         if (c.moveToFirst()) {
             do {
@@ -206,14 +207,16 @@ public class DataSource {
     }
 
     public static List<CRN> getCRNs(Context context, String semester, int[] crns) {
-        StringBuilder builder = new StringBuilder(CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = '" + semester + "'");
+        String[] args = new String[crns.length + 1];
+        StringBuilder builder = new StringBuilder(CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = ?");
+        args[0] = semester;
         for (int i : crns) {
             builder.append(crns[0] == i ? " and " : " or ");
             builder.append(CourseReaderContract.CRNEntry.COLUMN_NAME_CRN);
-            builder.append(" = ");
-            builder.append(i);
+            builder.append(" = ?");
+            args[i + 1] = crns[i] + "";
         }
-        Query q = new Query(CourseReaderContract.CRNEntry.TABLE_NAME, builder.toString());
+        Query q = new Query(CourseReaderContract.CRNEntry.TABLE_NAME, builder.toString(), args);
         Cursor c = DatabaseWrapper.getInstance(context).query(q).getCursor();
         List<CRN> outList = CRN.createCRNs(c);
         c.close();
@@ -221,12 +224,14 @@ public class DataSource {
     }
 
     public static void getCRNs(Context context, String semester, int[] crns, final OnEventListener<List<CRN>> receiver) {
-        StringBuilder whereString = new StringBuilder(CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = '" + semester + "'");
-        for (int i : crns) {
-            whereString.append(crns[0] == i ? " and " : " or ");
+        String[] args = new String[crns.length + 1];
+        StringBuilder whereString = new StringBuilder(CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = ?");
+        args[0] = semester;
+        for (int i = 0; i < crns.length; i++) {
+            whereString.append(i == 0 ? " and " : " or ");
             whereString.append(CourseReaderContract.CRNEntry.COLUMN_NAME_CRN);
-            whereString.append(" = ");
-            whereString.append(i);
+            whereString.append(" = ?");
+            args[i + 1] = crns[i] + "";
         }
         DatabaseWrapper.getInstance(context).query(new OnEventListener<List<QueryResult>>() {
             @Override
@@ -236,13 +241,13 @@ public class DataSource {
                 c.close();
                 receiver.onSuccess(outList);
             }
-        }, new Query(CourseReaderContract.CRNEntry.TABLE_NAME, whereString.toString()));
+        }, new Query(CourseReaderContract.CRNEntry.TABLE_NAME, whereString.toString(), args));
     }
 
     public static ArrayList<MeetingTime> getMeetingTimes(Context context, CRN crn) {
-        String whereStatement = CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_CRN_SEMESTER + " = '" + crn.getSemester()
-                + "' AND " + CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_CRN_CRN + " = " + crn.getCRN();
-        Cursor c = DatabaseWrapper.getInstance(context).query(new Query(CourseReaderContract.MeetingTimeEntry.TABLE_NAME, whereStatement)).getCursor();
+        String whereStatement = CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_CRN_SEMESTER
+                + " = ? AND " + CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_CRN_CRN + " = ?";
+        Cursor c = DatabaseWrapper.getInstance(context).query(new Query(CourseReaderContract.MeetingTimeEntry.TABLE_NAME, whereStatement, new String[]{crn.getSemester(), crn.getCRN() + ""})).getCursor();
         ArrayList<MeetingTime> mtl = new ArrayList<>();
         if (c.moveToFirst()) {
             do {
