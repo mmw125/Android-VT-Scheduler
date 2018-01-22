@@ -16,8 +16,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintTop_creator="1"
-        android:layout_marginLeft="8dp" />
+        tools:layout_constraintTop_creator="1" />
 
     <TextView
         android:id="@+id/child"
@@ -34,6 +33,18 @@
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintTop_creator="1"
         app:layout_constraintVertical_bias="0.0"
-        android:layout_marginLeft="8dp"
         app:layout_constraintLeft_toLeftOf="@+id/parent" />
+
+    <!--<TextView-->
+        <!--android:id="@+id/textViewOptions"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentEnd="true"-->
+        <!--android:layout_alignParentTop="true"-->
+        <!--android:layout_marginEnd="8dp"-->
+        <!--android:layout_marginTop="8dp"-->
+        <!--android:text="@string/hamburger_icon"-->
+        <!--android:textAppearance="?android:textAppearanceLarge"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--app:layout_constraintTop_toTopOf="parent" />-->
 </android.support.constraint.ConstraintLayout>
