@@ -34,6 +34,7 @@ public class DataSource {
         getCourses(context, new OnEventListener<List<Course>>() {
             @Override
             public void onSuccess(List<Course> courses) {
+                DatabaseWrapper.verifyNotOnUIThread();
                 for (Course c : courses) {
                     if (crn.isCRNOf(c)) {
                         receiver.onSuccess(c);
@@ -111,6 +112,7 @@ public class DataSource {
         DatabaseWrapper.getInstance(context).query(new OnEventListener<List<QueryResult>>() {
             @Override
             public void onSuccess(List<QueryResult> results) {
+                DatabaseWrapper.verifyNotOnUIThread();
                 courses = new ArrayList<>();
                 Cursor c = results.get(0).getCursor();
                 if (c.moveToFirst()) {
@@ -148,6 +150,7 @@ public class DataSource {
         DatabaseWrapper.getInstance(context).query(new OnEventListener<List<QueryResult>>() {
             @Override
             public void onSuccess(List<QueryResult> results) {
+                DatabaseWrapper.verifyNotOnUIThread();
                 Cursor c = results.get(0).getCursor();
                 if (c.moveToFirst()) {
                     do {
@@ -234,6 +237,7 @@ public class DataSource {
         DatabaseWrapper.getInstance(context).query(new OnEventListener<List<QueryResult>>() {
             @Override
             public void onSuccess(List<QueryResult> results) {
+                DatabaseWrapper.verifyNotOnUIThread();
                 Cursor c = results.get(0).getCursor();
                 List<CRN> outList = CRN.createCRNs(c);
                 c.close();
@@ -263,6 +267,7 @@ public class DataSource {
             getCourses(context, new OnEventListener<List<Course>>() {
                 @Override
                 public void onSuccess(List<Course> courses) {
+                    DatabaseWrapper.verifyNotOnUIThread();
                     for (Course c : courses) {
                         courseNames.add(c.getCourseName());
                     }

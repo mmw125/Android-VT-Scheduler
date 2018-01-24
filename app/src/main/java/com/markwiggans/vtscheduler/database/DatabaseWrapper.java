@@ -85,7 +85,7 @@ public class DatabaseWrapper {
         new DatabaseTask(receiver, closeFPS).execute(query);
     }
 
-    private void verifyNotOnUIThread() {
+    public static void verifyNotOnUIThread() {
         if(Looper.getMainLooper().getThread() == Thread.currentThread()) {
             throw new IllegalStateException("Cannot do synchronous query on ui thread");
         }
