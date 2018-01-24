@@ -43,4 +43,7 @@
     <string name="unable_to_generate_schedules">No schedules are possible</string>
     <string name="enter_at_least_one_course_error">Enter at least one course</string>
     <string name="hamburger_icon">&#8942;</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
