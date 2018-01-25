@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 
+import com.markwiggans.vtscheduler.MainActivity;
 import com.markwiggans.vtscheduler.R;
 import com.markwiggans.vtscheduler.adapters.CRNListAdapter;
 import com.markwiggans.vtscheduler.data.CRN;
@@ -58,13 +59,19 @@ public class CRNDisplay extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.crn_display, container, false);
         crnView = (ExpandableListView) view.findViewById(R.id.crn_expandable_list);
-        DataSource.getCRNs(getContext(), course, new OnEventListener<List<CRN>>() {
+        DataSource.getCRNs(getContext(), course, false, new OnEventListener<List<CRN>>() {
             @Override
             public void onSuccess(List<CRN> crns) {
                 List<String> semesters = new ArrayList<>();
-                semesters.add(crns.get(0).getSemester());
                 HashMap<String, List<CRN>> map = new HashMap<>();
-                map.put(crns.get(0).getSemester(), crns);
+                for (CRN crn : crns) {
+                    if (map.get(crn.getSemester()) == null) {
+                        semesters.add(crn.getSemester());
+                        map.put(crn.getSemester(), new ArrayList<CRN>());
+                    }
+                    map.get(crn.getSemester()).add(crn);
+                }
+
                 CRNListAdapter adapter = new CRNListAdapter(getContext(), semesters, map);
                 crnView.setAdapter(adapter);
             }
