@@ -8,6 +8,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -28,7 +29,7 @@ import java.util.List;
 /**
  * Fragment for Quering courses
  */
-public class CourseQuery extends Fragment implements TextWatcher {
+public class CourseQuery extends Fragment implements TextWatcher, AdapterView.OnItemClickListener {
     public static final String COURSE_QUERY_FRAGMENT = "QUERY_FRAGMENT";
     private MainActivityInteraction mListener;
     private EditText crn, department;
@@ -36,6 +37,7 @@ public class CourseQuery extends Fragment implements TextWatcher {
     private Context context;
     private LinearLayout linlaHeaderProgress;
     private View view;
+    private ListView memberList;
 
     public CourseQuery() {
         // Required empty public constructor
@@ -65,6 +67,8 @@ public class CourseQuery extends Fragment implements TextWatcher {
         department.addTextChangedListener(this);
         layout = (LinearLayout) view.findViewById(R.id.linear_layout);
         linlaHeaderProgress = (LinearLayout) view.findViewById(R.id.linlaHeaderProgress);
+        memberList = (ListView) view.findViewById(R.id.panel_up_list);
+        memberList.setOnItemClickListener(this);
         return view;
     }
 
@@ -115,9 +119,14 @@ public class CourseQuery extends Fragment implements TextWatcher {
                 linlaHeaderProgress.setVisibility(View.GONE);
                 CourseAdapter adapter = new CourseAdapter(context, R.id.panel_up_list,
                         Course.createCourses(results.get(0).getCursor()));
-                ListView memberList = (ListView) view.findViewById(R.id.panel_up_list);
                 memberList.setAdapter(adapter);
             }
         }, q);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        Course course = (Course) adapterView.getItemAtPosition(i);
+        mListener.changeFragment(CRNDisplay.newInstance(course));
     }
 }

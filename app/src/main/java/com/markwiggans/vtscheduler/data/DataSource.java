@@ -181,6 +181,27 @@ public class DataSource {
         return null;
     }
 
+    public static void getCRNs(Context context, final Course course, final OnEventListener<List<CRN>> reciever) {
+        String[] args = new String[]{course.getSemester(), course.getWholeName(), course.getType()};
+        String whereStatement = CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = ? AND " +
+                CourseReaderContract.CRNEntry.COLUMN_COURSE_WHOLE_NAME + " = ? AND " +
+                CourseReaderContract.CRNEntry.COLUMN_COURSE_TYPE + " = ?";
+        DatabaseWrapper.getInstance(context).query(new OnEventListener<List<QueryResult>>() {
+            @Override
+            public void onSuccess(List<QueryResult> object) {
+                List<CRN> crns = new ArrayList<>();
+                Cursor c = object.get(0).getCursor();
+                if (c.moveToFirst()) {
+                    do {
+                        crns.add(new CRN(course, c));
+                    } while (c.moveToNext());
+                }
+                c.close();
+                reciever.onSuccess(crns);
+            }
+        }, new Query(CourseReaderContract.CRNEntry.TABLE_NAME, whereStatement, args));
+    }
+
     /**
      * Gets the meeting times for one course
      *

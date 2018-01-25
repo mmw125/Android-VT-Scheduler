@@ -2,15 +2,21 @@ package com.markwiggans.vtscheduler.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
-import android.widget.TextView;
 
 import com.markwiggans.vtscheduler.R;
+import com.markwiggans.vtscheduler.adapters.CRNListAdapter;
 import com.markwiggans.vtscheduler.data.CRN;
+import com.markwiggans.vtscheduler.data.Course;
+import com.markwiggans.vtscheduler.data.DataSource;
+import com.markwiggans.vtscheduler.interfaces.OnEventListener;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Mark Wiggans on 3/27/2017.
@@ -19,7 +25,7 @@ import com.markwiggans.vtscheduler.data.CRN;
 public class CRNDisplay extends Fragment {
     private static final String ARG_PARAM1 = "param1";
 
-    private int crnNumber;
+    private Course course = null;
     private ExpandableListView crnView;
 
     public CRNDisplay() {
@@ -32,10 +38,10 @@ public class CRNDisplay extends Fragment {
      *
      * @return A new instance of fragment ScheduleCreator.
      */
-    public static CRNDisplay newInstance(int crnNumber) {
+    public static CRNDisplay newInstance(Course course) {
         CRNDisplay fragment = new CRNDisplay();
         Bundle args = new Bundle();
-        args.putInt(ARG_PARAM1, crnNumber);
+        args.putSerializable(ARG_PARAM1, course);
         fragment.setArguments(args);
         return fragment;
     }
@@ -44,7 +50,7 @@ public class CRNDisplay extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            this.crnNumber = getArguments().getInt(ARG_PARAM1);
+            this.course = (Course) getArguments().getSerializable(ARG_PARAM1);
         }
     }
 
@@ -52,20 +58,17 @@ public class CRNDisplay extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.crn_display, container, false);
         crnView = (ExpandableListView) view.findViewById(R.id.crn_expandable_list);
-        crnView.setAdapter();
+        DataSource.getCRNs(getContext(), course, new OnEventListener<List<CRN>>() {
+            @Override
+            public void onSuccess(List<CRN> crns) {
+                List<String> semesters = new ArrayList<>();
+                semesters.add(crns.get(0).getSemester());
+                HashMap<String, List<CRN>> map = new HashMap<>();
+                map.put(crns.get(0).getSemester(), crns);
+                CRNListAdapter adapter = new CRNListAdapter(getContext(), semesters, map);
+                crnView.setAdapter(adapter);
+            }
+        });
         return view;
-    }
-
-    public @NonNull
-    View getView(int position, View convertView, @NonNull ViewGroup parent) {
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.crn_display, parent, false);
-        }
-        CRN item = getItem(position);
-        TextView crn_number = (TextView) convertView.findViewById(R.id.parent);
-        crn_number.setText(item.getCRN() + "");
-        TextView instructor = (TextView) convertView.findViewById(R.id.child);
-        instructor.setText(item.getInstructor());
-        return convertView;
     }
 }

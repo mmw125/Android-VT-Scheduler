@@ -8,5 +8,8 @@
     <ExpandableListView
         android:id="@+id/crn_expandable_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"
+        android:divider="@android:color/white"
+        android:dividerHeight="0.5dp"/>
 </android.support.constraint.ConstraintLayout>
