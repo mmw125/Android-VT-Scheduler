@@ -273,7 +273,26 @@ public class DataSource {
         }, new Query(CourseReaderContract.CRNEntry.TABLE_NAME, whereString.toString(), args));
     }
 
-    public static ArrayList<MeetingTime> getMeetingTimes(Context context, CRN crn) {
+    public static void getMeetingTimes(Context context, CRN crn, final OnEventListener<List<MeetingTime>> receiver) {
+        String whereStatement = CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_CRN_SEMESTER
+                + " = ? AND " + CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_CRN_CRN + " = ?";
+        DatabaseWrapper.getInstance(context).query(new OnEventListener<List<QueryResult>>() {
+            @Override
+            public void onSuccess(List<QueryResult> object) {
+                ArrayList<MeetingTime> mtl = new ArrayList<>();
+                Cursor c = object.get(0).getCursor();
+                if (c.moveToFirst()) {
+                    do {
+                        mtl.add(new MeetingTime(c));
+                    } while (c.moveToNext());
+                }
+                c.close();
+                receiver.onSuccess(mtl);
+            }
+        }, new Query(CourseReaderContract.MeetingTimeEntry.TABLE_NAME, whereStatement, new String[]{crn.getSemester(), crn.getCRN() + ""}));
+    }
+
+    public static List<MeetingTime> getMeetingTimes(Context context, CRN crn) {
         String whereStatement = CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_CRN_SEMESTER
                 + " = ? AND " + CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_CRN_CRN + " = ?";
         Cursor c = DatabaseWrapper.getInstance(context).query(new Query(

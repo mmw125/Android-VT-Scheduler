@@ -16,21 +16,21 @@ import com.markwiggans.vtscheduler.data.CRN;
 
 public class CRNListAdapter extends BaseExpandableListAdapter {
 
-    private Context _context;
-    private List<String> _listDataHeader; // header titles
+    private Context context;
+    private List<String> listDataHeader; // header titles
     // child data in format of header title, child title
-    private HashMap<String, List<CRN>> _listDataChild;
+    private HashMap<String, List<CRN>> listDataChild;
 
     public CRNListAdapter(Context context, List<String> listDataHeader,
                           HashMap<String, List<CRN>> listChildData) {
-        this._context = context;
-        this._listDataHeader = listDataHeader;
-        this._listDataChild = listChildData;
+        this.context = context;
+        this.listDataHeader = listDataHeader;
+        this.listDataChild = listChildData;
     }
 
     @Override
     public Object getChild(int groupPosition, int childPosititon) {
-        return this._listDataChild.get(this._listDataHeader.get(groupPosition))
+        return this.listDataChild.get(this.listDataHeader.get(groupPosition))
                 .get(childPosititon);
     }
 
@@ -44,7 +44,7 @@ public class CRNListAdapter extends BaseExpandableListAdapter {
                              boolean isLastChild, View convertView, ViewGroup parent) {
         CRN crn = (CRN) getChild(groupPosition, childPosition);
         if (convertView == null) {
-            LayoutInflater inflater = (LayoutInflater) this._context
+            LayoutInflater inflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.adapter_crn, null);
         }
@@ -52,24 +52,25 @@ public class CRNListAdapter extends BaseExpandableListAdapter {
         TextView crn_number = (TextView) convertView.findViewById(R.id.parent);
         crn_number.setText(crn.getCRN() + "");
         TextView instructor = (TextView) convertView.findViewById(R.id.child);
-        instructor.setText(crn.getInstructor());
+        String instructorName = crn.getInstructor().trim();
+        crn.getMeetingTimes(context);
+        instructor.setText(instructorName + "\n" + crn.getShortMeetingTimesString());
         return convertView;
     }
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return this._listDataChild.get(this._listDataHeader.get(groupPosition))
-                .size();
+        return this.listDataChild.get(this.listDataHeader.get(groupPosition)).size();
     }
 
     @Override
     public Object getGroup(int groupPosition) {
-        return this._listDataHeader.get(groupPosition);
+        return this.listDataHeader.get(groupPosition);
     }
 
     @Override
     public int getGroupCount() {
-        return this._listDataHeader.size();
+        return this.listDataHeader.size();
     }
 
     @Override
@@ -82,7 +83,7 @@ public class CRNListAdapter extends BaseExpandableListAdapter {
                              View convertView, ViewGroup parent) {
         String headerTitle = (String) getGroup(groupPosition);
         if (convertView == null) {
-            LayoutInflater infalInflater = (LayoutInflater) this._context
+            LayoutInflater infalInflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = infalInflater.inflate(R.layout.crn_group, null);
         }

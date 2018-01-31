@@ -69,6 +69,7 @@ public class CRNDisplay extends Fragment {
                         semesters.add(crn.getSemester());
                         map.put(crn.getSemester(), new ArrayList<CRN>());
                     }
+                    crn.updateMeetingTimes(getContext());
                     map.get(crn.getSemester()).add(crn);
                 }
 

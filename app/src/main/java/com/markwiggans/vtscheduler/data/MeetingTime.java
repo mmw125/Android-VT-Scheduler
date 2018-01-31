@@ -15,7 +15,9 @@ public class MeetingTime implements Comparable<MeetingTime>{
     private int startTime, endTime /*, crn */;
     private String startTimeString, endTimeString /*, semester */;
 
-    public MeetingTime(Cursor c) {
+    private static final int DAY_LENGTH = 1440;
+
+    MeetingTime(Cursor c) {
 //        id = c.getInt(c.getColumnIndex(CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_ID));
         day = Day.stringToDay(c.getString(c.getColumnIndex(CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_DAY)));
         startTimeString = c.getString(c.getColumnIndex(CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_START_TIME_STR));
@@ -26,21 +28,54 @@ public class MeetingTime implements Comparable<MeetingTime>{
 //        semester = c.getString(c.getColumnIndex(CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_CRN_SEMESTER));
     }
 
-    public Day getDay() {
+    /**
+     * Gets the day that the meeting time is on.
+     * @return the day.
+     */
+    Day getDay() {
         return this.day;
     }
 
-    public int getStartTime() {
+    /**
+     * Get the start time.
+     * @return start time.
+     */
+    int getStartTime() {
         return this.startTime;
     }
 
-    public int getEndTime() {
+    /**
+     * Get the start time without day.
+     * @return start time.
+     */
+    int getStartTimeWithoutDay() {
+        return this.startTime - day.toInt();
+    }
+
+    /**
+     * Get the end time.
+     * @return the end time.
+     */
+    int getEndTime() {
         return this.endTime;
+    }
+
+    /**
+     * Gets the time without the day.
+     * @return the end time.
+     */
+    int getEndTimeWithoutDay() {
+        return this.endTime - day.toInt();
     }
 
     public enum Day {
         MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY, DEFAULT;
 
+        /**
+         * Creates a day from a string object;
+         * @param s the string to create a day from.
+         * @return a day from the string.
+         */
         private static Day stringToDay(String s) {
             switch (s) {
                 case "MONDAY": return MONDAY;
@@ -57,14 +92,27 @@ public class MeetingTime implements Comparable<MeetingTime>{
         private int toInt() {
             switch(this) {
                 case MONDAY: return 0;
-                case TUESDAY: return 1440;
-                case WEDNESDAY: return 2880;
-                case THURSDAY: return 4320;
-                case FRIDAY: return 5760;
-                case SATURDAY: return 7200;
-                case SUNDAY: return 8640;
+                case TUESDAY: return DAY_LENGTH;
+                case WEDNESDAY: return DAY_LENGTH * 2;
+                case THURSDAY: return DAY_LENGTH * 3;
+                case FRIDAY: return DAY_LENGTH * 4;
+                case SATURDAY: return DAY_LENGTH * 5;
+                case SUNDAY: return DAY_LENGTH * 6;
                 default: return 0;
             }
+        }
+
+        public String toShortString() {
+            switch (this) {
+                case MONDAY: return "M";
+                case TUESDAY: return "T";
+                case WEDNESDAY: return "W";
+                case THURSDAY: return "H";
+                case FRIDAY: return "F";
+                case SATURDAY: return "S";
+                case SUNDAY: return "U";
+            }
+            return "ARR";
         }
     }
 
@@ -73,11 +121,19 @@ public class MeetingTime implements Comparable<MeetingTime>{
         return this.getStartTime() - o.getStartTime();
     }
 
-    public String getStartTimeString() {
+    /**
+     * Get the string used to create the object.
+     * @return start time string.
+     */
+    String getStartTimeString() {
         return this.startTimeString;
     }
 
-    public String getEndTimeString() {
+    /**
+     * Get the string representing the end time.
+     * @return end time string.
+     */
+    String getEndTimeString() {
         return this.endTimeString;
     }
 }
