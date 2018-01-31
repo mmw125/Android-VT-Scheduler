@@ -185,8 +185,11 @@ public class MainActivity extends Activity implements MainActivityInteraction {
             }
             fragment = scheduleViewer;
         }
+        changeFragment(fragment);
+    }
 
-
+    @Override
+    public void changeFragment(Fragment fragment) {
         if (fragment != null) {
             // update the main content by replacing fragments
             getFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).addToBackStack(null).commit();

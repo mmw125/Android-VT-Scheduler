@@ -181,6 +181,36 @@ public class DataSource {
         return null;
     }
 
+    public static void getCRNs(Context context, final Course course, final OnEventListener<List<CRN>> reciever) {
+        getCRNs(context, course, true, reciever);
+    }
+
+    public static void getCRNs(Context context, final Course course, boolean restrictSemester, final OnEventListener<List<CRN>> reciever) {
+        String[] args;
+        String whereStatement = CourseReaderContract.CRNEntry.COLUMN_COURSE_WHOLE_NAME +
+                " = ? AND " + CourseReaderContract.CRNEntry.COLUMN_COURSE_TYPE + " = ?";
+        if (restrictSemester) {
+            args = new String[]{course.getWholeName(), course.getType(), course.getSemester()};
+            whereStatement += " AND " + CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = ?";
+        } else {
+            args = new String[]{course.getWholeName(), course.getType()};
+        }
+        DatabaseWrapper.getInstance(context).query(new OnEventListener<List<QueryResult>>() {
+            @Override
+            public void onSuccess(List<QueryResult> object) {
+                List<CRN> crns = new ArrayList<>();
+                Cursor c = object.get(0).getCursor();
+                if (c.moveToFirst()) {
+                    do {
+                        crns.add(new CRN(course, c));
+                    } while (c.moveToNext());
+                }
+                c.close();
+                reciever.onSuccess(crns);
+            }
+        }, new Query(CourseReaderContract.CRNEntry.TABLE_NAME, whereStatement, args));
+    }
+
     /**
      * Gets the meeting times for one course
      *
@@ -223,7 +253,8 @@ public class DataSource {
 
     public static void getCRNs(Context context, String semester, int[] crns, final OnEventListener<List<CRN>> receiver) {
         String[] args = new String[crns.length + 1];
-        StringBuilder whereString = new StringBuilder(CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = ?");
+        StringBuilder whereString = new StringBuilder(
+                CourseReaderContract.CRNEntry.COLUMN_COURSE_SEMESTER + " = ?");
         args[0] = semester;
         for (int i = 0; i < crns.length; i++) {
             whereString.append(i == 0 ? " and " : " or ");
@@ -242,10 +273,31 @@ public class DataSource {
         }, new Query(CourseReaderContract.CRNEntry.TABLE_NAME, whereString.toString(), args));
     }
 
-    public static ArrayList<MeetingTime> getMeetingTimes(Context context, CRN crn) {
+    public static void getMeetingTimes(Context context, CRN crn, final OnEventListener<List<MeetingTime>> receiver) {
         String whereStatement = CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_CRN_SEMESTER
                 + " = ? AND " + CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_CRN_CRN + " = ?";
-        Cursor c = DatabaseWrapper.getInstance(context).query(new Query(CourseReaderContract.MeetingTimeEntry.TABLE_NAME, whereStatement, new String[]{crn.getSemester(), crn.getCRN() + ""})).getCursor();
+        DatabaseWrapper.getInstance(context).query(new OnEventListener<List<QueryResult>>() {
+            @Override
+            public void onSuccess(List<QueryResult> object) {
+                ArrayList<MeetingTime> mtl = new ArrayList<>();
+                Cursor c = object.get(0).getCursor();
+                if (c.moveToFirst()) {
+                    do {
+                        mtl.add(new MeetingTime(c));
+                    } while (c.moveToNext());
+                }
+                c.close();
+                receiver.onSuccess(mtl);
+            }
+        }, new Query(CourseReaderContract.MeetingTimeEntry.TABLE_NAME, whereStatement, new String[]{crn.getSemester(), crn.getCRN() + ""}));
+    }
+
+    public static List<MeetingTime> getMeetingTimes(Context context, CRN crn) {
+        String whereStatement = CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_CRN_SEMESTER
+                + " = ? AND " + CourseReaderContract.MeetingTimeEntry.COLUMN_NAME_CRN_CRN + " = ?";
+        Cursor c = DatabaseWrapper.getInstance(context).query(new Query(
+                CourseReaderContract.MeetingTimeEntry.TABLE_NAME,
+                whereStatement, new String[]{crn.getSemester(), crn.getCRN() + ""})).getCursor();
         ArrayList<MeetingTime> mtl = new ArrayList<>();
         if (c.moveToFirst()) {
             do {
@@ -278,7 +330,8 @@ public class DataSource {
     public static void getSemesters(Context context, final OnEventListener<List<Semester>> receiver) {
         if (semesters == null) {
             semesters = new ArrayList<>();
-            Query query = new Query(CourseReaderContract.CourseEntry.TABLE_NAME, new String[]{"distinct " + CourseReaderContract.CourseEntry.COLUMN_NAME_SEMESTER_ID});
+            Query query = new Query(CourseReaderContract.CourseEntry.TABLE_NAME, new String[]{
+                    "distinct " + CourseReaderContract.CourseEntry.COLUMN_NAME_SEMESTER_ID});
             DatabaseWrapper.getInstance(context).query(new OnEventListener<List<QueryResult>>() {
                 @Override
                 public void onSuccess(List<QueryResult> results) {

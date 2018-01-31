@@ -86,7 +86,7 @@ public class DatabaseWrapper {
     }
 
     private void verifyNotOnUIThread() {
-        if(Looper.getMainLooper().getThread() == Thread.currentThread()) {
+        if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
             throw new IllegalStateException("Cannot do synchronous query on ui thread");
         }
     }

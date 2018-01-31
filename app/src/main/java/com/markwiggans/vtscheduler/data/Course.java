@@ -3,6 +3,7 @@ package com.markwiggans.vtscheduler.data;
 import android.content.Context;
 import android.database.Cursor;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
  * Created by Mark Wiggans on 3/19/2017.
  * Represents a Course
  */
-public class Course {
+public class Course implements Serializable {
     public static List<Course> createCourses(Cursor c) {
         ArrayList<Course> courses = new ArrayList<>();
         if (c.moveToFirst()) {

@@ -1,5 +1,7 @@
 package com.markwiggans.vtscheduler.interfaces;
 
+import android.app.Fragment;
+
 import com.markwiggans.vtscheduler.data.Course;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;
 
@@ -17,6 +19,7 @@ public interface MainActivityInteraction {
      * @param params parameters to pass to the fragment instance
      */
     void changeFragment(String fragmentName, Object... params);
+    void changeFragment(Fragment fragment);
 
     /**
      * Starts a generate schedules query
